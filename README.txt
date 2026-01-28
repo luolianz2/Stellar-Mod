@@ -1,1 +1,1 @@
-A core mod developed collaboratively by our team, designed for a modpack.
+A core mod developed collaboratively by our team, designed for a modpack.A core mod developed collaboratively by our team, designed for a modpack.
