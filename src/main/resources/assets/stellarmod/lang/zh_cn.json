@@ -1,4 +1,5 @@
 {
   "block.stellarmod.test": "彩虹方块",
-  "block.stellarmod.dimension_block": "维度方块"
+  "block.stellarmod.dimension_block": "维度方块",
+  "itemGroup.stellar_tab": "群星"
 }

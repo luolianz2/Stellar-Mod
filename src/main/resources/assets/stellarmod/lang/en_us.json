@@ -1,4 +1,5 @@
 {
-  "block.stellarmod.test": "rainbow block",
-  "block.stellarmod.dimension_block": "dimension block"
+  "block.stellarmod.test": "Rainbow Block",
+  "block.stellarmod.dimension_block": "Dimension Block",
+  "itemGroup.stellar_tab": "Stellar Tab"
 }
