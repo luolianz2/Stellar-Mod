@@ -1,21 +1,7 @@
 {
   "variants": {
-    "":[
-      {
-        "model":"stellarmod:block/dimension_block"
-      },
-      {
-        "model":"stellarmod:block/dimension_block",
-        "y": 90
-      },
-      {
-        "model":"stellarmod:block/dimension_block",
-        "y": 180
-      },
-      {
-        "model":"stellarmod:block/dimension_block",
-        "y": 270
-      }
-    ]
+    "": {
+        "model": "stellarmod:block/dimension_block"
+    }
   }
 }

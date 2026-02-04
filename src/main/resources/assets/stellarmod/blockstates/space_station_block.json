@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "stellarmod:block/space_station_block"
+    }
+  }
+}

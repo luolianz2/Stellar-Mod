@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+        "model": "stellarmod:block/coil_block"
+    }
+  }
+}

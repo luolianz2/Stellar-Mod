@@ -1,5 +1,8 @@
 {
-  "block.stellarmod.test": "Rainbow Block",
+  "item.stellarmod.blush_face": "Blush Face",
+  "block.stellarmod.rainbow_block": "Rainbow Block",
+  "block.stellarmod.coil_block": "Coil Block",
   "block.stellarmod.dimension_block": "Dimension Block",
+  "block.stellarmod.space_station_block": "Space Station Block",
   "itemGroup.stellar_tab": "Stellar Tab"
 }

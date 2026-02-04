@@ -11,7 +11,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class StellarItems
 {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, StellarMod.MODID);
-    public static final RegistryObject<Item> testblockitem = ITEMS.register("test",() -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> Blush_Face = ITEMS.register("blush_face",() -> new Item(new Item.Properties()));
     public static void register(IEventBus eventBus)  {
         ITEMS.register(eventBus);
     }
