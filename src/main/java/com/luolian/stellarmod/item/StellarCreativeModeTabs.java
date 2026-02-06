@@ -26,6 +26,7 @@ public class StellarCreativeModeTabs {
                         p_259752_.accept(StellarBlocks.Dimension_Block.get());
                         p_259752_.accept(StellarBlocks.Space_Station_Block.get());
                         p_259752_.accept(StellarBlocks.Space_Station_Glass_Block.get());
+                        p_259752_.accept(StellarBlocks.Blue_Purple_Neon_Light.get());
                     }).build());
     public static void register(IEventBus eventBus) {       //让封装了自定义创造物品栏的DeferredRegister注册器，绑定到事件总线
             CREATIVE_MODE_TABS.register(eventBus);

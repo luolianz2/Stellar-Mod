@@ -1,0 +1,6 @@
+{
+	"parent": "block/cube_all",
+	"textures": {
+		"all": "stellarmod:block/blue_purple_neon_light"
+	}
+}

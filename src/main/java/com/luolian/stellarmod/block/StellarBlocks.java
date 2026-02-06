@@ -2,6 +2,7 @@ package com.luolian.stellarmod.block;
 
 import com.luolian.stellarmod.StellarMod;
 import com.luolian.stellarmod.item.StellarItems;
+import net.minecraft.world.entity.GlowSquid;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -33,11 +34,12 @@ public class StellarBlocks {
                     .requiresCorrectToolForDrops()));
     public static final RegistryObject<Block> Space_Station_Glass_Block =
             registerBlock("space_station_glass_block", () -> new GlassBlock(BlockBehaviour.Properties.copy(Blocks.GLASS).noOcclusion()));
+    public static final RegistryObject<Block> Blue_Purple_Neon_Light =
+            registerBlock("blue_purple_neon_light", () -> new Block(BlockBehaviour.Properties.copy(Blocks.GLOWSTONE).noOcclusion()));
 
     private static <T extends Block> void registerBlockItems(String name, RegistryObject<T> block) {
         StellarItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
     }
-
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {        //注册方块
         RegistryObject<T> blocks = BLOCKS.register(name, block);
         registerBlockItems(name, blocks);
