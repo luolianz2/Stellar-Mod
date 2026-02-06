@@ -4,5 +4,6 @@
   "block.stellarmod.coil_block": "Coil Block",
   "block.stellarmod.dimension_block": "Dimension Block",
   "block.stellarmod.space_station_block": "Space Station Block",
+  "block.stellarmod.space_station_glass_block": "Space Station Glass Block",
   "itemGroup.stellar_tab": "Stellar Tab"
 }

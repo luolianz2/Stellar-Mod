@@ -5,6 +5,8 @@ import com.luolian.stellarmod.item.StellarItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.GlassBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -29,6 +31,8 @@ public class StellarBlocks {
     public static final RegistryObject<Block> Space_Station_Block =
             registerBlock("space_station_block", () -> new Block(BlockBehaviour.Properties.of().strength(4.5F,3.0F)
                     .requiresCorrectToolForDrops()));
+    public static final RegistryObject<Block> Space_Station_Glass_Block =
+            registerBlock("space_station_glass_block", () -> new GlassBlock(BlockBehaviour.Properties.copy(Blocks.GLASS).noOcclusion()));
 
     private static <T extends Block> void registerBlockItems(String name, RegistryObject<T> block) {
         StellarItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));

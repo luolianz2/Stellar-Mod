@@ -10,7 +10,7 @@
 //public class StellarLootTableProvider {
 //    public static LootTableProvider create(PackOutput packOutput) {
 //        return new LootTableProvider(packOutput, Set.of(), List.of(
-//                new LootTableProvider.SubProviderEntry(StellarBlockLootTablesProvider::new, LootContextParamSet.BLOCK)
-//        ))
+//                new LootTableProvider.SubProviderEntry(StellarBlockLootTablesProvider::new, LootContextParamSet.B)
+//        ));
 //    }
 //}
