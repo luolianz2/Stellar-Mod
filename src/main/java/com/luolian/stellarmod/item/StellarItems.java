@@ -2,6 +2,7 @@
 package com.luolian.stellarmod.item;
 
 import com.luolian.stellarmod.StellarMod;
+import net.minecraft.world.food.Foods;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -12,6 +13,7 @@ public class StellarItems
 {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, StellarMod.MODID);
     public static final RegistryObject<Item> Blush_Face = ITEMS.register("blush_face",() -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> Energy_Battery = ITEMS.register("energy_battery",() -> new Item((new Item.Properties()).food(Foods.GOLDEN_APPLE)));
     public static void register(IEventBus eventBus)  {
         ITEMS.register(eventBus);
     }

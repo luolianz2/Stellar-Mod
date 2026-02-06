@@ -1,10 +1,11 @@
 {
   "item.stellarmod.blush_face": "Blush Face",
+  "item.stellarmod.energy_battery": "Energy battery",
   "block.stellarmod.rainbow_block": "Rainbow Block",
   "block.stellarmod.coil_block": "Coil Block",
   "block.stellarmod.dimension_block": "Dimension Block",
   "block.stellarmod.space_station_block": "Space Station Block",
   "block.stellarmod.space_station_glass_block": "Space Station Glass Block",
-  "block.stellarmod.blue_purple_neon_light": "Blue purple neon light",
+  "block.stellarmod.blue_purple_neon_light": "Blue Purple Neon Light",
   "itemGroup.stellar_tab": "Stellar Tab"
 }
