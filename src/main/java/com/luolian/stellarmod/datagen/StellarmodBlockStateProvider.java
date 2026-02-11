@@ -8,11 +8,11 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class StellarmodBlockStateProvider extends BlockStateProvider {
     public StellarmodBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
-        super(output, StellarMod.MODID, exFileHelper);
+        super(output, StellarMod.MOD_ID, exFileHelper);
     }
 
     @Override
     protected void registerStatesAndModels() {
-        simpleBlockWithItem(StellarBlocks.Space_Station_Block.get(),cubeAll(StellarBlocks.Space_Station_Block.get()));
+        simpleBlockWithItem(StellarBlocks.SPACE_STATION_BLOCK.get(),cubeAll(StellarBlocks.SPACE_STATION_BLOCK.get()));
     }
 }
