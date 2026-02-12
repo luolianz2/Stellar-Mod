@@ -49,7 +49,11 @@ public abstract class BaseOperation {
      * 之所以可以用json类比，是因为NBT和其一样是树形结构，使用键值对来标记数据，
      * NBT标签对应json对象，NBT数组也对应json数组，在语法上很相似。<br>
      * <br>
-     * 在单维使用时可以想象其是一个Map<String, Object>，我们可以put和get数据。<br>
+     * 在单维使用时可以想象其是一个{@code Map<String, Object>}，我们可以put和get数据。<br>
+     * <h2>触发时机</h2>
+     * 序列化和反序列化都在服务端进行，客户端不存在这些概念。<br>
+     * 序列化的触发时机通常是服务器暂停、服务器关闭、玩家离开服务器和自动保存时等。<br>
+     * 反序列化的触发时机通常是服务器启动、区块加载时等。<br>
      * <h2>创建NBT标签（序列化）</h2>
      * 以下是创建NBT标签的方式：
      * <pre>{@code
