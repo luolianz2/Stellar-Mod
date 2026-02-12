@@ -99,6 +99,7 @@ public abstract class BaseOperation {
      *         this.booleanValue = customTag.getBoolean("BooleanValue");
      *         // getter方法总是有一个默认值，比如0或new ArrayList<>()
      *         // 当getter没有找到对应的键时，它会返回这个默认值
+     *     }
      * }
      * }</pre>
      * @param tag 一个NBT标签对象
