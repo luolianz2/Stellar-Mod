@@ -25,6 +25,7 @@ public abstract class NetworkOperation {
      *    // 如果你没有这个判断，你的逻辑会同时在服务端和客户端执行，也就是两次
      * }
      * }</pre>
+     * <h3>↑ 但是注意，以上写法不适用与所有内容，具体实现具体分析 ↑</h3>
      * <h2>纯客户端</h2>
      * 另外，当你需要在纯客户端的环境下写一些东西，你需要加上{@code @OnlyIn(Dist.CLIENT)}注解在类或方法上：
      * <pre>{@code
