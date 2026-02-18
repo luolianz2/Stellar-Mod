@@ -20,6 +20,7 @@ public class StellarCreativeModeTabs {
                     .title(Component.translatable("itemGroup.stellar_tab"))     //名称（用相应语言文件实现）
                     .displayItems((p_270258_, p_259752_) -> {
                         p_259752_.accept(StellarItems.BLUSH_FACE.get());     //往里面添加相应物品
+                        p_259752_.accept(StellarItems.METAL_DETECTOR.get());
                         p_259752_.accept(StellarBlocks.RAINBOW_BLOCK.get());
                         p_259752_.accept(StellarBlocks.COIL_BLOCK.get());
                         p_259752_.accept(StellarBlocks.DIMENSION_BLOCK.get());

@@ -1,5 +1,7 @@
 {
   "item.stellarmod.blush_face": "Blush Face",
+  "item.stellarmod.metal_detector": "Metal Detector",
+  "item.stellarmod.metal_detected.found": "Found in（%d，%d，%d）for %s",
   "block.stellarmod.rainbow_block": "Rainbow Block",
   "block.stellarmod.coil_block": "Coil Block",
   "block.stellarmod.dimension_block": "Dimension Block",

@@ -13,6 +13,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class MetalDetectorItem extends Item {
+    private static final int DETECTION_RADIUS = 32;
+    int searchDepth = 64; //向下搜索64格
+
     public MetalDetectorItem(Properties properties) {
         super(properties);
     }
@@ -29,13 +32,20 @@ public class MetalDetectorItem extends Item {
 
             boolean foundBlock = false;
 
-            for(int i = 0; i <= positionClicked.getY() + 64; i++) {
-                BlockState state = p_41427_.getLevel().getBlockState(positionClicked.below(i));
-                if(isValuableBlock(state)) {
-                    outputValuableCoordinates(positionClicked.below(i), player, state.getBlock());
-                    foundBlock = true;
-
-                    break;
+            searchLoop:
+            for (int dx = -DETECTION_RADIUS; dx <= DETECTION_RADIUS; dx++) {
+                for (int dz = -DETECTION_RADIUS; dz <= DETECTION_RADIUS; dz++) {
+                    for (int dy = 0; dy <= searchDepth; dy++) {
+                        BlockState state = p_41427_.getLevel().getBlockState(positionClicked.offset(dx, -dy, dz));
+                        if(isValuableBlock(state)) {
+                            outputValuableCoordinates(positionClicked.offset(dx, -dy, dz), player, state.getBlock());
+                            foundBlock = true;
+                            break searchLoop;
+                        }
+                        if(state.is(Blocks.VOID_AIR)){
+                            break;
+                        }
+                    }
                 }
             }
 
@@ -49,8 +59,9 @@ public class MetalDetectorItem extends Item {
     }
 
     private void outputValuableCoordinates(BlockPos blockPos, Player player, Block block) {      //找到对应方块时发送信息至聊天栏
-        player.sendSystemMessage(Component.literal("已发现" + I18n.get(block.getDescriptionId()) + "，其位于" +
-                "(" + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ() + ")"));
+        Component message = Component.translatable("item.stellarmod.metal_detected.found",
+                 blockPos.getX(), blockPos.getY(), blockPos.getZ(),block.getName());
+        player.sendSystemMessage(message);
     }
 
     private boolean isValuableBlock(BlockState state) {     //对应方块判断

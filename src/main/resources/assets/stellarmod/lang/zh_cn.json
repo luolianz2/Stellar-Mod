@@ -1,5 +1,7 @@
 {
   "item.stellarmod.blush_face": "红色微笑",
+  "item.stellarmod.metal_detector": "探矿仪",
+  "item.stellarmod.metal_detected.found": "已检测到位于（%d，%d，%d）的%s",
   "block.stellarmod.rainbow_block": "彩虹方块",
   "block.stellarmod.coil_block": "线圈方块",
   "block.stellarmod.dimension_block": "维度方块",
