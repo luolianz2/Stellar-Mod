@@ -1,4 +1,3 @@
-//探矿杖
 package com.luolian.stellarmod.item.custom;
 
 import net.minecraft.core.BlockPos;
@@ -17,6 +16,7 @@ import net.minecraft.world.item.TooltipFlag;
 import javax.annotation.Nullable;
 import java.util.List;
 
+// 探矿杖
 public class MetalDetectorItem extends Item {
     private static final int DETECTION_RADIUS = 32;
     int searchDepth = 64; //向下搜索64格
