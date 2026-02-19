@@ -1,6 +1,5 @@
 {
-  "replace": false,
   "values": [
-    "stellarmod:coil_block",
+    "stellarmod:coil_block"
   ]
 }

@@ -1,16 +1,21 @@
 //探矿杖
 package com.luolian.stellarmod.item.custom;
 
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.item.TooltipFlag;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class MetalDetectorItem extends Item {
     private static final int DETECTION_RADIUS = 32;
@@ -58,6 +63,12 @@ public class MetalDetectorItem extends Item {
         return InteractionResult.SUCCESS;
     }
 
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+        tooltipComponents.add(Component.translatable("tooltip.stellarmod_item.metal_detector"));
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+    }
+
     private void outputValuableCoordinates(BlockPos blockPos, Player player, Block block) {      //找到对应方块时发送信息至聊天栏
         Component message = Component.translatable("item.stellarmod.metal_detected.found",
                  blockPos.getX(), blockPos.getY(), blockPos.getZ(),block.getName());
@@ -67,4 +78,5 @@ public class MetalDetectorItem extends Item {
     private boolean isValuableBlock(BlockState state) {     //对应方块判断
         return state.is(Blocks.IRON_ORE) || state.is(Blocks.GOLD_ORE) || state.is(Blocks.DIAMOND_ORE);
     }
+
 }

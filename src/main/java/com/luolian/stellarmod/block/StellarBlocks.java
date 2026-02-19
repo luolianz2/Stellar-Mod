@@ -7,6 +7,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.GlassBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -24,7 +25,7 @@ public class StellarBlocks {
     public static final RegistryObject<Block> RAINBOW_BLOCK =
             registerBlock("rainbow_block", () -> new Block(BlockBehaviour.Properties.of().strength(0.5F,3.0F)));
     public static final RegistryObject<Block> COIL_BLOCK =
-            registerBlock("coil_block", () -> new Block(BlockBehaviour.Properties.of().strength(3.0F,3.0F)
+            registerBlock("coil_block", () -> new RotatedPillarBlock(BlockBehaviour.Properties.of().strength(3.0F,3.0F)
                     .requiresCorrectToolForDrops()));
     public static final RegistryObject<Block> DIMENSION_BLOCK =
             registerBlock("dimension_block", () -> new Block(BlockBehaviour.Properties.of().strength(6.0F,3.0F)
@@ -33,7 +34,7 @@ public class StellarBlocks {
             registerBlock("space_station_block", () -> new Block(BlockBehaviour.Properties.of().strength(4.5F,3.0F)
                     .requiresCorrectToolForDrops()));
     public static final RegistryObject<Block> SPACE_STATION_GLASS_BLOCK =
-            registerBlock("space_station_glass_block", () -> new GlassBlock(BlockBehaviour.Properties.copy(Blocks.GLASS).noOcclusion()));
+            registerBlock("space_station_glass_block", () -> new GlassBlock(BlockBehaviour.Properties.copy(Blocks.GLASS)));
 
     private static <T extends Block> void registerBlockItems(String name, RegistryObject<T> block) {
         StellarItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));

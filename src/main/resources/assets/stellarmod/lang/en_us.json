@@ -7,5 +7,6 @@
   "block.stellarmod.dimension_block": "Dimension Block",
   "block.stellarmod.space_station_block": "Space Station Block",
   "block.stellarmod.space_station_glass_block": "Space Station Glass Block",
+  "tooltip.stellarmod_item.metal_detector": "A cane for prospecting, which can detect iron, gold, and diamond ores. \n They have nowhere to hide!!!",
   "itemGroup.stellar_tab": "Stellar Tab"
 }
