@@ -1,7 +1,16 @@
 {
   "variants": {
-    "": {
-        "model": "stellarmod:block/coil_block"
+    "axis=x": {
+      "model": "stellarmod:block/coil_block_side_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "stellarmod:block/coil_block_side"
+    },
+    "axis=z": {
+      "model": "stellarmod:block/coil_block_side_horizontal",
+      "x": 90
     }
   }
 }

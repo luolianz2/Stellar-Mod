@@ -1,11 +1,12 @@
 {
   "item.stellarmod.blush_face": "Blush Face",
-  "item.stellarmod.energy_battery": "Energy battery",
+  "item.stellarmod.metal_detector": "Metal Detector",
+  "item.stellarmod.metal_detected.found": "Found in（%d，%d，%d）for %s",
   "block.stellarmod.rainbow_block": "Rainbow Block",
   "block.stellarmod.coil_block": "Coil Block",
   "block.stellarmod.dimension_block": "Dimension Block",
   "block.stellarmod.space_station_block": "Space Station Block",
   "block.stellarmod.space_station_glass_block": "Space Station Glass Block",
-  "block.stellarmod.blue_purple_neon_light": "Blue Purple Neon Light",
+  "tooltip.stellarmod_item.metal_detector": "A cane for prospecting, which can detect iron, gold, and diamond ores. \n They have nowhere to hide!!!",
   "itemGroup.stellar_tab": "Stellar Tab"
 }

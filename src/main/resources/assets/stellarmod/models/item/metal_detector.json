@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "stellarmod:item/blush_face"
+    "layer0": "stellarmod:item/metal_detector"
   }
 }

@@ -1,21 +1,7 @@
 {
   "variants": {
-    "": [
-      {
-        "model": "stellarmod:block/rainbow_block"
-      },
-      {
-        "model": "stellarmod:block/rainbow_block",
-        "y": 90
-      },
-      {
-        "model": "stellarmod:block/rainbow_block",
-        "y": 180
-      },
-      {
-        "model": "stellarmod:block/rainbow_block",
-        "y": 270
-      }
-    ]
+    "": {
+      "model": "stellarmod:block/rainbow_block"
+    }
   }
 }

@@ -1,11 +1,12 @@
 {
   "item.stellarmod.blush_face": "红色微笑",
-  "item.stellarmod.energy_battery": "能量电池",
+  "item.stellarmod.metal_detector": "探矿仪",
+  "item.stellarmod.metal_detected.found": "已检测到位于（%d，%d，%d）的%s",
   "block.stellarmod.rainbow_block": "彩虹方块",
   "block.stellarmod.coil_block": "线圈方块",
   "block.stellarmod.dimension_block": "维度方块",
   "block.stellarmod.space_station_block": "太空站方块",
   "block.stellarmod.space_station_glass_block": "太空站玻璃方块",
-  "block.stellarmod.blue_purple_neon_light": "蓝紫色霓虹灯",
+  "tooltip.stellarmod_item.metal_detector": "一把探矿用的手杖，可发现铁、金、钻石矿石 \n  无所遁形！！！",
   "itemGroup.stellar_tab": "群星"
 }

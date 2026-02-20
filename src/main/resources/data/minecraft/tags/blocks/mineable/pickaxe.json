@@ -1,8 +1,8 @@
 {
-  "replace": false,
   "values": [
     "stellarmod:coil_block",
     "stellarmod:dimension_block",
-    "stellarmod:space_station_block"
+    "stellarmod:space_station_block",
+    "stellarmod:space_station_glass_block"
   ]
 }

@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "stellarmod:coil_block"
+          "name": "stellarmod:space_station_glass_block"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "stellarmod:blocks/coil_block"
+  "random_sequence": "stellarmod:blocks/space_station_glass_block"
 }
