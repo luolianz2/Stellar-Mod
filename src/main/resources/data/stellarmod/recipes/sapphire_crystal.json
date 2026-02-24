@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "stellarmod:sapphire_crystal_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "item": "stellarmod:sapphire_crystal"
+  }
+}

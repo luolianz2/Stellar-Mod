@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "stellarmod:block/sapphire_crystal_ore"
+  }
+}

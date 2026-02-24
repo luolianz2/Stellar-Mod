@@ -20,6 +20,7 @@ public class StellarItemModelProvider extends ItemModelProvider {
     protected void registerModels() {   //添加物品模型
         simpleItem(StellarItems.BLUSH_FACE);
         simpleItem(StellarItems.METAL_DETECTOR);
+        simpleItem(StellarItems.SAPPHIRE_CRYSTAL);
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {

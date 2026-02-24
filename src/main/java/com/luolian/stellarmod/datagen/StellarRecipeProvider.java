@@ -1,29 +1,44 @@
 package com.luolian.stellarmod.datagen;
 
+import com.google.common.collect.ImmutableList;
 import com.luolian.stellarmod.StellarMod;
 import com.luolian.stellarmod.block.StellarBlocks;
+import com.luolian.stellarmod.item.StellarItems;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 //用于生成各种配方
 public class StellarRecipeProvider extends RecipeProvider implements IConditionBuilder {
+    //用于聚合蓝宝石水晶矿
+    public static final List<ItemLike> SAPPHIRE_CRYSTAL_SMELTABLES = List.of(StellarBlocks.SAPPHIRE_CRYSTAL_ORE.get());
+
     public StellarRecipeProvider(PackOutput packOutput) {
         super(packOutput);
     }
 
     @Override
     protected void buildRecipes(Consumer<FinishedRecipe> writer) {  //添加配方
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, StellarBlocks.SPACE_STATION_BLOCK.get())    //有序合成
+        //添加熔炉配方
+        oreSmelting(writer, SAPPHIRE_CRYSTAL_SMELTABLES, RecipeCategory.MISC, StellarItems.SAPPHIRE_CRYSTAL.get(), 0.25f, 200, "sapphire_crystal");
+
+        //添加高炉配方
+        oreBlasting(writer, SAPPHIRE_CRYSTAL_SMELTABLES, RecipeCategory.MISC, StellarItems.SAPPHIRE_CRYSTAL.get(), 0.25f, 100, "sapphire_crystal");
+
+        //有序合成
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, StellarBlocks.SPACE_STATION_BLOCK.get())
                 .pattern("###") //各种不同物品用不同的符号表示
                 .pattern("#$#")
                 .pattern("###")
@@ -31,7 +46,22 @@ public class StellarRecipeProvider extends RecipeProvider implements IConditionB
                 .define('$', Items.IRON_BLOCK)
                 .unlockedBy("has_air", has(Items.AIR))
                 .save(writer);  //保存
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, StellarBlocks.SAPPHIRE_CRYSTAL_BLOCK.get())
+                .pattern("###")
+                .pattern("###")
+                .pattern("###")
+                .define('#', StellarItems.SAPPHIRE_CRYSTAL.get())
+                .unlockedBy("has_sapphire_crystal", has(StellarItems.SAPPHIRE_CRYSTAL.get()))
+                .save(writer);
+
+        //无序合成
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, StellarItems.SAPPHIRE_CRYSTAL.get(), 9)
+                .requires(StellarBlocks.SAPPHIRE_CRYSTAL_BLOCK.get())
+                .unlockedBy(getHasName(StellarBlocks.SAPPHIRE_CRYSTAL_BLOCK.get()),  has(StellarBlocks.SAPPHIRE_CRYSTAL_BLOCK.get()))
+                .save(writer);
     }
+
     protected static void oreSmelting(Consumer<FinishedRecipe> p_250654_, List<ItemLike> p_250172_, RecipeCategory p_250588_,
                                       ItemLike p_251868_, float p_250789_, int p_252144_, String p_251687_) {
         oreCooking(p_250654_, RecipeSerializer.SMELTING_RECIPE, p_250172_,

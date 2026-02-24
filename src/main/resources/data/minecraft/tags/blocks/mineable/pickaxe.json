@@ -3,6 +3,8 @@
     "stellarmod:coil_block",
     "stellarmod:dimension_block",
     "stellarmod:space_station_block",
-    "stellarmod:space_station_glass_block"
+    "stellarmod:space_station_glass_block",
+    "stellarmod:sapphire_crystal_ore",
+    "stellarmod:sapphire_crystal_block"
   ]
 }

@@ -1,5 +1,7 @@
 {
   "values": [
-    "stellarmod:coil_block"
+    "stellarmod:coil_block",
+    "stellarmod:sapphire_crystal_ore",
+    "stellarmod:sapphire_crystal_block"
   ]
 }

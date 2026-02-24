@@ -24,15 +24,24 @@ public class StellarBlocks {
     // JAVA规范final字段名使用全大写字母和下划线分隔单词，建议养成好习惯
     public static final RegistryObject<Block> RAINBOW_BLOCK =
             registerBlock("rainbow_block", () -> new Block(BlockBehaviour.Properties.of().strength(0.5F,3.0F)));
-    public static final RegistryObject<Block> COIL_BLOCK =
-            registerBlock("coil_block", () -> new RotatedPillarBlock(BlockBehaviour.Properties.of().strength(3.0F,3.0F)
-                    .requiresCorrectToolForDrops()));
+
     public static final RegistryObject<Block> DIMENSION_BLOCK =
             registerBlock("dimension_block", () -> new Block(BlockBehaviour.Properties.of().strength(6.0F,3.0F)
                     .requiresCorrectToolForDrops()));
     public static final RegistryObject<Block> SPACE_STATION_BLOCK =
             registerBlock("space_station_block", () -> new Block(BlockBehaviour.Properties.of().strength(4.5F,3.0F)
                     .requiresCorrectToolForDrops()));
+    public static final RegistryObject<Block> SAPPHIRE_CRYSTAL_ORE =
+            registerBlock("sapphire_crystal_ore", () -> new Block(BlockBehaviour.Properties.of().strength(3.0F,3.0F)
+                    .requiresCorrectToolForDrops()));
+    public static final RegistryObject<Block> SAPPHIRE_CRYSTAL_BLOCK =
+            registerBlock("sapphire_crystal_block", () -> new Block(BlockBehaviour.Properties.of().strength(3.0F,3.0F)
+                    .requiresCorrectToolForDrops()));
+
+    public static final RegistryObject<Block> COIL_BLOCK =
+            registerBlock("coil_block", () -> new RotatedPillarBlock(BlockBehaviour.Properties.of().strength(3.0F,3.0F)
+                    .requiresCorrectToolForDrops()));
+
     public static final RegistryObject<Block> SPACE_STATION_GLASS_BLOCK =
             registerBlock("space_station_glass_block", () -> new GlassBlock(BlockBehaviour.Properties.copy(Blocks.GLASS)));
 

@@ -21,11 +21,14 @@ public class StellarCreativeModeTabs {
                     .displayItems((p_270258_, p_259752_) -> {
                         p_259752_.accept(StellarItems.BLUSH_FACE.get());     //往里面添加相应物品
                         p_259752_.accept(StellarItems.METAL_DETECTOR.get());
+                        p_259752_.accept(StellarItems.SAPPHIRE_CRYSTAL.get());
                         p_259752_.accept(StellarBlocks.RAINBOW_BLOCK.get());
                         p_259752_.accept(StellarBlocks.COIL_BLOCK.get());
                         p_259752_.accept(StellarBlocks.DIMENSION_BLOCK.get());
                         p_259752_.accept(StellarBlocks.SPACE_STATION_BLOCK.get());
                         p_259752_.accept(StellarBlocks.SPACE_STATION_GLASS_BLOCK.get());
+                        p_259752_.accept(StellarBlocks.SAPPHIRE_CRYSTAL_ORE.get());
+                        p_259752_.accept(StellarBlocks.SAPPHIRE_CRYSTAL_BLOCK.get());
                     }).build());
     public static void register(IEventBus eventBus) {       //让封装了自定义创造物品栏的DeferredRegister注册器，绑定到事件总线
             CREATIVE_MODE_TABS.register(eventBus);

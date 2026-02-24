@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_sapphire_crystal": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "stellarmod:sapphire_crystal"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "stellarmod:sapphire_crystal_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_sapphire_crystal",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stellarmod:sapphire_crystal_block"
+    ]
+  },
+  "sends_telemetry_event": false
+}

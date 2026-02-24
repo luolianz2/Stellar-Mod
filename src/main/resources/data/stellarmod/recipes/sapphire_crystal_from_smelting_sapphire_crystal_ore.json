@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.25,
+  "group": "sapphire_crystal",
+  "ingredient": {
+    "item": "stellarmod:sapphire_crystal_ore"
+  },
+  "result": "stellarmod:sapphire_crystal"
+}

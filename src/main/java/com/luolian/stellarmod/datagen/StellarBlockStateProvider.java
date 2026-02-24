@@ -23,6 +23,8 @@ public class StellarBlockStateProvider extends BlockStateProvider {
         blockWithItem(StellarBlocks.RAINBOW_BLOCK);
         blockWithItem(StellarBlocks.DIMENSION_BLOCK);
         blockWithItem(StellarBlocks.SPACE_STATION_BLOCK);
+        blockWithItem(StellarBlocks.SAPPHIRE_CRYSTAL_ORE);
+        blockWithItem(StellarBlocks.SAPPHIRE_CRYSTAL_BLOCK);
 
         pillarBlockWithItem(StellarBlocks.COIL_BLOCK);
 
