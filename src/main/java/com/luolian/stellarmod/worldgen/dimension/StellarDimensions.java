@@ -23,11 +23,11 @@ import java.util.OptionalLong;
 
 public class StellarDimensions {
     public static final ResourceKey<LevelStem> STELLAR_SPACE_KEY = ResourceKey.create(Registries.LEVEL_STEM,
-            new ResourceLocation(StellarMod.MOD_ID, "stellar_space"));
+            StellarMod.location("stellar_space"));
     public static final ResourceKey<Level> STELLAR_SPACE_LEVEL_KEY = ResourceKey.create(Registries.DIMENSION,
-            new ResourceLocation(StellarMod.MOD_ID,"stellar_space"));
+            StellarMod.location("stellar_space"));
     public static final ResourceKey<DimensionType> STELLAR_DIM_TYPE = ResourceKey.create(Registries.DIMENSION_TYPE,
-            new ResourceLocation(StellarMod.MOD_ID, "stellar_type"));
+            StellarMod.location("stellar_type"));
 
     public static void bootstrapType(BootstapContext<DimensionType> context) {
         context.register(STELLAR_DIM_TYPE, new DimensionType(

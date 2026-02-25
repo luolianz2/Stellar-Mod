@@ -15,7 +15,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 public class StellarBiomes {
     public static final ResourceKey<Biome> STELLAR_BIOME = ResourceKey.create(Registries.BIOME,
-            new ResourceLocation(StellarMod.MOD_ID, "stellar_biome"));
+            StellarMod.location("stellar_biome"));
 
     public static void bootstrap(BootstapContext<Biome> context) {
         context.register(STELLAR_BIOME, createStellarBiome(context));
