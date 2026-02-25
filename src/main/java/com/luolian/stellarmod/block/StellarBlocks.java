@@ -1,6 +1,7 @@
 package com.luolian.stellarmod.block;
 
 import com.luolian.stellarmod.StellarMod;
+import com.luolian.stellarmod.block.custom.DimensionBlock;
 import com.luolian.stellarmod.item.StellarItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -25,9 +26,6 @@ public class StellarBlocks {
     public static final RegistryObject<Block> RAINBOW_BLOCK =
             registerBlock("rainbow_block", () -> new Block(BlockBehaviour.Properties.of().strength(0.5F,3.0F)));
 
-    public static final RegistryObject<Block> DIMENSION_BLOCK =
-            registerBlock("dimension_block", () -> new Block(BlockBehaviour.Properties.of().strength(6.0F,3.0F)
-                    .requiresCorrectToolForDrops()));
     public static final RegistryObject<Block> SPACE_STATION_BLOCK =
             registerBlock("space_station_block", () -> new Block(BlockBehaviour.Properties.of().strength(4.5F,3.0F)
                     .requiresCorrectToolForDrops()));
@@ -44,6 +42,10 @@ public class StellarBlocks {
 
     public static final RegistryObject<Block> SPACE_STATION_GLASS_BLOCK =
             registerBlock("space_station_glass_block", () -> new GlassBlock(BlockBehaviour.Properties.copy(Blocks.GLASS)));
+
+    public static final RegistryObject<Block> DIMENSION_BLOCK =
+            registerBlock("dimension_block", () -> new DimensionBlock(BlockBehaviour.Properties.of().strength(6.0F,3.0F)
+                    .requiresCorrectToolForDrops()));
 
     private static <T extends Block> void registerBlockItems(String name, RegistryObject<T> block) {
         StellarItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
