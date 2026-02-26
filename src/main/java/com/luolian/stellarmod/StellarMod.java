@@ -2,8 +2,11 @@
 package com.luolian.stellarmod;
 
 import com.luolian.stellarmod.block.StellarBlocks;
+import com.luolian.stellarmod.effect.StellarMobEffects;
 import com.luolian.stellarmod.item.StellarCreativeModeTabs;
 import com.luolian.stellarmod.item.StellarItems;
+import com.luolian.stellarmod.potion.StellarBrewingRecipes;
+import com.luolian.stellarmod.potion.StellarPotions;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -32,5 +35,7 @@ public class StellarMod {
         StellarItems.register(modEventBus);                 //调用自定义的物品注册类，将物品注册逻辑绑定到模组事件总线
         StellarCreativeModeTabs.register(modEventBus);      //调用自定义的创造模式标签注册类，将标签注册逻辑绑定到模组事件总线
         StellarBlocks.register(modEventBus);                //调用自定义的方块注册类，将方块注册逻辑绑定到模组事件总线
+        StellarMobEffects.register(modEventBus);
+        StellarPotions.register(modEventBus);
     }
 }

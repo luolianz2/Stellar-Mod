@@ -11,5 +11,25 @@
   "block.stellarmod.sapphire_crystal_ore": "Sapphire Crystal Ore",
   "block.stellarmod.sapphire_crystal_block": "Sapphire Crystal Block",
   "tooltip.stellarmod_item.metal_detector": "A instrument for prospecting, which can detect iron, gold, and diamond ores. \n They have nowhere to hide!!!",
-  "itemGroup.stellar_tab": "Stellar Tab"
+  "itemGroup.stellar_tab": "Stellar Tab",
+
+  "effect.stellarmod.grain_alcohol": "Alcohol's Blessing",
+  "effect.stellarmod.grain_alcohol.desc": "Grants 5 seconds of Regeneration when gaining any status effect.",
+  "effect.stellarmod.grain_alcohol.description": "Grants 5 seconds of Regeneration when gaining any status effect.",
+
+  "item.minecraft.potion.effect.grain_alcohol": "Potion of Alcohol's Blessing",
+  "item.minecraft.potion.effect.long_grain_alcohol": "Potion of Alcohol's Blessing",
+  "item.minecraft.potion.effect.strong_grain_alcohol": "Potion of Alcohol's Blessing",
+
+  "item.minecraft.splash_potion.effect.grain_alcohol": "Splash Potion of Alcohol's Blessing",
+  "item.minecraft.splash_potion.effect.long_grain_alcohol": "Splash Potion of Alcohol's Blessing",
+  "item.minecraft.splash_potion.effect.strong_grain_alcohol": "Splash Potion of Alcohol's Blessing",
+
+  "item.minecraft.lingering_potion.effect.grain_alcohol": "Lingering Potion of Alcohol's Blessing",
+  "item.minecraft.lingering_potion.effect.long_grain_alcohol": "Lingering Potion of Alcohol's Blessing",
+  "item.minecraft.lingering_potion.effect.strong_grain_alcohol": "Lingering Potion of Alcohol's Blessing",
+
+  "item.minecraft.tipped_arrow.effect.grain_alcohol": "Arrow of Alcohol's Blessing",
+  "item.minecraft.tipped_arrow.effect.long_grain_alcohol": "Arrow of Alcohol's Blessing",
+  "item.minecraft.tipped_arrow.effect.strong_grain_alcohol": "Arrow of Alcohol's Blessing"
 }

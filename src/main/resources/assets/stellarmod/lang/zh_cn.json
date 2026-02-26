@@ -11,5 +11,25 @@
   "block.stellarmod.sapphire_crystal_ore": "蓝宝石水晶原矿",
   "block.stellarmod.sapphire_crystal_block": "蓝宝石水晶块",
   "tooltip.stellarmod_item.metal_detector": "一款探矿用的仪器，可发现铁、金、钻石矿石 \n  无所遁形！！！",
-  "itemGroup.stellar_tab": "群星"
+  "itemGroup.stellar_tab": "群星",
+  
+  "effect.stellarmod.grain_alcohol": "酒精的祝福",
+  "effect.stellarmod.grain_alcohol.desc": "获得任何状态效果时，额外获得5秒的生命恢复。",
+  "effect.stellarmod.grain_alcohol.description": "获得任何状态效果时，额外获得5秒的生命恢复。",
+
+  "item.minecraft.potion.effect.grain_alcohol": "酒精的祝福药水",
+  "item.minecraft.potion.effect.long_grain_alcohol": "酒精的祝福药水",
+  "item.minecraft.potion.effect.strong_grain_alcohol": "酒精的祝福药水",
+
+  "item.minecraft.splash_potion.effect.grain_alcohol": "喷溅型酒精的祝福药水",
+  "item.minecraft.splash_potion.effect.long_grain_alcohol": "喷溅型酒精的祝福药水",
+  "item.minecraft.splash_potion.effect.strong_grain_alcohol": "喷溅型酒精的祝福药水",
+
+  "item.minecraft.lingering_potion.effect.grain_alcohol": "滞留型酒精的祝福药水",
+  "item.minecraft.lingering_potion.effect.long_grain_alcohol": "滞留型酒精的祝福药水",
+  "item.minecraft.lingering_potion.effect.strong_grain_alcohol": "滞留型酒精的祝福药水",
+
+  "item.minecraft.tipped_arrow.effect.grain_alcohol": "酒精的祝福之箭",
+  "item.minecraft.tipped_arrow.effect.long_grain_alcohol": "酒精的祝福之箭",
+  "item.minecraft.tipped_arrow.effect.strong_grain_alcohol": "酒精的祝福之箭"
 }
