@@ -25,7 +25,7 @@ public class StellarItemModelProvider extends ItemModelProvider {
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {
         return withExistingParent(item.getId().getPath(),
-                StellarMod.location("item/generated")).texture("layer0",
+                "item/generated").texture("layer0",
                 StellarMod.location("item/" + item.getId().getPath()));
     }
 }

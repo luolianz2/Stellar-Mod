@@ -22,7 +22,7 @@ public class StellarBiomes {
     }
 
     //太空环境
-    private static Biome createStellarBiome(BootstapContext<Biome> context) {  // 这里也改回
+    private static Biome createStellarBiome(BootstapContext<Biome> context) {
         //获取必要的HolderGetter用于构建BiomeGenerationSettings（为空，无地形等）
         HolderGetter<PlacedFeature> placedFeatureGetter = context.lookup(Registries.PLACED_FEATURE);
         HolderGetter<ConfiguredWorldCarver<?>> carverGetter = context.lookup(Registries.CONFIGURED_CARVER);
