@@ -3,10 +3,11 @@
   "minVersion": "0.8.5",
   "package": "com.luolian.stellarmod.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [],
-  "client": [
+  "mixins": [
+    "LivingEntityMixin",
     "TestMixin"
   ],
+  "client": [],
   "server": [],
   "injectors": {
     "defaultRequire": 1
