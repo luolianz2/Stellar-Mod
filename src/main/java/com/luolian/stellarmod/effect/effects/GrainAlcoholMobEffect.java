@@ -1,6 +1,5 @@
 package com.luolian.stellarmod.effect.effects;
 
-import com.luolian.stellarmod.listener.MobEffectEventListener;
 import com.luolian.stellarmod.potion.StellarPotions;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
