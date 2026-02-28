@@ -44,15 +44,16 @@ public abstract class BaseOperation {
     /**
      * <h1>如何使用mixin在目标类中添加内容</h1>
      * mixin提供了{@code @Unique}注解来为目标类添加新的字段或方法。<br>
+     * 但是你需要对你的字段或方法名做一些处理，推荐在其前加入“modid$”来注明该内容来自那个mod。<br>
      * 只需要这样写：
      * <pre>{@code
      * @Mixin(TargetClass.class)
      * public class TargetClassMixin {
      *     @Unique
-     *     private int someNewField;
+     *     private int modid$someNewField;
      *
      *     @Unique
-     *     private void someNewMethod() {
+     *     private void modid$someNewMethod() {
      *         // 在这里实现你想要添加的方法
      *     }
      * }
