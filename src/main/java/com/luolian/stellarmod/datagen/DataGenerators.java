@@ -31,5 +31,10 @@ public class DataGenerators {
                 new StellarBlockTagGenerator(packOutput, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new StellarItemTagGenerator(packOutput, lookupProvider,
                 blockTagGenerator.contentsGetter(), existingFileHelper));
+
+        generator.addProvider(
+                event.includeServer(),
+                new StellarWorldGenProvider(packOutput, lookupProvider)
+        );
     }
 }
