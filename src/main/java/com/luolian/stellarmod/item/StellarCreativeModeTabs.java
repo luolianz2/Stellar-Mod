@@ -29,6 +29,7 @@ public class StellarCreativeModeTabs {
                         output.accept(StellarBlocks.SPACE_STATION_GLASS_BLOCK.get());
                         output.accept(StellarBlocks.SAPPHIRE_CRYSTAL_ORE.get());
                         output.accept(StellarBlocks.SAPPHIRE_CRYSTAL_BLOCK.get());
+                        output.accept(StellarItems.TOKEN.get());
                     }).build());
     public static void register(IEventBus eventBus) {       //让封装了自定义创造物品栏的DeferredRegister注册器，绑定到事件总线
             CREATIVE_MODE_TABS.register(eventBus);
