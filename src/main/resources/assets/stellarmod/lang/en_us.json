@@ -31,5 +31,8 @@
 
   "item.minecraft.tipped_arrow.effect.grain_alcohol": "Arrow of Alcohol's Blessing",
   "item.minecraft.tipped_arrow.effect.long_grain_alcohol": "Arrow of Alcohol's Blessing",
-  "item.minecraft.tipped_arrow.effect.strong_grain_alcohol": "Arrow of Alcohol's Blessing"
+  "item.minecraft.tipped_arrow.effect.strong_grain_alcohol": "Arrow of Alcohol's Blessing",
+
+  "ftbquests.task.stellarmod.origin_layer": "Origin Layer",
+  "ftbquests.task.stellarmod.origin" : "Origin"
 }

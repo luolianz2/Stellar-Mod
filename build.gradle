@@ -29,6 +29,8 @@ base {
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
+jarJar.enable()
+
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
     // The mappings can be changed at any time and must be in the following format.
@@ -134,6 +136,23 @@ repositories {
     // flatDir {
     //     dir 'libs'
     // }
+
+    // curseforge maven
+    maven {
+        url "https://cursemaven.com/"
+    }
+    // Architectury maven
+    maven {
+        url "https://maven.architectury.dev/"
+    }
+    // Origins Forge
+    maven {
+        url "https://maven.ladysnake.org/releases"
+    }
+    // Caelus API
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
 }
 
 dependencies {
@@ -144,22 +163,40 @@ dependencies {
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    // Apply Mixin AP
+    // Mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    // Apply MixinExtras
-    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.2.0")) {
-        jarJar.ranged(it, "[0.2.0,)")
+    // MixinExtras
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0")) {
+        jarJar.ranged(it, "[0.5.0,)")
     }
+
+    // FTB
+    implementation fg.deobf("curse.maven:ftb-quests-forge-289412:7260736")
+    implementation fg.deobf("curse.maven:ftb-library-forge-404465:7296748")
+    implementation fg.deobf("curse.maven:ftb-teams-forge-404468:6130786")
+
+    // Origins Forge
+    implementation fg.deobf("io.github.edwinmindcraft:calio-forge:${calio_forge_version}")
+    implementation fg.deobf("io.github.edwinmindcraft:apoli-forge:${apoli_forge_version}")
+    implementation fg.deobf("io.github.edwinmindcraft:origins-forge:${origins_forge_version}")
+
+    // Caelus API
+    runtimeOnly fg.deobf("top.theillusivec4.caelus:caelus-forge:${caelus_forge_version}")
+    compileOnly fg.deobf("top.theillusivec4.caelus:caelus-forge:${caelus_forge_version}")
+
+    // Architectury API
+    implementation fg.deobf("dev.architectury:architectury-forge:${architectury_api_version}")
+
+    // TerraBlender
+    implementation fg.deobf("com.github.glitchfiend:TerraBlender-forge:${minecraft_version}-${terrablender_version}")
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
     // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
-
-    implementation fg.deobf("com.github.glitchfiend:TerraBlender-forge:${minecraft_version}-${terrablender_version}")
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
@@ -177,7 +214,6 @@ mixin {
     config 'mixins.stellarmod.json'
 }
 
-
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
 // When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
@@ -189,7 +225,12 @@ tasks.named('processResources', ProcessResources).configure {
             loader_version_range: loader_version_range,
             mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
             mod_authors: mod_authors, mod_description: mod_description,
-            terrablender_version_range: terrablender_version_range
+            terrablender_version_range: terrablender_version_range,
+            origins_forge_version_range: origins_forge_version_range,
+            architectury_api_version_range: architectury_api_version_range,
+            calio_forge_version_range: calio_forge_version_range,
+            apoli_forge_version_range: apoli_forge_version_range,
+            caelus_forge_version_range: caelus_forge_version_range
     ]
     inputs.properties replaceProperties
 

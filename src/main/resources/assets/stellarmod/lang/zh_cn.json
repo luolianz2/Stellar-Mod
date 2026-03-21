@@ -31,5 +31,8 @@
 
   "item.minecraft.tipped_arrow.effect.grain_alcohol": "酒精的祝福之箭",
   "item.minecraft.tipped_arrow.effect.long_grain_alcohol": "酒精的祝福之箭",
-  "item.minecraft.tipped_arrow.effect.strong_grain_alcohol": "酒精的祝福之箭"
+  "item.minecraft.tipped_arrow.effect.strong_grain_alcohol": "酒精的祝福之箭",
+
+  "ftbquests.task.stellarmod.origin_layer": "起源层",
+  "ftbquests.task.stellarmod.origin" : "起源"
 }
