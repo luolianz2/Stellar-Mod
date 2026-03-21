@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.effect.effects;
+package com.luolian.stellarmod.server.effect.effects;
 
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;

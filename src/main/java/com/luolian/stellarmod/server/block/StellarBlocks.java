@@ -1,8 +1,8 @@
-package com.luolian.stellarmod.block;
+package com.luolian.stellarmod.server.block;
 
 import com.luolian.stellarmod.StellarMod;
-import com.luolian.stellarmod.block.custom.DimensionBlock;
-import com.luolian.stellarmod.item.StellarItems;
+import com.luolian.stellarmod.server.block.custom.DimensionBlock;
+import com.luolian.stellarmod.server.item.StellarItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;

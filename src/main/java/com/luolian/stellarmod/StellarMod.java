@@ -2,12 +2,11 @@
 package com.luolian.stellarmod;
 
 import com.luolian.stellarmod.api.compat.StellarTaskTypes;
-import com.luolian.stellarmod.block.StellarBlocks;
-import com.luolian.stellarmod.effect.StellarMobEffects;
-import com.luolian.stellarmod.item.StellarCreativeModeTabs;
-import com.luolian.stellarmod.item.StellarItems;
-import com.luolian.stellarmod.listener.StellarCommandRegister;
-import com.luolian.stellarmod.potion.StellarPotions;
+import com.luolian.stellarmod.server.block.StellarBlocks;
+import com.luolian.stellarmod.server.effect.StellarMobEffects;
+import com.luolian.stellarmod.server.item.StellarCreativeModeTabs;
+import com.luolian.stellarmod.server.item.StellarItems;
+import com.luolian.stellarmod.server.potion.StellarPotions;
 import com.luolian.stellarmod.worldgen.dimension.EmptyChunkGenerator;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;

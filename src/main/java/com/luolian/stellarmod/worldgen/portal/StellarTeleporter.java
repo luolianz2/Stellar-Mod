@@ -1,11 +1,10 @@
 package com.luolian.stellarmod.worldgen.portal;
 
-import com.luolian.stellarmod.block.StellarBlocks;
-import com.luolian.stellarmod.block.custom.DimensionBlock;
+import com.luolian.stellarmod.server.block.StellarBlocks;
+import com.luolian.stellarmod.server.block.custom.DimensionBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.util.ITeleporter;

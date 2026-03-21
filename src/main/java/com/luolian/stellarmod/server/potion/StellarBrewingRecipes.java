@@ -1,7 +1,7 @@
-package com.luolian.stellarmod.potion;
+package com.luolian.stellarmod.server.potion;
 
 import com.luolian.stellarmod.StellarMod;
-import com.luolian.stellarmod.effect.effects.GrainAlcoholMobEffect;
+import com.luolian.stellarmod.server.effect.effects.GrainAlcoholMobEffect;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;

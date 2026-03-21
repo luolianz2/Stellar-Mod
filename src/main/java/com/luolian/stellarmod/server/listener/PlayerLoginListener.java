@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.listener;
+package com.luolian.stellarmod.server.listener;
 
 import com.luolian.stellarmod.StellarMod;
 import com.luolian.stellarmod.api.util.OriginsUtil;

@@ -1,7 +1,7 @@
-package com.luolian.stellarmod.item;
+package com.luolian.stellarmod.server.item;
 
 import com.luolian.stellarmod.StellarMod;
-import com.luolian.stellarmod.block.StellarBlocks;
+import com.luolian.stellarmod.server.block.StellarBlocks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;

@@ -2,7 +2,7 @@ package com.luolian.stellarmod.mixin;
 
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import com.luolian.stellarmod.effect.StellarMobEffects;
+import com.luolian.stellarmod.server.effect.StellarMobEffects;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
