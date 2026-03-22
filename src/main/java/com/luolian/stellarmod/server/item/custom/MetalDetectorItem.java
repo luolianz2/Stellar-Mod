@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.item.custom;
+package com.luolian.stellarmod.server.item.custom;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;

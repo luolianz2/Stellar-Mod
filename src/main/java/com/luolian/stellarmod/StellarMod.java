@@ -1,12 +1,12 @@
 //模组主类
 package com.luolian.stellarmod;
 
-import com.luolian.stellarmod.block.StellarBlocks;
-import com.luolian.stellarmod.effect.StellarMobEffects;
-import com.luolian.stellarmod.item.StellarCreativeModeTabs;
-import com.luolian.stellarmod.item.StellarItems;
-import com.luolian.stellarmod.potion.StellarBrewingRecipes;
-import com.luolian.stellarmod.potion.StellarPotions;
+import com.luolian.stellarmod.api.compat.StellarTaskTypes;
+import com.luolian.stellarmod.server.block.StellarBlocks;
+import com.luolian.stellarmod.server.effect.StellarMobEffects;
+import com.luolian.stellarmod.server.item.StellarCreativeModeTabs;
+import com.luolian.stellarmod.server.item.StellarItems;
+import com.luolian.stellarmod.server.potion.StellarPotions;
 import com.luolian.stellarmod.worldgen.dimension.EmptyChunkGenerator;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
@@ -43,7 +43,13 @@ public class StellarMod {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
+    public static ResourceLocation textureLocation(String path) {
+        return location("textures/" + path);
+    }
+
     public StellarMod(FMLJavaModLoadingContext context) {
+        StellarTaskTypes.init();
+
         IEventBus modEventBus = context.getModEventBus();
         StellarItems.register(modEventBus);                 //调用自定义的物品注册类，将物品注册逻辑绑定到模组事件总线
         StellarCreativeModeTabs.register(modEventBus);      //调用自定义的创造模式标签注册类，将标签注册逻辑绑定到模组事件总线

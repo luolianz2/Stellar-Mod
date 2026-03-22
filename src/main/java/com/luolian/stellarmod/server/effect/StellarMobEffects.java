@@ -1,7 +1,7 @@
-package com.luolian.stellarmod.effect;
+package com.luolian.stellarmod.server.effect;
 
 import com.luolian.stellarmod.StellarMod;
-import com.luolian.stellarmod.effect.effects.GrainAlcoholMobEffect;
+import com.luolian.stellarmod.server.effect.effects.GrainAlcoholMobEffect;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;

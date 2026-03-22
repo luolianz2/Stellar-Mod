@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.block.custom;
+package com.luolian.stellarmod.server.block.custom;
 
 import com.luolian.stellarmod.worldgen.dimension.StellarDimensions;
 import com.luolian.stellarmod.worldgen.portal.StellarTeleporter;

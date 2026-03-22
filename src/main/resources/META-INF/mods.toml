@@ -66,13 +66,60 @@ description='''${mod_description}'''
     ordering="NONE"
     side="BOTH"
 [[dependencies.${mod_id}]]
-modId="terrablender"
-mandatory=true
-# This version range declares a minimum of the current minecraft version up to but not including the next major version
-versionRange="${terrablender_version_range}"
-ordering="NONE"
-side="BOTH"
-
+    modId="terrablender"
+    mandatory=true
+    # This version range declares a minimum of the current minecraft version up to but not including the next major version
+    versionRange="${terrablender_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="ftbquests"
+    mandatory=true
+    versionRange="[2001.4.17,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="ftblibrary"
+    mandatory=true
+    versionRange="[2001.2.12,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="ftbteams"
+    mandatory=true
+    versionRange="[2001.3.1,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="origins"
+    mandatory=true
+    versionRange="${origins_forge_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="apoli"
+    mandatory=true
+    versionRange="${apoli_forge_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="calio"
+    mandatory=true
+    versionRange="${calio_forge_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="caelus"
+    mandatory=true
+    versionRange="${caelus_forge_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="architectury"
+    mandatory=true
+    versionRange="${architectury_api_version_range}"
+    ordering="NONE"
+    side="BOTH"
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
 # stop your mod loading on the server for example.

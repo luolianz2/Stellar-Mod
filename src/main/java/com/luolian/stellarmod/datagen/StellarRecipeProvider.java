@@ -1,21 +1,16 @@
 package com.luolian.stellarmod.datagen;
 
-import com.google.common.collect.ImmutableList;
 import com.luolian.stellarmod.StellarMod;
-import com.luolian.stellarmod.block.StellarBlocks;
-import com.luolian.stellarmod.item.StellarItems;
-import net.minecraft.data.DataGenerator;
+import com.luolian.stellarmod.server.block.StellarBlocks;
+import com.luolian.stellarmod.server.item.StellarItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
-import org.apache.logging.log4j.LogManager;
 
 import java.util.List;
 import java.util.function.Consumer;

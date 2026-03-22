@@ -1,6 +1,8 @@
 package com.luolian.stellarmod.mixin;
 
-import com.luolian.stellarmod.effect.StellarMobEffects;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import com.luolian.stellarmod.server.effect.StellarMobEffects;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,9 +16,6 @@ import javax.annotation.Nullable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
-    @Unique
-    private static final ThreadLocal<MobEffectInstance> MODIFIED_INSTANCE = new ThreadLocal<>();
-
     @Shadow
     public abstract boolean hasEffect(MobEffect pEffect);
 
@@ -31,10 +30,10 @@ public abstract class LivingEntityMixin {
             ),
             index = 1
     )
-    private Object modifyPutEffect(Object value) {
+    private Object modifyPutEffect(Object value, @Share("modifiedInstance") LocalRef<MobEffectInstance> modifiedInstance) {
         if (value instanceof MobEffectInstance instance) {
             MobEffectInstance modified = stellarmod$modifyMobEffectInstance(instance);
-            MODIFIED_INSTANCE.set(modified);
+            modifiedInstance.set(modified);
             return modified;
         }
         return value;
@@ -48,9 +47,8 @@ public abstract class LivingEntityMixin {
             ),
             index = 0
     )
-    private MobEffectInstance modifyOnEffectAddedEffect(MobEffectInstance original) {
-        MobEffectInstance modified = MODIFIED_INSTANCE.get();
-        MODIFIED_INSTANCE.remove();
+    private MobEffectInstance modifyOnEffectAddedEffect(MobEffectInstance original, @Share("modifiedInstance") LocalRef<MobEffectInstance> modifiedInstance) {
+        MobEffectInstance modified = modifiedInstance.get();
         return modified != null ? modified : original;
     }
 

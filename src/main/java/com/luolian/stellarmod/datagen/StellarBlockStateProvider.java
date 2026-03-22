@@ -1,7 +1,7 @@
 package com.luolian.stellarmod.datagen;
 
 import com.luolian.stellarmod.StellarMod;
-import com.luolian.stellarmod.block.StellarBlocks;
+import com.luolian.stellarmod.server.block.StellarBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;

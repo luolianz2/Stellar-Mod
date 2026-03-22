@@ -1,7 +1,7 @@
-package com.luolian.stellarmod.potion;
+package com.luolian.stellarmod.server.potion;
 
 import com.luolian.stellarmod.StellarMod;
-import com.luolian.stellarmod.effect.StellarMobEffects;
+import com.luolian.stellarmod.server.effect.StellarMobEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraftforge.eventbus.api.IEventBus;

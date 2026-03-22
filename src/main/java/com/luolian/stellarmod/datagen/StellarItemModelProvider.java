@@ -1,9 +1,8 @@
 package com.luolian.stellarmod.datagen;
 
 import com.luolian.stellarmod.StellarMod;
-import com.luolian.stellarmod.item.StellarItems;
+import com.luolian.stellarmod.server.item.StellarItems;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
