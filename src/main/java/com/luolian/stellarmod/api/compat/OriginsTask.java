@@ -2,6 +2,7 @@ package com.luolian.stellarmod.api.compat;
 
 import com.luolian.stellarmod.api.util.OriginsUtil;
 import dev.ftb.mods.ftblibrary.config.ConfigGroup;
+import dev.ftb.mods.ftblibrary.config.NameMap;
 import dev.ftb.mods.ftblibrary.icon.Icon;
 import dev.ftb.mods.ftbquests.quest.Quest;
 import dev.ftb.mods.ftbquests.quest.TeamData;
@@ -9,14 +10,10 @@ import dev.ftb.mods.ftbquests.quest.task.AbstractBooleanTask;
 import dev.ftb.mods.ftbquests.quest.task.TaskType;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
-import io.github.edwinmindcraft.origins.api.origin.Origin;
-import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
-import io.github.edwinmindcraft.origins.common.capabilities.OriginContainer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,8 +23,8 @@ import net.minecraftforge.common.util.LazyOptional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OriginsTask extends AbstractBooleanTask {
-    private ResourceLocation originLayer = OriginsUtil.originsLocation("origin");
-    private ResourceLocation origin = OriginsUtil.originsLocation("human");
+    private static final ResourceLocation DEFAULT_ORIGIN = OriginsUtil.location("human");
+    private ResourceLocation origin = DEFAULT_ORIGIN;
 
     public OriginsTask(long id, Quest quest) {
         super(id, quest);
@@ -35,16 +32,21 @@ public class OriginsTask extends AbstractBooleanTask {
 
     @Override
     public boolean canSubmit(TeamData teamData, ServerPlayer serverPlayer) {
-        AtomicBoolean rt = new AtomicBoolean(false);
+        if (!OriginsUtil.isValidOrigin(this.origin)) {
+            // 如果指定的起源无效，无法完成任务
+            return false;
+        }
 
-        ResourceKey<OriginLayer> originLayerKey = OriginsUtil.getOriginLayerKey(this.originLayer);
-        ResourceKey<Origin> originKey = OriginsUtil.getOriginKey(this.origin);
+        if (OriginsUtil.isEmptyOrigin(this.origin)) {
+            // 如果指定为空，任意起源都满足条件
+            return true;
+        }
+
+        AtomicBoolean rt = new AtomicBoolean(false);
         LazyOptional<IOriginContainer> capability = serverPlayer.getCapability(OriginsAPI.ORIGIN_CONTAINER);
 
         capability.ifPresent(container -> {
-            OriginContainer originContainer = (OriginContainer) container;
-            // 检查指定layer中是否存在指定origin
-            if (originContainer.getOrigin(originLayerKey).equals(originKey)) {
+            if (OriginsUtil.hasOrigin(container, OriginsUtil.getLayerIdByOriginId(this.origin), this.origin)) {
                 rt.set(true);
             }
         });
@@ -61,27 +63,29 @@ public class OriginsTask extends AbstractBooleanTask {
     public void fillConfigGroup(ConfigGroup config) {
         super.fillConfigGroup(config);
 
-        config.addString(
-                "origin_layer",
-                originLayer.toString(),
-                v -> originLayer = ResourceLocation.tryParse(v),
-                "origins:origin"
-        ).setIcon(OriginsUtil.getOriginIcon())
-                .setNameKey("ftbquests.task.stellarmod.origin_layer");
-        config.addString(
+        config.addEnum(
                 "origin",
-                origin.toString(),
-                v -> origin = ResourceLocation.tryParse(v),
-                "origin:human"
-        ).setIcon(OriginsUtil.getOriginIcon())
-                .setNameKey("ftbquests.task.stellarmod.origin");
+                origin,
+                v -> origin = v,
+                NameMap.of(DEFAULT_ORIGIN, OriginsUtil.getOriginIds().toArray(new ResourceLocation[0]))
+                        .icon(OriginsUtil::getOriginIcon)
+                        .name(originId -> {
+                            ResourceLocation layerId = OriginsUtil.getLayerIdByOriginId(originId);
+
+                            if (layerId == null) {
+                                return OriginsUtil.getOriginName(originId);
+                            }
+
+                            return Component.literal(OriginsUtil.getOriginLayerName(layerId).getString()).append(": ").append(OriginsUtil.getOriginName(originId));
+                        })
+                        .create()
+        ).setNameKey("ftbquests.task.stellarmod.origin");
     }
 
     @Override
     public void writeData(CompoundTag nbt) {
         super.writeData(nbt);
 
-        nbt.putString("origin_layer", originLayer.toString());
         nbt.putString("origin", origin.toString());
     }
 
@@ -89,21 +93,18 @@ public class OriginsTask extends AbstractBooleanTask {
     public void readData(CompoundTag nbt) {
         super.readData(nbt);
 
-        this.originLayer = ResourceLocation.tryParse(nbt.getString("origin_layer"));
         this.origin = ResourceLocation.tryParse(nbt.getString("origin"));
     }
 
     @Override
     public void writeNetData(FriendlyByteBuf buffer) {
         super.writeNetData(buffer);
-        buffer.writeUtf(originLayer.toString());
         buffer.writeUtf(origin.toString());
     }
 
     @Override
     public void readNetData(FriendlyByteBuf buffer) {
         super.readNetData(buffer);
-        this.originLayer = ResourceLocation.tryParse(buffer.readUtf());
         this.origin = ResourceLocation.tryParse(buffer.readUtf());
     }
 

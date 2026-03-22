@@ -33,6 +33,8 @@
   "item.minecraft.tipped_arrow.effect.long_grain_alcohol": "Arrow of Alcohol's Blessing",
   "item.minecraft.tipped_arrow.effect.strong_grain_alcohol": "Arrow of Alcohol's Blessing",
 
-  "ftbquests.task.stellarmod.origin_layer": "Origin Layer",
-  "ftbquests.task.stellarmod.origin" : "Origin"
+  "ftbquests.task.stellarmod.origin" : "Origin",
+  "text.stellarmod.empty_origin": "Empty",
+  "text.stellarmod.unknown_origin_layer": "Unknown Origin Layer",
+  "text.stellarmod.unknown_origin": "Unknown Origin"
 }

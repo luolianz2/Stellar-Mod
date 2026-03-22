@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -26,6 +27,15 @@ public class StellarCommandRegister {
                         )
                         .then(literal("origin_layer_list")
                                 .executes(StellarCommandRegister::checkOriginLayerList)
+                        )
+                        .then(literal("test")
+                                .executes(context -> {
+                                    if (context.getSource().getPlayer() == null) return 0;
+                                    context.getSource().getPlayer().sendSystemMessage(Component.literal(
+                                            OriginsUtil.getOriginIds(ResourceLocation.fromNamespaceAndPath("origins-classes", "class")).toString()
+                                    ));
+                                    return 1;
+                                })
                         )
         );
     }
