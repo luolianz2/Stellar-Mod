@@ -21,6 +21,7 @@ public class StellarItemModelProvider extends ItemModelProvider {
         simpleItem(StellarItems.BLUSH_FACE);
         simpleItem(StellarItems.METAL_DETECTOR);
         simpleItem(StellarItems.SAPPHIRE_CRYSTAL);
+        simpleItem(StellarItems.MULTI_FUNCTION_TOOL);
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {

@@ -22,6 +22,7 @@ public class StellarCreativeModeTabs {
                         output.accept(StellarItems.BLUSH_FACE.get());     //往里面添加相应物品
                         output.accept(StellarItems.METAL_DETECTOR.get());
                         output.accept(StellarItems.SAPPHIRE_CRYSTAL.get());
+                        output.accept(StellarItems.MULTI_FUNCTION_TOOL.get());
                         output.accept(StellarBlocks.RAINBOW_BLOCK.get());
                         output.accept(StellarBlocks.COIL_BLOCK.get());
                         output.accept(StellarBlocks.DIMENSION_BLOCK.get());
