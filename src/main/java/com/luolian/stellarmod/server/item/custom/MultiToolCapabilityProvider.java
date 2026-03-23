@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.item.custom;
+package com.luolian.stellarmod.server.item.custom;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
