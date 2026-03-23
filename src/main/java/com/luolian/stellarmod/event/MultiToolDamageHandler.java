@@ -1,6 +1,6 @@
 package com.luolian.stellarmod.event;
 
-import com.luolian.stellarmod.item.custom.MultiToolItem;
+import com.luolian.stellarmod.server.item.custom.MultiToolItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
