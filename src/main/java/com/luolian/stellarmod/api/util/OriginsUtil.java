@@ -35,6 +35,7 @@ public class OriginsUtil {
     @SuppressWarnings("ConstantConditions")
     public static final ResourceLocation EMPTY_ORIGIN_ID = OriginRegisters.EMPTY.getKey().location(); // origins:empty
     public static final ResourceLocation ORIGINS_ORIGIN_LAYER_ID = location("origin"); // origins:origin
+    public static final ResourceLocation DEFAULT_ORIGIN = OriginsUtil.location("human"); // origins:human
 
     /**
      * 缓存起源ID到起源层ID的映射，以提高通过originId查找所属起源层的效率。

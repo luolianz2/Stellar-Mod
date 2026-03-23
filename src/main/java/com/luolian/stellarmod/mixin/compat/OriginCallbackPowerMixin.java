@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.mixin;
+package com.luolian.stellarmod.mixin.compat;
 
 import com.luolian.stellarmod.api.util.OriginsUtil;
 import io.github.apace100.origins.power.OriginsCallbackPower;

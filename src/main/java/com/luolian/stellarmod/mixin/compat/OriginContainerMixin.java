@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.mixin;
+package com.luolian.stellarmod.mixin.compat;
 
 import com.luolian.stellarmod.api.util.OriginsUtil;
 import io.github.edwinmindcraft.origins.api.origin.Origin;
