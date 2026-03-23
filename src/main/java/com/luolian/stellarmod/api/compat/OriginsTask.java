@@ -23,8 +23,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OriginsTask extends AbstractBooleanTask {
-    private static final ResourceLocation DEFAULT_ORIGIN = OriginsUtil.location("human");
-    private ResourceLocation origin = DEFAULT_ORIGIN;
+    private ResourceLocation origin = OriginsUtil.DEFAULT_ORIGIN;
 
     public OriginsTask(long id, Quest quest) {
         super(id, quest);
@@ -67,7 +66,7 @@ public class OriginsTask extends AbstractBooleanTask {
                 "origin",
                 origin,
                 v -> origin = v,
-                NameMap.of(DEFAULT_ORIGIN, OriginsUtil.getOriginIds().toArray(new ResourceLocation[0]))
+                NameMap.of(OriginsUtil.DEFAULT_ORIGIN, OriginsUtil.getOriginIds().toArray(new ResourceLocation[0]))
                         .icon(OriginsUtil::getOriginIcon)
                         .name(originId -> {
                             ResourceLocation layerId = OriginsUtil.getLayerIdByOriginId(originId);

@@ -36,5 +36,13 @@
   "ftbquests.task.stellarmod.origin" : "Origin",
   "text.stellarmod.empty_origin": "Empty",
   "text.stellarmod.unknown_origin_layer": "Unknown Origin Layer",
-  "text.stellarmod.unknown_origin": "Unknown Origin"
+  "text.stellarmod.unknown_origin": "Unknown Origin",
+
+  "ftbquests.chapter.dependencies": "Dependencies",
+  "ftbquests.chapter.dependencies.dependencies": "Dependencies",
+  "ftbquests.chapter.dependencies.dependency_requirement": "Dependency Requirement",
+  "ftbquests.chapter.dependencies.invisible": "Hide Until Dependencies Completed",
+  "ftbquests.chapter.dependencies.lock": "Lock Chapter Until Dependencies Completed",
+
+  "ftbquests.quest.visibility.always_invisible": "Always Invisible"
 }

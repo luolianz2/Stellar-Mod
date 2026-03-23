@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8.5",
-  "mixinextras" : {
+  "mixinextras": {
     "minVersion": "0.5.0"
   },
   "package": "com.luolian.stellarmod.mixin",
@@ -9,9 +9,12 @@
   "refmap": "mixins.stellarmod.refmap.json",
   "mixins": [
     "LivingEntityMixin",
-    "OriginCallbackPowerMixin",
-    "OriginContainerMixin",
-    "TestMixin"
+    "TestMixin",
+    "compat.ChapterMixin",
+    "compat.OriginCallbackPowerMixin",
+    "compat.OriginContainerMixin",
+    "compat.QuestMixin",
+    "compat.TeamDataMixin"
   ],
   "client": [],
   "server": [],
