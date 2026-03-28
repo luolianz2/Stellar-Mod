@@ -2,7 +2,10 @@
 package com.luolian.stellarmod;
 
 import com.luolian.stellarmod.api.compat.StellarTaskTypes;
+import com.luolian.stellarmod.screen.CraftingAreaBlockScreen;
+import com.luolian.stellarmod.screen.StellarMenuTypes;
 import com.luolian.stellarmod.server.block.StellarBlocks;
+import com.luolian.stellarmod.server.block.entity.StellarBlockEntities;
 import com.luolian.stellarmod.server.effect.StellarMobEffects;
 import com.luolian.stellarmod.server.item.StellarCreativeModeTabs;
 import com.luolian.stellarmod.server.item.StellarItems;
@@ -10,11 +13,16 @@ import com.luolian.stellarmod.server.potion.StellarPotions;
 import com.luolian.stellarmod.worldgen.dimension.EmptyChunkGenerator;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -56,7 +64,17 @@ public class StellarMod {
         StellarBlocks.register(modEventBus);                //调用自定义的方块注册类，将方块注册逻辑绑定到模组事件总线
         StellarMobEffects.register(modEventBus);
         StellarPotions.register(modEventBus);
+        StellarBlockEntities.register(modEventBus);
+        StellarMenuTypes.register(modEventBus);
         // 注册区块生成器 Codec 到事件总线
         CHUNK_GENERATORS.register(modEventBus);
+    }
+
+    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ClientEvents {
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            MenuScreens.register(StellarMenuTypes.CRAFTING_AREA_MENU.get(), CraftingAreaBlockScreen::new);
+        }
     }
 }

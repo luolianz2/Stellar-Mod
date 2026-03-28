@@ -1,6 +1,7 @@
 package com.luolian.stellarmod.server.block;
 
 import com.luolian.stellarmod.StellarMod;
+import com.luolian.stellarmod.server.block.custom.CraftingAreaBlock;
 import com.luolian.stellarmod.server.block.custom.DimensionBlock;
 import com.luolian.stellarmod.server.item.StellarItems;
 import net.minecraft.world.item.BlockItem;
@@ -46,6 +47,10 @@ public class StellarBlocks {
     public static final RegistryObject<Block> DIMENSION_BLOCK =
             registerBlock("dimension_block", () -> new DimensionBlock(BlockBehaviour.Properties.of().strength(6.0F,3.0F)
                     .requiresCorrectToolForDrops()));
+
+    public static final RegistryObject<Block> CRAFTING_AREA_BLOCK =
+            registerBlock("crafting_area_block", () -> new CraftingAreaBlock(BlockBehaviour.Properties.copy(Blocks.CRAFTING_TABLE)
+                    .noOcclusion()));
 
     private static <T extends Block> void registerBlockItems(String name, RegistryObject<T> block) {
         StellarItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));

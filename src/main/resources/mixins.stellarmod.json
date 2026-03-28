@@ -9,7 +9,6 @@
   "refmap": "mixins.stellarmod.refmap.json",
   "mixins": [
     "LivingEntityMixin",
-    "TestMixin",
     "compat.ChapterMixin",
     "compat.OriginCallbackPowerMixin",
     "compat.OriginContainerMixin",

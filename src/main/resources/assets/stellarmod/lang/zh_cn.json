@@ -10,6 +10,7 @@
   "block.stellarmod.space_station_glass_block": "太空站玻璃方块",
   "block.stellarmod.sapphire_crystal_ore": "蓝宝石水晶原矿",
   "block.stellarmod.sapphire_crystal_block": "蓝宝石水晶块",
+  "block.stellarmod.crafting_area_block": "制作区",
   "tooltip.stellarmod_item.metal_detector": "一款探矿用的仪器，可发现铁、金、钻石矿石 \n  无所遁形！！！",
   "itemGroup.stellar_tab": "群星",
   

@@ -1,7 +1,6 @@
 package com.luolian.stellarmod.util;
 
 import com.luolian.stellarmod.StellarMod;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;

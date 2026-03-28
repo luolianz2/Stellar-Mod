@@ -37,7 +37,7 @@ public class EmptyChunkGenerator extends ChunkGenerator {
             ).apply(instance, EmptyChunkGenerator::new)
     );
 
-    // 辅助构造函数，从 FixedBiomeSource 提取生物群系
+    //辅助构造函数，从FixedBiomeSource提取生物群系
     private EmptyChunkGenerator(FixedBiomeSource biomeSource) {
         this(extractBiome(biomeSource));
     }

@@ -15,8 +15,6 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.Nullable;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.Tiers;
 
 import java.util.List;
 

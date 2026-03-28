@@ -1,7 +1,22 @@
 {
-  "variants": {
-    "": {
-      "model": "stellarmod:block/rainbow_block"
+  "format_version": "1.9.0",
+  "credit": "Made with Blockbench",
+  "textures": {
+    "0": "block/rainbow_block",
+    "particle": "block/rainbow_block"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "north": {"uv": [0, 0, 2, 2], "texture": "#0"},
+        "east": {"uv": [0, 2, 2, 4], "texture": "#0"},
+        "south": {"uv": [2, 0, 4, 2], "texture": "#0"},
+        "west": {"uv": [2, 2, 4, 4], "texture": "#0"},
+        "up": {"uv": [2, 6, 0, 4], "texture": "#0"},
+        "down": {"uv": [6, 0, 4, 2], "texture": "#0"}
+      }
     }
-  }
+  ]
 }

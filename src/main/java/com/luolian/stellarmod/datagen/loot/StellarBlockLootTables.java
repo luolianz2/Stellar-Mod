@@ -32,6 +32,7 @@ public class StellarBlockLootTables extends BlockLootSubProvider{
         this.dropSelf(StellarBlocks.SPACE_STATION_BLOCK.get());
         this.dropSelf(StellarBlocks.SPACE_STATION_GLASS_BLOCK.get());
         this.dropSelf(StellarBlocks.SAPPHIRE_CRYSTAL_BLOCK.get());
+        this.dropSelf(StellarBlocks.CRAFTING_AREA_BLOCK.get());
 
         //添加类矿物掉落
         this.add(StellarBlocks.SAPPHIRE_CRYSTAL_ORE.get(),
