@@ -94,9 +94,9 @@ public class ChapterMixin implements ChapterDependencyController {
     @Unique
     private boolean stellar$checkDependency(DependencyChecker checker) {
         if (this.stellar$dependencyRequirement.needOnlyOne()) {
-            return this.stellar$dependencies.stream().anyMatch(checker::check);
+            return this.stellar$dependencies.stream().anyMatch(checker::checkCondition);
         } else {
-            return this.stellar$dependencies.stream().allMatch(checker::check);
+            return this.stellar$dependencies.stream().allMatch(checker::checkCondition);
         }
     }
 
