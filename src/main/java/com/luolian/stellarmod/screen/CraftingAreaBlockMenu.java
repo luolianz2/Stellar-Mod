@@ -32,14 +32,14 @@ public class CraftingAreaBlockMenu extends AbstractContainerMenu {
         addPlayerHotbar(inventory);
 
         this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-            this.addSlot(new SlotItemHandler(iItemHandler, 0, 16, 11));
-            this.addSlot(new SlotItemHandler(iItemHandler, 1, 34, 11));
-            this.addSlot(new SlotItemHandler(iItemHandler, 2, 16, 29));
-            this.addSlot(new SlotItemHandler(iItemHandler, 3, 34, 29));
-            this.addSlot(new SlotItemHandler(iItemHandler, 4, 52, 11));
-            this.addSlot(new SlotItemHandler(iItemHandler, 5, 52, 29));
-            this.addSlot(new SlotItemHandler(iItemHandler, 6, 16, 47));
-            this.addSlot(new SlotItemHandler(iItemHandler, 7, 34, 47));
+            this.addSlot(new SlotItemHandler(iItemHandler, 0, 22, 17));
+            this.addSlot(new SlotItemHandler(iItemHandler, 1, 52, 17));
+            this.addSlot(new SlotItemHandler(iItemHandler, 2, 10, 41));
+            this.addSlot(new SlotItemHandler(iItemHandler, 3, 37, 41));
+            this.addSlot(new SlotItemHandler(iItemHandler, 4, 64, 41));
+            this.addSlot(new SlotItemHandler(iItemHandler, 5, 22, 65));
+            this.addSlot(new SlotItemHandler(iItemHandler, 6, 52, 65));
+            this.addSlot(new SlotItemHandler(iItemHandler, 7, 139, 41));
         });
         addDataSlots(containerData);
     }
@@ -108,14 +108,14 @@ public class CraftingAreaBlockMenu extends AbstractContainerMenu {
     private void addPlayerInventory(Inventory playerInventory) {
         for (int i = 0; i < 3; i++) {
             for (int l = 0; l < 9; l++) {
-                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 84 + i * 18));
+                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 10 + l * 18, 90 + i * 18));
             }
         }
     }
 
     private void addPlayerHotbar(Inventory playerInventory) {
         for (int i = 0; i < 9; i++) {
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+            this.addSlot(new Slot(playerInventory, i, 10 + i * 18, 148));
         }
     }
 }

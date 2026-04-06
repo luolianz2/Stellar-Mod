@@ -7,7 +7,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.GlassBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -15,10 +16,11 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
-
 import javax.annotation.Nullable;
 
-public class CraftingAreaBlock extends BaseEntityBlock {
+public class CraftingAreaBlock extends GlassBlock implements EntityBlock {
+    //继承GlassBlock，同时实现EntityBlock接口以支持方块实体
+
     public CraftingAreaBlock(Properties properties) {
         super(properties);
     }
@@ -28,23 +30,25 @@ public class CraftingAreaBlock extends BaseEntityBlock {
         return RenderShape.MODEL;
     }
 
+    //方块被破坏时掉落物品
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
+        if (!state.is(newState.getBlock())) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
-            if(blockEntity instanceof CraftingAreaBlockEntity) {
+            if (blockEntity instanceof CraftingAreaBlockEntity) {
                 ((CraftingAreaBlockEntity) blockEntity).drops();
             }
         }
         super.onRemove(state, level, pos, newState, isMoving);
     }
 
+    //右键打开GUI容器
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if(!level.isClientSide){
+        if (!level.isClientSide) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
-            if(blockEntity instanceof CraftingAreaBlockEntity) {
-                NetworkHooks.openScreen(((ServerPlayer)player),(CraftingAreaBlockEntity)blockEntity, pos);
+            if (blockEntity instanceof CraftingAreaBlockEntity) {
+                NetworkHooks.openScreen((ServerPlayer) player, (CraftingAreaBlockEntity) blockEntity, pos);
             } else {
                 throw new IllegalStateException("Our Container provider has not been created");
             }
@@ -52,6 +56,7 @@ public class CraftingAreaBlock extends BaseEntityBlock {
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
+    //创建方块实体
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -60,7 +65,7 @@ public class CraftingAreaBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity>BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return null;
     }
 }

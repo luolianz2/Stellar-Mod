@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.server.data.baseplate;
+package com.luolian.stellarmod.server.data.itemcore;
 
 import net.minecraft.resources.ResourceLocation;
 

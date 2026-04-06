@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.server.data.baseplate;
+package com.luolian.stellarmod.server.data.itemcore;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
