@@ -1,6 +1,6 @@
 package com.luolian.stellarmod.server.block.entity;
 
-import com.luolian.stellarmod.screen.CraftingAreaBlockMenu;
+import com.luolian.stellarmod.client.screen.craftingArea.CraftingAreaBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

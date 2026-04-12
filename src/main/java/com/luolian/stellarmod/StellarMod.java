@@ -2,19 +2,19 @@
 package com.luolian.stellarmod;
 
 import com.luolian.stellarmod.api.compat.StellarTaskTypes;
-import com.luolian.stellarmod.screen.CraftingAreaBlockScreen;
-import com.luolian.stellarmod.screen.StellarMenuTypes;
+import com.luolian.stellarmod.client.screen.craftingArea.CraftingAreaBlockScreen;
+import com.luolian.stellarmod.client.screen.StellarMenuTypes;
+import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.server.block.StellarBlocks;
 import com.luolian.stellarmod.server.block.entity.StellarBlockEntities;
 import com.luolian.stellarmod.server.effect.StellarMobEffects;
 import com.luolian.stellarmod.server.item.StellarCreativeModeTabs;
 import com.luolian.stellarmod.server.item.StellarItems;
 import com.luolian.stellarmod.server.potion.StellarPotions;
-import com.luolian.stellarmod.worldgen.dimension.EmptyChunkGenerator;
+import com.luolian.stellarmod.server.worldgen.dimension.EmptyChunkGenerator;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -66,6 +66,7 @@ public class StellarMod {
         StellarPotions.register(modEventBus);
         StellarBlockEntities.register(modEventBus);
         StellarMenuTypes.register(modEventBus);
+        StellarNetworkHandler.register();
         // 注册区块生成器 Codec 到事件总线
         CHUNK_GENERATORS.register(modEventBus);
     }

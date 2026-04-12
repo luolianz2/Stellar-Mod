@@ -1,7 +1,7 @@
 package com.luolian.stellarmod.server.block.custom;
 
-import com.luolian.stellarmod.worldgen.dimension.StellarDimensions;
-import com.luolian.stellarmod.worldgen.portal.StellarTeleporter;
+import com.luolian.stellarmod.server.worldgen.dimension.StellarDimensions;
+import com.luolian.stellarmod.server.worldgen.portal.StellarTeleporter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;

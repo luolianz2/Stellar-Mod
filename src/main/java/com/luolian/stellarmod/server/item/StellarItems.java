@@ -2,7 +2,7 @@ package com.luolian.stellarmod.server.item;
 
 import com.luolian.stellarmod.StellarMod;
 import com.luolian.stellarmod.server.item.custom.MetalDetectorItem;
-import com.luolian.stellarmod.server.item.custom.MultiToolItem;
+import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -17,8 +17,7 @@ public class StellarItems
     public static final RegistryObject<Item> SAPPHIRE_CRYSTAL = ITEMS.register("sapphire_crystal",() -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> METAL_DETECTOR = ITEMS.register("metal_detector",() -> new MetalDetectorItem(new Item
             .Properties().durability(100)));
-    public static final RegistryObject<Item> MULTI_FUNCTION_TOOL = ITEMS.register("multi_function_tool",() -> new MultiToolItem(new Item
-            .Properties()));
+    public static final RegistryObject<Item> TOOL_CORE = ITEMS.register("tool_core",() -> new ToolCoreItem(new Item.Properties()));
     public static void register(IEventBus eventBus)  {
         ITEMS.register(eventBus);
     }
