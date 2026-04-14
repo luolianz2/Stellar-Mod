@@ -7,10 +7,12 @@ import com.luolian.stellarmod.client.screen.StellarMenuTypes;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.server.block.StellarBlocks;
 import com.luolian.stellarmod.server.block.entity.StellarBlockEntities;
+import com.luolian.stellarmod.server.data.itemcore.MaterialDataLoader;
 import com.luolian.stellarmod.server.effect.StellarMobEffects;
 import com.luolian.stellarmod.server.item.StellarCreativeModeTabs;
 import com.luolian.stellarmod.server.item.StellarItems;
 import com.luolian.stellarmod.server.potion.StellarPotions;
+import com.luolian.stellarmod.server.recipe.StellarRecipes;
 import com.luolian.stellarmod.server.worldgen.dimension.EmptyChunkGenerator;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
@@ -19,6 +21,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -27,6 +30,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
+
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(StellarMod.MOD_ID)
@@ -65,6 +69,7 @@ public class StellarMod {
         StellarMobEffects.register(modEventBus);
         StellarPotions.register(modEventBus);
         StellarBlockEntities.register(modEventBus);
+        StellarRecipes.register(modEventBus);
         StellarMenuTypes.register(modEventBus);
         StellarNetworkHandler.register();
         // 注册区块生成器 Codec 到事件总线

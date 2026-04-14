@@ -40,7 +40,7 @@ public class ToolCoreItem extends Item {
             float miningSpeed,
             float attackDamage,
             int durability, //耐久值
-            int enchantability,
+            int enchantAbility,
             int color
     ) {
         public static final ToolProperties EMPTY = new ToolProperties(0, 1.0f, 0.0f, 
@@ -86,7 +86,7 @@ public class ToolCoreItem extends Item {
         float miningSpeed = 0;
         float attackDamage = 0;
         int durability = 0;
-        int enchantability = 0;
+        int enchantAbility = 0;
         int color = 0xFFFFFF;
 
         //遍历所有已添加的材料，累加各项属性
@@ -95,7 +95,7 @@ public class ToolCoreItem extends Item {
             miningSpeed += mat.miningSpeed();
             attackDamage += mat.attackDamage();
             durability += mat.durability();
-            enchantability += mat.enchantability();
+            enchantAbility += mat.enchantAbility();
             color = mat.color(); // 最后一个材料颜色
         }
 
@@ -107,7 +107,7 @@ public class ToolCoreItem extends Item {
             attackDamage *= 1.2f;
         }
 
-        return new ToolProperties(miningLevel, miningSpeed, attackDamage, durability, enchantability, color);
+        return new ToolProperties(miningLevel, miningSpeed, attackDamage, durability, enchantAbility, color);
     }
 
     //工具形态的读
@@ -144,12 +144,13 @@ public class ToolCoreItem extends Item {
     //从 NBT 读取并调用 MaterialManager.getMaterial 获取实际 Material 对象
     public static List<Material> getMaterialsFromStack(ItemStack stack) {
         CompoundTag tag = stack.getOrCreateTag();
-        ListTag list = tag.getList(TAG_MATERIALS, Tag.TAG_STRING); //材料以 ResourceLocation 字符串形式存入 ListTag
+        ListTag list = tag.getList(TAG_MATERIALS, Tag.TAG_STRING);
         List<Material> materials = new ArrayList<>();
         for (Tag t : list) {
             if (t instanceof StringTag st) {
                 ResourceLocation id = ResourceLocation.tryParse(st.getAsString());
                 if (id != null) {
+                    //此时 id 是物品 ID，可以正确从 MaterialManager 获取
                     Material mat = MaterialManager.getMaterial(id);
                     if (mat != null) materials.add(mat);
                 }
@@ -162,7 +163,8 @@ public class ToolCoreItem extends Item {
     public static void addMaterialToStack(ItemStack stack, Material material) {
         CompoundTag tag = stack.getOrCreateTag();
         ListTag list = tag.getList(TAG_MATERIALS, Tag.TAG_STRING);
-        list.add(StringTag.valueOf(material.id().toString()));
+        //此时 id 是物品 ID，可以正确从 MaterialManager 获取
+        list.add(StringTag.valueOf(material.itemId().toString()));
         tag.put(TAG_MATERIALS, list);
     }
 

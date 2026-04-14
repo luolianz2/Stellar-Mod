@@ -1,0 +1,15 @@
+{
+  "type": "stellarmod:crafting_area",
+  "ingredients": [
+    { "item": "minecraft:iron_ingot", "count": 1 },
+    { "item": "minecraft:iron_ingot", "count": 1 },
+    { "item": "minecraft:iron_ingot", "count": 1 },
+    { "item": "stellarmod:tool_core", "count": 1 },
+    { "item": "minecraft:iron_ingot", "count": 1 },
+    { "item": "minecraft:iron_ingot", "count": 1 },
+    { "item": "minecraft:diamond", "count": 1 }
+  ],
+  "output": {
+    "item": "stellarmod:tool_core"
+  }
+}

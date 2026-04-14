@@ -26,7 +26,7 @@ public class ToolCoreKeyEvents {
 
         boolean isRDown = GLFW.glfwGetKey(mc.getWindow().getWindow(), GLFW.GLFW_KEY_R) == GLFW.GLFW_PRESS;
 
-        // 刚按下 R 键时打开轮盘
+        //刚按下 R 键时打开轮盘
         if (isRDown && !wasKeyDown) {
             mc.setScreen(new RadialMenuScreen(held));
         }
