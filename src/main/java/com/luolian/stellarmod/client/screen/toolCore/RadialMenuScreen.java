@@ -16,7 +16,7 @@ import org.lwjgl.glfw.GLFW;
 public class RadialMenuScreen extends Screen {
 
     //被选框右下角的标记
-    private static final ResourceLocation WIDGETS =  ResourceLocation.fromNamespaceAndPath("minecraft","textures/gui/widgets.png");
+    private static final ResourceLocation WIDGETS = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/widgets.png");
     private static final int SLOT_COUNT = 8;        //轮盘槽位数
     private static final int RADIUS = 80;          //轮盘半径
     private static final int SLOT_SIZE = 24;       //槽位图标大小
@@ -40,6 +40,9 @@ public class RadialMenuScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        //确保渲染状态干净，开启混合以避免与其他模组的渲染冲突
+        RenderSystem.enableBlend();
+
         //不渲染默认背景，保留游戏画面
         this.renderBackground(graphics);
 
@@ -65,6 +68,8 @@ public class RadialMenuScreen extends Screen {
                         centerX, centerY + RADIUS + 20, 0xFFFFFF);
             }
         }
+        //恢复渲染状态，避免对后续渲染造成影响
+        RenderSystem.disableBlend();
     }
 
     private void updateHighlightedSlot(int mouseX, int mouseY, int centerX, int centerY) {
@@ -78,7 +83,7 @@ public class RadialMenuScreen extends Screen {
             double angle = Math.atan2(dy, dx) * 180.0 / Math.PI;
             //转换：使 0° 对应正上（-90° 偏移），且顺时针
             angle = (angle + 90 + 360) % 360;
-            // 每个槽位占 45°
+            //每个槽位占 45°
             int slot = (int) ((angle + 22.5) / 45) % 8;
             highlightedSlot = slot;
         } else {
@@ -102,7 +107,7 @@ public class RadialMenuScreen extends Screen {
 
         //绘制图标
         if (action.getIcon() != null) {
-            RenderSystem.setShaderTexture(0, action.getIcon());
+            //直接使用 GuiGraphics.blit，无需手动设置纹理，避免状态污染
             graphics.blit(action.getIcon(), x + 4, y + 4, 0, 0, 16, 16, 16, 16);
         }
 
@@ -126,7 +131,8 @@ public class RadialMenuScreen extends Screen {
 
     //绘制中心图标
     private void renderCenterIcon(GuiGraphics graphics, int centerX, int centerY) {
-        //绘制工具核心物品的图标
+        //主动刷新缓冲区，确保物品渲染在干净的状态下进行（虽然 renderItem 内部也会 flush，但显式调用更安全）
+        graphics.flush();
         graphics.renderItem(toolStack, centerX - 8, centerY - 8);
     }
 

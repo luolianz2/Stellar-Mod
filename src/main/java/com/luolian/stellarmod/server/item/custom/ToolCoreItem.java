@@ -20,14 +20,16 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ToolCoreItem extends Item {
 
     //类结构与常量定义
     public static final String TAG_MATERIALS = "Materials";     //一个列表，存放已装配材料的 ResourceLocation 字符串
     public static final String TAG_ACTIVE_TYPE = "ActiveType";  //当前激活的工具形态ID（如 "pickaxe"）
+    //耐久相关 NBT 键
+    public static final String TAG_DAMAGE = "Damage";
+    public static final String TAG_MAX_DAMAGE = "MaxDamage";
 
     public ToolCoreItem(Properties properties) {
         super(properties);
@@ -43,7 +45,7 @@ public class ToolCoreItem extends Item {
             int enchantAbility,
             int color
     ) {
-        public static final ToolProperties EMPTY = new ToolProperties(0, 1.0f, 0.0f, 
+        public static final ToolProperties EMPTY = new ToolProperties(0, 1.0f, 0.0f,
                 0, 0, 0xFFFFFF);
     }
 
@@ -78,7 +80,83 @@ public class ToolCoreItem extends Item {
         }
     }
 
+    //静态耐久存取方法（内部使用，避免与实例方法签名冲突）
+
+    /**
+     * 从物品堆叠中读取存储的最大耐久值
+     */
+    public static int getStoredMaxDamage(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        return tag != null && tag.contains(TAG_MAX_DAMAGE) ? tag.getInt(TAG_MAX_DAMAGE) : 0;
+    }
+
+    /**
+     * 将最大耐久值写入物品堆叠
+     */
+    public static void setStoredMaxDamage(ItemStack stack, int maxDamage) {
+        stack.getOrCreateTag().putInt(TAG_MAX_DAMAGE, maxDamage);
+    }
+
+    /**
+     * 从物品堆叠中读取当前耐久损伤值
+     */
+    public static int getStoredDamage(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        return tag != null && tag.contains(TAG_DAMAGE) ? tag.getInt(TAG_DAMAGE) : 0;
+    }
+
+    /**
+     * 设置当前耐久损伤值，自动限制不超过最大耐久
+     */
+    public static void setStoredDamage(ItemStack stack, int damage) {
+        int max = getStoredMaxDamage(stack);
+        stack.getOrCreateTag().putInt(TAG_DAMAGE, Math.min(damage, max));
+    }
+
+    //重写实例方法以满足 Forge 接口要求
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return getStoredMaxDamage(stack);
+    }
+
+    @Override
+    public int getDamage(ItemStack stack) {
+        return getStoredDamage(stack);
+    }
+
+    @Override
+    public void setDamage(ItemStack stack, int damage) {
+        setStoredDamage(stack, damage);
+    }
+
+    @Override
+    public boolean isBarVisible(ItemStack stack) {
+        return getStoredMaxDamage(stack) > 0 && getStoredDamage(stack) > 0;
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+        int max = getStoredMaxDamage(stack);
+        if (max == 0) return 0;
+        //耐久条是从左到右缩短的，满耐久时显示完整的 13 像素绿色条
+        //随着工具使用，getStoredDamage 增加，损伤宽度 变大，剩余宽度 变小。
+        //例如：最大耐久 100，当前损伤 30，则剩余宽度 = 13 - (30 * 13 / 100) = 13 - 3.9 = 9.1 → 四舍五入为 9 像素。
+        return Math.round(13.0f - (float) getStoredDamage(stack) * 13.0f / (float) max);
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack) {
+        return 0x00FF00; //绿色耐久条
+    }
+
+    @Override
+    public int getMaxStackSize(ItemStack stack) {
+        return 1; //工具核心不可堆叠
+    }
+
     //属性获取+计算
+    //注意：只累加每种材料第一次添加时的属性，重复添加不再提供属性加成
     public static ToolProperties getProperties(ItemStack stack) {
         List<Material> materials = getMaterialsFromStack(stack);
         //基础属性（核心本身不给加成，只给类型基础，类型基础在外层处理）
@@ -89,17 +167,22 @@ public class ToolCoreItem extends Item {
         int enchantAbility = 0;
         int color = 0xFFFFFF;
 
-        //遍历所有已添加的材料，累加各项属性
+        Set<ResourceLocation> seen = new HashSet<>(); //用于追踪已处理的材料（按物品ID）
+
+        //遍历所有已添加的材料，仅累加每种材料第一次出现的属性
         for (Material mat : materials) {
-            miningLevel += mat.miningLevel();
-            miningSpeed += mat.miningSpeed();
-            attackDamage += mat.attackDamage();
-            durability += mat.durability();
-            enchantAbility += mat.enchantAbility();
-            color = mat.color(); // 最后一个材料颜色
+            if (seen.add(mat.itemId())) {
+                //挖掘等级取所有材料的最高值
+                miningLevel = Math.max(miningLevel, mat.miningLevel());
+                miningSpeed += mat.miningSpeed();
+                attackDamage += mat.attackDamage();
+                durability += mat.durability();
+                enchantAbility += mat.enchantAbility();
+                color = mat.color(); //最后一个材料颜色
+            }
         }
 
-        // 材料联动示例
+        //材料联动示例
         boolean hasIron = materials.stream().anyMatch(m -> m.id().getPath().contains("iron"));
         boolean hasDiamond = materials.stream().anyMatch(m -> m.id().getPath().contains("diamond"));
         if (hasIron && hasDiamond) {
@@ -160,12 +243,68 @@ public class ToolCoreItem extends Item {
     }
 
     //用于组装台将材料添加到核心
+    //首次添加时自动初始化最大耐久为材料提供的耐久值，并将当前损伤设为0
     public static void addMaterialToStack(ItemStack stack, Material material) {
         CompoundTag tag = stack.getOrCreateTag();
         ListTag list = tag.getList(TAG_MATERIALS, Tag.TAG_STRING);
         //此时 id 是物品 ID，可以正确从 MaterialManager 获取
         list.add(StringTag.valueOf(material.itemId().toString()));
         tag.put(TAG_MATERIALS, list);
+
+        //如果当前最大耐久为0，说明是第一次添加材料，初始化耐久
+        if (getStoredMaxDamage(stack) == 0) {
+            setStoredMaxDamage(stack, material.durability());
+            setStoredDamage(stack, 0); // 满耐久
+        }
+    }
+
+    //检查某个材料是否已经添加过（通过物品 ID 判断）
+    public static boolean hasMaterial(ItemStack stack, ResourceLocation itemId) {
+        List<Material> materials = getMaterialsFromStack(stack);
+        return materials.stream().anyMatch(m -> m.itemId().equals(itemId));
+    }
+
+    //获取材料添加次数（通过 NBT 列表中的出现次数）
+    public static int getMaterialCount(ItemStack stack, ResourceLocation itemId) {
+        List<Material> materials = getMaterialsFromStack(stack);
+        return (int) materials.stream().filter(m -> m.itemId().equals(itemId)).count();
+    }
+
+    /**
+     * 尝试使用材料修复工具核心（仅当材料已添加过时有效）。
+     * 修复量基于材料耐久属性的 50%，并受工具当前挖掘等级与材料等级之差衰减。
+     * 若修复后耐久值不足 10 则不予修复。
+     *
+     * @return 实际恢复的耐久值，若无法修复则返回 0
+     */
+    public static int tryRepairWithMaterial(ItemStack stack, Material material) {
+        int currentMax = getStoredMaxDamage(stack);
+        if (currentMax <= 0) return 0;
+
+        //只有已经添加过的材料才能用于修复
+        if (!hasMaterial(stack, material.itemId())) return 0;
+
+        int currentDamage = getStoredDamage(stack);
+        if (currentDamage <= 0) return 0; //未受损，无需修复
+
+        int toolLevel = getTotalMiningLevel(stack);
+        int matLevel = material.miningLevel();
+
+        //基础恢复量 = 材料耐久属性的 50%
+        int baseRepair = material.durability() / 2;
+        if (baseRepair <= 0) return 0;
+
+        //等级差衰减：工具等级高于材料时，每高一级减半
+        if (toolLevel > matLevel) {
+            int diff = toolLevel - matLevel;
+            baseRepair = (int) (baseRepair * Math.pow(0.5, diff));
+        }
+
+        if (baseRepair < 10) return 0; //不足 10 点不予修复
+
+        int newDamage = Math.max(0, currentDamage - baseRepair);
+        setStoredDamage(stack, newDamage);
+        return baseRepair;
     }
 
     //用于形态切换
@@ -183,19 +322,48 @@ public class ToolCoreItem extends Item {
         int prevOrdinal = (current.ordinal() - 1 + values.length) % values.length;
         setActiveType(stack, values[prevOrdinal]);
     }
+
     //物品提示信息
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
         ToolType type = getActiveType(stack);
         tooltip.add(Component.literal("§7Active: §f" + type.id));
+
+        //显示已添加的材料列表
         List<Material> mats = getMaterialsFromStack(stack);
         if (!mats.isEmpty()) {
             tooltip.add(Component.literal("§7Materials:"));
+            //统计每种材料的次数，便于显示
+            Map<ResourceLocation, Integer> countMap = new LinkedHashMap<>();
             for (Material mat : mats) {
-                tooltip.add(Component.literal(" §8- §f" + mat.id().toString()));
+                countMap.put(mat.itemId(), countMap.getOrDefault(mat.itemId(), 0) + 1);
+            }
+            for (Map.Entry<ResourceLocation, Integer> entry : countMap.entrySet()) {
+                Material mat = MaterialManager.getMaterial(entry.getKey());
+                if (mat != null) {
+                    String name = mat.id().toString();
+                    if (entry.getValue() > 1) {
+                        name += " x" + entry.getValue();
+                    }
+                    tooltip.add(Component.literal(" §8- §f" + name));
+                }
             }
         }
+
+        //显示耐久信息
+        int maxDmg = getStoredMaxDamage(stack);
+        if (maxDmg > 0) {
+            int currentDmg = getStoredDamage(stack);
+            tooltip.add(Component.literal("§7Durability: §f" + (maxDmg - currentDmg) + " / " + maxDmg));
+        }
+
+        //显示预览修复量（如果存在）
+        if (stack.hasTag() && stack.getTag().contains("PreviewRepair")) {
+            int repair = stack.getTag().getInt("PreviewRepair");
+            tooltip.add(Component.literal("§aWill repair: +" + repair));
+        }
+
         ToolProperties props = getProperties(stack);
         tooltip.add(Component.literal("§7Mining Level: §f" + props.miningLevel()));
         tooltip.add(Component.literal("§7Speed: §f" + getTotalMiningSpeed(stack, type)));
@@ -228,11 +396,5 @@ public class ToolCoreItem extends Item {
         }
 
         return modifiers;
-    }
-
-    // 工具耐久由材料累加，但核心本身不显示耐久条（可自行决定）
-    @Override
-    public boolean isBarVisible(ItemStack stack) {
-        return false;
     }
 }

@@ -2,8 +2,9 @@
   "item": "minecraft:iron_ingot",
   "mining_level": 2,
   "mining_speed": 6.0,
-  "attack_damage": 2.0,
+  "attack_damage": 3.0,
   "durability": 250,
   "enchantAbility": 14,
-  "color": 14277081
+  "color": 14277081,
+  "upgrade_cost": 3
 }

@@ -11,9 +11,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import net.minecraft.server.packs.resources.Resource;
 
-import java.util.Collection;
 import java.util.Map;
 /**
  * 材料数据加载器，负责在资源重载时从数据包中读取并解析材料 JSON 文件。
@@ -106,7 +104,8 @@ public class MaterialDataLoader extends SimpleJsonResourceReloadListener {
         int durability = GsonHelper.getAsInt(json, "durability", 0);
         int enchantAbility = GsonHelper.getAsInt(json, "enchantAbility", 0);
         int color = GsonHelper.getAsInt(json, "color", 0xFFFFFF);
+        int upgradeCost = GsonHelper.getAsInt(json, "upgrade_cost", 1);
 
-        return new Material(fileId, itemId, miningLevel, miningSpeed, attackDamage, durability, enchantAbility, color);
+        return new Material(fileId, itemId, miningLevel, miningSpeed, attackDamage, durability, enchantAbility, color,  upgradeCost);
     }
 }

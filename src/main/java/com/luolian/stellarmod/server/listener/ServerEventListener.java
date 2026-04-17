@@ -14,7 +14,13 @@ public class ServerEventListener {
     @SubscribeEvent
     public static void onDataPackSync(OnDatapackSyncEvent event) {
         OriginsUtil.buildOriginToLayerCache();
-        OriginsUtil.handleOriginChange(event.getPlayer());
+
+        ServerPlayer player = event.getPlayer();
+        if (player != null) {
+            OriginsUtil.handleOriginChange(player);
+        }
+
+        //OriginsUtil.handleOriginChange(event.getPlayer());
     }
 
     @SubscribeEvent

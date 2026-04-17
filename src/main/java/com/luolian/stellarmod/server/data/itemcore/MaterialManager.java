@@ -13,7 +13,7 @@ public class MaterialManager {
     private static final Material DEFAULT = new Material(
             ResourceLocation.fromNamespaceAndPath("stellarmod", "default"),
             ResourceLocation.fromNamespaceAndPath("minecraft", "air"),
-            0, 1.0f, 0.0f, 0, 0, 0xFFFFFF
+            0, 1.0f, 0.0f, 0, 0, 0xFFFFFF, 1
     );
 
     public static void clear() {

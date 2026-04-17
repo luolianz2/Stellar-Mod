@@ -12,7 +12,6 @@ import com.luolian.stellarmod.server.effect.StellarMobEffects;
 import com.luolian.stellarmod.server.item.StellarCreativeModeTabs;
 import com.luolian.stellarmod.server.item.StellarItems;
 import com.luolian.stellarmod.server.potion.StellarPotions;
-import com.luolian.stellarmod.server.recipe.StellarRecipes;
 import com.luolian.stellarmod.server.worldgen.dimension.EmptyChunkGenerator;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
@@ -21,6 +20,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -30,7 +30,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
-
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(StellarMod.MOD_ID)
@@ -69,11 +68,26 @@ public class StellarMod {
         StellarMobEffects.register(modEventBus);
         StellarPotions.register(modEventBus);
         StellarBlockEntities.register(modEventBus);
-        StellarRecipes.register(modEventBus);
         StellarMenuTypes.register(modEventBus);
         StellarNetworkHandler.register();
         // 注册区块生成器 Codec 到事件总线
         CHUNK_GENERATORS.register(modEventBus);
+
+        //注册材料数据加载器到 Forge 事件总线
+        //确保在资源重载时（包括首次加载和 /reload 命令）能够扫描并加载材料 JSON 文件
+        MinecraftForge.EVENT_BUS.addListener(this::onAddReloadListeners);
+    }
+
+    //事件处理方法
+    /**
+     * 在资源重载事件中添加自定义的数据加载器 {@link MaterialDataLoader}。
+     * 该方法由 Forge 事件总线调用，负责将材料 JSON 文件的扫描逻辑注入资源加载流程。
+     *
+     * @param event 资源重载事件
+     */
+    private void onAddReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(new MaterialDataLoader());
+        LOGGER.debug("MaterialDataLoader registered to AddReloadListenerEvent");
     }
 
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)

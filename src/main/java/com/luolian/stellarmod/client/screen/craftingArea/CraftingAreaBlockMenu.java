@@ -4,6 +4,7 @@ import com.luolian.stellarmod.client.screen.StellarMenuTypes;
 import com.luolian.stellarmod.server.block.StellarBlocks;
 import com.luolian.stellarmod.server.block.entity.CraftingAreaBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -53,7 +54,7 @@ public class CraftingAreaBlockMenu extends AbstractContainerMenu {
         addDataSlots(containerData);
     }
 
-    //自定义输出槽
+    //自定义输出槽：处理点击合成与放置限制
     private static class OutputSlot extends SlotItemHandler {
         private final CraftingAreaBlockEntity blockEntity;
 
@@ -69,27 +70,22 @@ public class CraftingAreaBlockMenu extends AbstractContainerMenu {
 
         @Override
         public boolean mayPickup(Player player) {
-            // 允许手动拿起，但禁止通过 Shift 快速移动（因为 mayPickup 返回 false 会阻止所有取出，但我们希望手动可取）
-            // 由于需要区分手动与 Shift，这里统一返回 true，实际的 Shift 禁止将在 quickMoveStack 中通过槽位索引特殊处理。
-            // 但由于你要求不动 quickMoveStack 代码，我们通过让 mayPickup 总是返回 true 来保持手动可取，
-            // 而 Shift 操作最终也会调用 mayPickup，因此 Shift 也能取出预览物品，但这不符合设计。
-            // 为解决此矛盾，我们在不修改 quickMoveStack 的前提下，只能接受 Shift 也可以取出预览物品并触发合成。
-            // 如果你希望禁止 Shift 取出输出槽，则必须在 quickMoveStack 中加一行拦截，但既然代码不可动，我们只能保留此行为。
             return true;
         }
 
         @Override
         public void onTake(Player player, ItemStack stack) {
-            //执行实际合成
-            ItemStack realResult = blockEntity.assemble();
-            if (!realResult.isEmpty()) {
-                IItemHandler handler = blockEntity.getItemHandler();
-                handler.extractItem(getSlotIndex(), 64, false);
-                handler.insertItem(getSlotIndex(), realResult, false);
-                stack = realResult;
+            //执行实际合成，获得新核心
+            ItemStack result = blockEntity.assemble();
+            if (!result.isEmpty()) {
+                //将合成结果设置为玩家当前手持的物品（鼠标拿着的物品）
+                player.containerMenu.setCarried(result);
+                //清空输出槽的预览物品
+                blockEntity.getItemHandler().extractItem(getSlotIndex(), 64, false);
             }
-            super.onTake(player, stack);
+            //更新预览（可能还有下一个候选材料）
             blockEntity.updatePreview();
+            blockEntity.setChanged();
         }
     }
 
@@ -113,6 +109,11 @@ public class CraftingAreaBlockMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
+        // 特殊处理：如果点击的是输出槽（索引7），阻止 Shift 快速移动，防止绕过合成逻辑
+        if (pIndex == TE_INVENTORY_FIRST_SLOT_INDEX + 7) {
+            return ItemStack.EMPTY;
+        }
+
         Slot sourceSlot = slots.get(pIndex);
         if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;  //EMPTY_ITEM
         ItemStack sourceStack = sourceSlot.getItem();

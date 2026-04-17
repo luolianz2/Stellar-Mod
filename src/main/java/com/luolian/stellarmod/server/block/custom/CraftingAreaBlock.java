@@ -1,6 +1,7 @@
 package com.luolian.stellarmod.server.block.custom;
 
 import com.luolian.stellarmod.server.block.entity.CraftingAreaBlockEntity;
+import com.luolian.stellarmod.server.block.entity.StellarBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -66,6 +67,12 @@ public class CraftingAreaBlock extends GlassBlock implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return null;
+        //确保传入的类型与我们的方块实体类型匹配
+        if (level.isClientSide()) {
+            return null; //客户端不需要 tick
+        }
+        return type == StellarBlockEntities.CRAFTING_AREA_BE.get()
+                ? (BlockEntityTicker<T>) (lvl, pos, st, be) -> CraftingAreaBlockEntity.tick(lvl, pos, st, (CraftingAreaBlockEntity) be)
+                : null;
     }
 }

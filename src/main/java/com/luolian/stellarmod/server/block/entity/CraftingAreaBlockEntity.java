@@ -4,7 +4,6 @@ import com.luolian.stellarmod.client.screen.craftingArea.CraftingAreaBlockMenu;
 import com.luolian.stellarmod.server.data.itemcore.Material;
 import com.luolian.stellarmod.server.data.itemcore.MaterialManager;
 import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
-import com.luolian.stellarmod.server.recipe.CraftingAreaRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -31,9 +30,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider {
 
@@ -70,6 +66,8 @@ public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider
 
     //常量：输出槽索引
     private static final int OUTPUT_SLOT = 7;
+    //常量：核心槽索引
+    private static final int CORE_SLOT = 3;
 
     //用于向外部暴露物品能力的 LazyOptional
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
@@ -127,36 +125,87 @@ public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider
         return hash;
     }
 
+    //材料扫描逻辑
+    /**
+     * 材料候选信息，用于表示当前可进行的操作（首次升级或修复）
+     * @param slot         材料所在槽位
+     * @param itemId       材料的物品ID
+     * @param material     对应的材料数据
+     * @param isFirstTime  是否为首次添加该材料
+     * @param availableCount 该槽位物品的堆叠数量
+     */
+    private record MaterialCandidate(
+            int slot,
+            ResourceLocation itemId,
+            Material material,
+            boolean isFirstTime,
+            int availableCount
+    ) {}
+
+    /**
+     * 按槽位顺序（0→1→2→4→5→6）扫描，返回第一个可用的材料候选。
+     * 若没有符合条件的材料或核心槽无工具核心，则返回 null。
+     */
+    @Nullable
+    private MaterialCandidate findNextCandidate() {
+        ItemStack core = itemHandler.getStackInSlot(CORE_SLOT);
+        if (!(core.getItem() instanceof ToolCoreItem)) {
+            return null;
+        }
+
+        //按槽位顺序遍历（跳过核心槽3）
+        int[] slotOrder = {0, 1, 2, 4, 5, 6};
+        for (int slot : slotOrder) {
+            ItemStack stack = itemHandler.getStackInSlot(slot);
+            if (stack.isEmpty()) continue;
+
+            ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
+            if (id == null) continue;
+
+            Material mat = MaterialManager.getMaterial(id);
+            if (mat == null) continue; //该物品未配置材料属性，跳过
+
+            boolean firstTime = !ToolCoreItem.hasMaterial(core, id);
+
+            // 修复：如果是修复操作（非首次添加），且当前工具核心耐久已满，则跳过该材料
+            if (!firstTime && ToolCoreItem.getStoredDamage(core) == 0) {
+                continue; // 耐久满，无需修复，继续扫描下一个材料
+            }
+
+            //根据操作类型确定需要消耗的材料数量
+            int required = firstTime ? mat.upgradeCost() : 1;
+
+            if (stack.getCount() >= required) {
+                //将符合条件的材料信息封装为 MaterialCandidate 对象并返回
+                return new MaterialCandidate(slot, id, mat, firstTime, stack.getCount());
+            }
+        }
+        return null;
+    }
+
     //更新输出槽的预览物品（带有预览标记的工具核心）
     public void updatePreview() {
-        Optional<CraftingAreaRecipe> recipe = getCurrentRecipe();
-        //如果没有匹配配方或核心槽没有工具核心，清空输出槽
-        if (recipe.isEmpty() || !(itemHandler.getStackInSlot(3).getItem() instanceof ToolCoreItem)) {
+        MaterialCandidate candidate = findNextCandidate();
+        ItemStack core = itemHandler.getStackInSlot(CORE_SLOT);
+
+        //没有候选或核心无效，清空输出槽
+        if (candidate == null || !(core.getItem() instanceof ToolCoreItem)) {
             itemHandler.setStackInSlot(OUTPUT_SLOT, ItemStack.EMPTY);
             return;
         }
 
-        CraftingAreaRecipe r = recipe.get();
-        ItemStack preview = itemHandler.getStackInSlot(3).copy();
+        //复制核心作为预览
+        ItemStack preview = core.copy();
         preview.setCount(1);
 
-        //模拟添加材料属性（不实际消耗）
-        for (int i = 0; i < 7; i++) {
-            if (i == 3) continue; //跳过核心槽
-            int consume = r.getConsumeCount(i);
-            if (consume <= 0) continue;
-
-            ItemStack materialStack = itemHandler.getStackInSlot(i);
-            if (materialStack.isEmpty()) continue;
-
-            ResourceLocation materialId = ForgeRegistries.ITEMS.getKey(materialStack.getItem());
-            if (materialId == null) continue;
-
-            Material material = MaterialManager.getMaterial(materialId);
-            if (material != null) {
-                for (int t = 0; t < consume; t++) {
-                    ToolCoreItem.addMaterialToStack(preview, material);
-                }
+        if (candidate.isFirstTime()) {
+            //首次添加：模拟添加材料（不实际消耗）
+            ToolCoreItem.addMaterialToStack(preview, candidate.material());
+        } else {
+            //计算预览修复量，存入临时标记供提示显示
+            int repair = ToolCoreItem.tryRepairWithMaterial(preview, candidate.material());
+            if (repair > 0) {
+                preview.getOrCreateTag().putInt("PreviewRepair", repair);
             }
         }
 
@@ -165,71 +214,52 @@ public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider
         itemHandler.setStackInSlot(OUTPUT_SLOT, preview);
     }
 
-    //实际执行合成：消耗材料，生成带有新属性的工具核心
+    //实际执行合成：消耗材料，生成带有新属性的工具核心（首次升级）或修复耐久（重复添加）
     public ItemStack assemble() {
-        Optional<CraftingAreaRecipe> recipe = getCurrentRecipe();
-        if (recipe.isEmpty() || !(itemHandler.getStackInSlot(3).getItem() instanceof ToolCoreItem)) {
+        MaterialCandidate candidate = findNextCandidate();
+        ItemStack core = itemHandler.getStackInSlot(CORE_SLOT);
+
+        if (candidate == null || !(core.getItem() instanceof ToolCoreItem)) {
             return ItemStack.EMPTY;
         }
 
-        CraftingAreaRecipe r = recipe.get();
+        int consume = candidate.isFirstTime() ? candidate.material().upgradeCost() : 1;
 
-        //第一步：收集要添加的材料（在消耗物品之前）
-        List<Material> materialsToAdd = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            if (i == 3) continue;
-            int consume = r.getConsumeCount(i);
-            if (consume <= 0) continue;
-
-            ItemStack stack = itemHandler.getStackInSlot(i);
-            if (stack.isEmpty()) continue;
-
-            ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
-            if (id == null) continue;
-
-            Material mat = MaterialManager.getMaterial(id);
-            if (mat != null) {
-                for (int t = 0; t < consume; t++) {
-                    materialsToAdd.add(mat);
-                }
-            }
+        //再次检查数量（防止并发修改）
+        ItemStack slotStack = itemHandler.getStackInSlot(candidate.slot());
+        if (slotStack.getCount() < consume) {
+            return ItemStack.EMPTY;
         }
 
-        //第二步：消耗材料
-        for (int i = 0; i < 7; i++) {
-            if (i == 3) continue;
-            int consume = r.getConsumeCount(i);
-            if (consume > 0) {
-                itemHandler.extractItem(i, consume, false);
-            }
-        }
+        //消耗材料
+        itemHandler.extractItem(candidate.slot(), consume, false);
 
-        //第三步：生成新的工具核心
-        ItemStack result = itemHandler.getStackInSlot(3).copy();
+        //复制核心并应用操作
+        ItemStack result = core.copy();
         result.setCount(1);
-        for (Material mat : materialsToAdd) {
-            ToolCoreItem.addMaterialToStack(result, mat);
+
+        if (candidate.isFirstTime()) {
+            ToolCoreItem.addMaterialToStack(result, candidate.material());
+        } else {
+            ToolCoreItem.tryRepairWithMaterial(result, candidate.material());
         }
-        result.removeTagKey("Preview"); // 移除预览标记
+
+        //移除预览相关标记
+        result.removeTagKey("Preview");
+        result.removeTagKey("PreviewRepair");
+
+        //消耗原核心（数量减1）
+        itemHandler.extractItem(CORE_SLOT, 1, false);
+
+        //更新预览（可能还有下一个候选材料）
+        updatePreview();
+
         return result;
     }
 
-    //检查当前是否存在有效配方（核心槽存在且输出槽为空）
+    //检查当前是否存在有效配方（核心槽存在且输出槽为空）- 当前逻辑已弃用，保留占位
     private boolean hasRecipe() {
-        Optional<CraftingAreaRecipe> recipe = getCurrentRecipe();
-        if (recipe.isEmpty()) return false;
-        if (!(itemHandler.getStackInSlot(3).getItem() instanceof ToolCoreItem)) return false;
-        //输出槽必须为空，因为生成的是不可堆叠的工具核心
-        return itemHandler.getStackInSlot(OUTPUT_SLOT).isEmpty();
-    }
-
-    //获取当前匹配的配方
-    private Optional<CraftingAreaRecipe> getCurrentRecipe() {
-        SimpleContainer inventory = new SimpleContainer(7);
-        for (int i = 0; i < 7; i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
-        return level.getRecipeManager().getRecipeFor(CraftingAreaRecipe.Type.INSTANCE, inventory, level);
+        return false;
     }
 
     //物品掉落

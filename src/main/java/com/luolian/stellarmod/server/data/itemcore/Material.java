@@ -9,9 +9,10 @@ import net.minecraft.resources.ResourceLocation;
  * @param miningLevel    挖掘等级
  * @param miningSpeed    挖掘速度加成
  * @param attackDamage   攻击伤害加成
- * @param durability     耐久加成
+ * @param durability     首次添加提供的最大耐久值
  * @param enchantAbility 附魔能力加成
  * @param color          渲染颜色（0xRRGGBB）
+ * @param upgradeCost    首次升级所需数量
  */
 public record Material(
         ResourceLocation id,
@@ -21,5 +22,6 @@ public record Material(
         float attackDamage,
         int durability,
         int enchantAbility,
-        int color
+        int color,
+        int upgradeCost
 ) {}

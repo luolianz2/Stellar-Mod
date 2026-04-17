@@ -49,12 +49,31 @@ public enum RadialAction {
     public ResourceLocation getIcon() {
         return icon;
     }
+
     public void execute(ItemStack stack, Player player) {
         action.accept(stack, player);
     }
 
+    /**
+     * 根据槽位索引获取对应的 RadialAction。
+     * 如果索引非法（小于0或大于等于枚举常量数），则返回默认的 EMPTY_1。
+     * 该方法保证了在任何情况下都不会因索引越界而崩溃。
+     *
+     * @param index 轮盘槽位索引 (0~7)
+     * @return 对应的 RadialAction 枚举实例，非法索引时返回 EMPTY_1
+     */
     public static RadialAction fromIndex(int index) {
-        for (RadialAction a : values()) if (a.index == index) return a;
+        //快速边界检查，避免无意义的遍历
+        if (index < 0 || index >= values().length) {
+            return EMPTY_1;
+        }
+        //遍历查找匹配的 index
+        for (RadialAction action : values()) {
+            if (action.index == index) {
+                return action;
+            }
+        }
+        //理论上不会执行到这里，但作为 fallback 返回空槽位
         return EMPTY_1;
     }
 }
