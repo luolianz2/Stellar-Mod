@@ -2,22 +2,41 @@ package com.luolian.stellarmod.server.item.custom;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.luolian.stellarmod.server.data.itemcore.Material;
-import com.luolian.stellarmod.server.data.itemcore.MaterialManager;
+import com.luolian.stellarmod.StellarMod;
+import com.luolian.stellarmod.api.modifier.StellarModifierEffect;
+import com.luolian.stellarmod.server.data.modifier.StellarModifierRegistry;
+import com.luolian.stellarmod.server.data.toolCore.Material;
+import com.luolian.stellarmod.server.data.toolCore.MaterialManager;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.ToolAction;
+import net.minecraftforge.common.ToolActions;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -31,9 +50,29 @@ public class ToolCoreItem extends Item {
     public static final String TAG_DAMAGE = "Damage";
     public static final String TAG_MAX_DAMAGE = "MaxDamage";
 
+    //自定义标签：需要 5 级工具才能挖掘的方块
+    public static final TagKey<Block> NEEDS_STELLAR_TOOL =
+            TagKey.create(Registries.BLOCK, StellarMod.location("needs_stellar_tool"));
+
+    //自定义标签：需要 4 级工具（下界合金）才能挖掘的方块
+    public static final TagKey<Block> NEEDS_NETHERITE_TOOL =
+            TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "needs_netherite_tool"));
+
+    //挖掘等级 → 对应的“需要该等级工具”标签
+    private static final Map<Integer, TagKey<Block>> MINING_LEVEL_TAGS = Map.of(
+            1, BlockTags.NEEDS_STONE_TOOL,
+            2, BlockTags.NEEDS_IRON_TOOL,
+            3, BlockTags.NEEDS_DIAMOND_TOOL,
+            4, NEEDS_NETHERITE_TOOL,
+            5, NEEDS_STELLAR_TOOL
+    );
+
     public ToolCoreItem(Properties properties) {
         super(properties);
     }
+
+    //模型属性覆盖的键名
+    public static final ResourceLocation ACTIVE_TYPE_PREDICATE = StellarMod.location("active_type");
 
     //属性汇总记录 ToolProperties
     //存储从材料计算得到的累计属性。它不包含形态基础值，只包含材料提供的部分
@@ -41,12 +80,9 @@ public class ToolCoreItem extends Item {
             int miningLevel,
             float miningSpeed,
             float attackDamage,
-            int durability, //耐久值
-            int enchantAbility,
-            int color
+            int durability //耐久值
     ) {
-        public static final ToolProperties EMPTY = new ToolProperties(0, 1.0f, 0.0f,
-                0, 0, 0xFFFFFF);
+        public static final ToolProperties EMPTY = new ToolProperties(0, 0.0f, -3.0f, 0);
     }
 
     //工具类型枚举ToolType，每个枚举值包含3个字段
@@ -54,10 +90,10 @@ public class ToolCoreItem extends Item {
     //baseSpeed：该形态的 基础挖掘速度
     //baseAttack：该形态的 基础攻击伤害
     public enum ToolType {
-        PICKAXE("pickaxe", 1.0f, 0.0f),
-        AXE("axe", 1.0f, 1.0f),
+        PICKAXE("pickaxe", 1.2f, 1.0f),
+        AXE("axe", 0.8f, 6.0f),
         SHOVEL("shovel", 1.0f, 0.5f),
-        SWORD("sword", 1.0f, 3.0f), // 基础伤害
+        SWORD("sword", 1.6f, 3.0f), // 基础伤害
         HOE("hoe", 1.0f, 0.0f);
 
         public final String id;
@@ -155,34 +191,312 @@ public class ToolCoreItem extends Item {
         return 1; //工具核心不可堆叠
     }
 
-    //属性获取+计算
-    //注意：只累加每种材料第一次添加时的属性，重复添加不再提供属性加成
-    public static ToolProperties getProperties(ItemStack stack) {
+    //右键交互逻辑（锄地、铲土径、斧去皮等）
+
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        Player player = context.getPlayer();
+        ItemStack stack = context.getItemInHand();
+        BlockState state = level.getBlockState(pos);
+        ToolType type = getActiveType(stack);
+
+        //根据当前形态处理不同的右键交互
+        return switch (type) {
+            case HOE -> handleHoeAction(context, state, pos, level, player, stack);
+            case SHOVEL -> handleShovelAction(context, state, pos, level, player, stack);
+            case AXE -> handleAxeAction(context, state, pos, level, player, stack);
+            default -> InteractionResult.PASS;
+        };
+    }
+
+    /**
+     * 处理锄头右键交互：将草方块、土块等转变为耕地
+     */
+    private InteractionResult handleHoeAction(UseOnContext context, BlockState state, BlockPos pos,
+                                              Level level, Player player, ItemStack stack) {
+        //检查是否为可耕地方块
+        BlockState farmland = state.getToolModifiedState(context, ToolActions.HOE_TILL, false);
+        if (farmland != null) {
+            if (!level.isClientSide) {
+                level.setBlock(pos, farmland, 11);
+                level.playSound(null, pos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+        return InteractionResult.PASS;
+    }
+
+    /**
+     * 处理铲子右键交互：将草方块转变为土径
+     */
+    private InteractionResult handleShovelAction(UseOnContext context, BlockState state, BlockPos pos,
+                                                 Level level, Player player, ItemStack stack) {
+        //制造土径
+        BlockState pathState = state.getToolModifiedState(context, ToolActions.SHOVEL_FLATTEN, false);
+        if (pathState != null && pathState.getBlock() != state.getBlock()) {
+            if (!level.isClientSide) {
+                level.setBlock(pos, pathState, 11);
+                level.playSound(null, pos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+        return InteractionResult.PASS;
+    }
+
+    /**
+     * 处理斧头右键交互：原木去皮、铜块除锈/去蜡等
+     */
+    private InteractionResult handleAxeAction(UseOnContext context, BlockState state, BlockPos pos,
+                                              Level level, Player player, ItemStack stack) {
+        //1. 原木去皮
+        BlockState strippedState = state.getToolModifiedState(context, ToolActions.AXE_STRIP, false);
+        if (strippedState != null) {
+            if (!level.isClientSide) {
+                level.setBlock(pos, strippedState, 11);
+                level.playSound(null, pos, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+
+        //2. 铜块刮锈 (AXE_SCRAPE)
+        BlockState scrapedState = state.getToolModifiedState(context, ToolActions.AXE_SCRAPE, false);
+        if (scrapedState != null) {
+            if (!level.isClientSide) {
+                level.setBlock(pos, scrapedState, 11);
+                level.playSound(null, pos, SoundEvents.AXE_SCRAPE, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+
+        //3. 铜块去蜡 (AXE_WAX_OFF)
+        BlockState waxOffState = state.getToolModifiedState(context, ToolActions.AXE_WAX_OFF, false);
+        if (waxOffState != null) {
+            if (!level.isClientSide) {
+                level.setBlock(pos, waxOffState, 11);
+                level.playSound(null, pos, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+
+        return InteractionResult.PASS;
+    }
+
+    //工具行为重写（挖掘、攻击）
+
+    /**
+     * 获取工具的挖掘速度。如果当前形态能有效挖掘该方块，则返回总挖掘速度，否则返回 1.0（空手速度），
+     * 剑形态对蜘蛛网等特殊方块有额外高速加成（固定10.0），并叠加材料挖掘速度
+     */
+    @Override
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
+        ToolType type = getActiveType(stack);
+        ToolProperties props = getProperties(stack);
+
+        //剑形态特殊处理：蜘蛛网或属于 SWORD_EFFICIENT 标签的方块
+        if (type == ToolType.SWORD) {
+            //显式检查蜘蛛网（解决标签加载问题）以及标签匹配
+            if (state.is(Blocks.COBWEB) || state.is(BlockTags.SWORD_EFFICIENT)) {
+                return 10.0f + props.miningSpeed();
+            }
+        }
+
+        //正常挖掘速度计算
+        if (isCorrectToolForDrops(stack, state)) {
+            return getTotalMiningSpeed(stack, type);
+        }
+        return 1.0F;
+    }
+
+    /**
+     * 判断该工具是否能采集目标方块（即是否能使其掉落物品）。
+     * 同时检查工具类型标签和挖掘等级标签。
+     */
+    @Override
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+        //工具已损坏，无法采集任何方块掉落
+        int max = getStoredMaxDamage(stack);
+        int damage = getStoredDamage(stack);
+        if (max > 0 && damage >= max) {
+            return false;
+        }
+
+        ToolType type = getActiveType(stack);
+
+        //剑形态特殊处理：蜘蛛网可以直接掉落（即使标签失效）
+        if (type == ToolType.SWORD && state.is(Blocks.COBWEB)) {
+            return true;
+        }
+
+        //1. 检查工具类型是否匹配
+        if (!state.is(getHarvestTagForType(type))) {
+            return false;
+        }
+        //2. 检查挖掘等级是否足够
+        int level = getTotalMiningLevel(stack);
+        return isMiningLevelSufficient(state, level);
+    }
+
+    /**
+     * 检查当前挖掘等级是否足以采集该方块。
+     * 使用 NEEDS_*_TOOL 标签判断。
+     */
+    private boolean isMiningLevelSufficient(BlockState state, int level) {
+        //如果工具等级 >= 5，可采集任意方块
+        if (level >= 5) return true;
+
+        //如果方块和工具等级对应的 "NEEDS" 标签相同，则可以采集
+        TagKey<Block> neededTag = MINING_LEVEL_TAGS.get(level);
+        if (neededTag != null && state.is(neededTag)) {
+            return true;
+        }
+
+        //遍历更高等级的标签，如果方块需要更高等级的工具，则当前工具无法采集
+        for (int i = level + 1; i <= 5; i++) {
+            TagKey<Block> higherTag = MINING_LEVEL_TAGS.get(i);
+            if (higherTag != null && state.is(higherTag)) {
+                return false;
+            }
+        }
+
+        //方块没有任何挖掘等级要求，可以采集
+        return true;
+    }
+
+    /**
+     * 辅助方法：根据工具形态获取对应的挖掘标签（如 MINEABLE_WITH_PICKAXE）。
+     */
+    private TagKey<Block> getHarvestTagForType(ToolType type) {
+        return switch (type) {
+            case AXE -> BlockTags.MINEABLE_WITH_AXE;
+            case SHOVEL -> BlockTags.MINEABLE_WITH_SHOVEL;
+            case HOE -> BlockTags.MINEABLE_WITH_HOE;
+            case SWORD -> BlockTags.SWORD_EFFICIENT;
+            default -> BlockTags.MINEABLE_WITH_PICKAXE;
+        };
+    }
+
+    /**
+     * 收集工具当前所有已添加材料中的副词条条目
+     */
+    public static List<Material.StellarModifierEntry> getAllModifiers(ItemStack stack) {
         List<Material> materials = getMaterialsFromStack(stack);
-        //基础属性（核心本身不给加成，只给类型基础，类型基础在外层处理）
+        List<Material.StellarModifierEntry> entries = new ArrayList<>();
+        for (Material mat : materials) {
+            entries.addAll(mat.modifiers());
+        }
+        return entries;
+    }
+
+    /**
+     * 玩家手持工具破坏方块时调用。在此消耗 1 点耐久，并触发所有副词条的挖掘后效果。
+     */
+    @Override
+    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity entityLiving) {
+        if (!level.isClientSide && state.getDestroySpeed(level, pos) != 0.0F) {
+            int newDamage = getDamage(stack) + 1;
+            setStoredDamage(stack, newDamage);
+            if (newDamage >= getMaxDamage(stack)) {
+                playBreakSound(entityLiving);
+            }
+
+            //触发副词条效果：挖掘后
+            for (Material.StellarModifierEntry entry : getAllModifiers(stack)) {
+                StellarModifierEffect effect = StellarModifierRegistry.get(entry.id());
+                if (effect != null) {
+                    effect.parseConfig(entry.config());
+                    effect.onBlockMined(stack, level, state, pos, entityLiving);
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 玩家手持工具攻击实体时调用。在此消耗 2 点耐久，并触发所有副词条的攻击后效果。
+     */
+    @Override
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        int newDamage = getDamage(stack) + 2;
+        setStoredDamage(stack, newDamage);
+        if (newDamage >= getMaxDamage(stack)) {
+            playBreakSound(attacker);
+        }
+
+        //触发副词条效果：攻击后
+        for (Material.StellarModifierEntry entry : getAllModifiers(stack)) {
+            StellarModifierEffect effect = StellarModifierRegistry.get(entry.id());
+            if (effect != null) {
+                effect.parseConfig(entry.config());
+                effect.onEntityHurt(stack, target, attacker);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 声明工具支持哪些右键交互动作（如锄地、剥皮、制造土径等）。
+     */
+    @Override
+    public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
+        ToolType type = getActiveType(stack);
+        return switch (type) {
+            case AXE -> ToolActions.DEFAULT_AXE_ACTIONS.contains(toolAction);
+            case SHOVEL -> ToolActions.DEFAULT_SHOVEL_ACTIONS.contains(toolAction);
+            case SWORD -> ToolActions.DEFAULT_SWORD_ACTIONS.contains(toolAction);
+            case HOE -> ToolActions.DEFAULT_HOE_ACTIONS.contains(toolAction);
+            default -> false;
+        };
+    }
+
+    //材料属性与形态相关逻辑
+
+    //属性获取+计算
+    // - 挖掘速度/攻击伤害的基础值 = 所有已添加材料中的最高属性值
+    // - 多样性加成 = Σ(每种首次添加材料的挖掘等级 × 1%)
+    // - 最终值 = 基础值 × (1 + 多样性加成)
+    public static ToolProperties getProperties(ItemStack stack) {
+        //若工具已损坏（耐久为0），则所有材料加成失效
+        int max = getStoredMaxDamage(stack);
+        int damage = getStoredDamage(stack);
+        if (max > 0 && damage >= max) {
+            return ToolProperties.EMPTY;
+        }
+
+        List<Material> materials = getMaterialsFromStack(stack);
         int miningLevel = 0;
         float miningSpeed = 0;
         float attackDamage = 0;
         int durability = 0;
-        int enchantAbility = 0;
-        int color = 0xFFFFFF;
 
         Set<ResourceLocation> seen = new HashSet<>(); //用于追踪已处理的材料（按物品ID）
+        Map<ResourceLocation, Integer> uniqueMaterialLevels = new HashMap<>(); //记录每种首次材料及其等级
 
-        //遍历所有已添加的材料，仅累加每种材料第一次出现的属性
+        //遍历所有已添加的材料，仅统计每种材料第一次出现的属性
         for (Material mat : materials) {
             if (seen.add(mat.itemId())) {
+                uniqueMaterialLevels.put(mat.itemId(), mat.miningLevel());
                 //挖掘等级取所有材料的最高值
                 miningLevel = Math.max(miningLevel, mat.miningLevel());
-                miningSpeed += mat.miningSpeed();
-                attackDamage += mat.attackDamage();
+                //耐久累加
                 durability += mat.durability();
-                enchantAbility += mat.enchantAbility();
-                color = mat.color(); //最后一个材料颜色
+                //记录最高速度和攻击
+                miningSpeed = Math.max(miningSpeed, mat.miningSpeed());
+                attackDamage = Math.max(attackDamage, mat.attackDamage());
             }
         }
 
-        //材料联动示例
+        //多样性加成：每种首次材料的挖掘等级 × 1% 的总和
+        float diversityBonus = 1.0f;
+        for (int level : uniqueMaterialLevels.values()) {
+            diversityBonus += level * 0.01f;
+        }
+
+        miningSpeed *= diversityBonus;
+        attackDamage *= diversityBonus;
+
+        // 材料联动示例：同时拥有铁和钻石时，额外提升20%速度和攻击
         boolean hasIron = materials.stream().anyMatch(m -> m.id().getPath().contains("iron"));
         boolean hasDiamond = materials.stream().anyMatch(m -> m.id().getPath().contains("diamond"));
         if (hasIron && hasDiamond) {
@@ -190,14 +504,18 @@ public class ToolCoreItem extends Item {
             attackDamage *= 1.2f;
         }
 
-        return new ToolProperties(miningLevel, miningSpeed, attackDamage, durability, enchantAbility, color);
+        //保留一位小数（四舍五入）
+        miningSpeed = Math.round(miningSpeed * 10.0f) / 10.0f;
+        attackDamage = Math.round(attackDamage * 10.0f) / 10.0f;
+
+        return new ToolProperties(miningLevel, miningSpeed, attackDamage, durability);
     }
 
     //工具形态的读
     public static ToolType getActiveType(ItemStack stack) {
         CompoundTag tag = stack.getOrCreateTag();
         String typeId = tag.getString(TAG_ACTIVE_TYPE);
-        return typeId.isEmpty() ? ToolType.PICKAXE : ToolType.fromId(typeId);   //默认形态为 PICKAXE，fromId 方法将字符串映射回枚举值
+        return typeId.isEmpty() ? ToolType.PICKAXE : ToolType.fromId(typeId);
     }
 
     //工具形态的写
@@ -209,13 +527,17 @@ public class ToolCoreItem extends Item {
     //获取最终挖掘速度
     public static float getTotalMiningSpeed(ItemStack stack, ToolType type) {
         ToolProperties props = getProperties(stack);
-        return type.baseSpeed + props.miningSpeed();
+        float total = type.baseSpeed + props.miningSpeed();
+        //四舍五入保留一位小数
+        return Math.round(total * 10.0f) / 10.0f;
     }
 
     //获取最终攻击伤害
     public static float getTotalAttackDamage(ItemStack stack, ToolType type) {
         ToolProperties props = getProperties(stack);
-        return type.baseAttack + props.attackDamage();
+        float total = type.baseAttack + props.attackDamage();
+        //四舍五入保留一位小数
+        return Math.round(total * 10.0f) / 10.0f;
     }
 
     //获取最终挖掘等级
@@ -233,7 +555,6 @@ public class ToolCoreItem extends Item {
             if (t instanceof StringTag st) {
                 ResourceLocation id = ResourceLocation.tryParse(st.getAsString());
                 if (id != null) {
-                    //此时 id 是物品 ID，可以正确从 MaterialManager 获取
                     Material mat = MaterialManager.getMaterial(id);
                     if (mat != null) materials.add(mat);
                 }
@@ -247,15 +568,16 @@ public class ToolCoreItem extends Item {
     public static void addMaterialToStack(ItemStack stack, Material material) {
         CompoundTag tag = stack.getOrCreateTag();
         ListTag list = tag.getList(TAG_MATERIALS, Tag.TAG_STRING);
-        //此时 id 是物品 ID，可以正确从 MaterialManager 获取
         list.add(StringTag.valueOf(material.itemId().toString()));
         tag.put(TAG_MATERIALS, list);
 
-        //如果当前最大耐久为0，说明是第一次添加材料，初始化耐久
-        if (getStoredMaxDamage(stack) == 0) {
-            setStoredMaxDamage(stack, material.durability());
-            setStoredDamage(stack, 0); // 满耐久
-        }
+        //累加材料提供的耐久值到最大耐久
+        int currentMax = getStoredMaxDamage(stack);
+        int currentDamage = getStoredDamage(stack);
+        int newMax = currentMax + material.durability();
+        setStoredMaxDamage(stack, newMax);
+        //确保当前损伤不超过新最大耐久
+        setStoredDamage(stack, Math.min(currentDamage, newMax));
     }
 
     //检查某个材料是否已经添加过（通过物品 ID 判断）
@@ -273,7 +595,7 @@ public class ToolCoreItem extends Item {
     /**
      * 尝试使用材料修复工具核心（仅当材料已添加过时有效）。
      * 修复量基于材料耐久属性的 50%，并受工具当前挖掘等级与材料等级之差衰减。
-     * 若修复后耐久值不足 10 则不予修复。
+     * 若修复耐久值为 0 则不予修复。
      *
      * @return 实际恢复的耐久值，若无法修复则返回 0
      */
@@ -281,7 +603,6 @@ public class ToolCoreItem extends Item {
         int currentMax = getStoredMaxDamage(stack);
         if (currentMax <= 0) return 0;
 
-        //只有已经添加过的材料才能用于修复
         if (!hasMaterial(stack, material.itemId())) return 0;
 
         int currentDamage = getStoredDamage(stack);
@@ -290,103 +611,115 @@ public class ToolCoreItem extends Item {
         int toolLevel = getTotalMiningLevel(stack);
         int matLevel = material.miningLevel();
 
-        //基础恢复量 = 材料耐久属性的 50%
         int baseRepair = material.durability() / 2;
         if (baseRepair <= 0) return 0;
 
-        //等级差衰减：工具等级高于材料时，每高一级减半
+        //等级差衰减
         if (toolLevel > matLevel) {
             int diff = toolLevel - matLevel;
             baseRepair = (int) (baseRepair * Math.pow(0.5, diff));
         }
 
-        if (baseRepair < 10) return 0; //不足 10 点不予修复
+        //如果修复量小于等于 0，不予修复
+        if (baseRepair <= 0) {
+            return 0;
+        }
 
         int newDamage = Math.max(0, currentDamage - baseRepair);
         setStoredDamage(stack, newDamage);
         return baseRepair;
     }
 
-    //用于形态切换
-    public static void switchToNextType(ItemStack stack) {
-        ToolType current = getActiveType(stack);
-        ToolType[] values = ToolType.values();
-        int nextOrdinal = (current.ordinal() + 1) % values.length;
-        setActiveType(stack, values[nextOrdinal]);
-    }
-
-    //用于形态切换
-    public static void switchToPreviousType(ItemStack stack) {
-        ToolType current = getActiveType(stack);
-        ToolType[] values = ToolType.values();
-        int prevOrdinal = (current.ordinal() - 1 + values.length) % values.length;
-        setActiveType(stack, values[prevOrdinal]);
-    }
-
     //物品提示信息
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
-        ToolType type = getActiveType(stack);
-        tooltip.add(Component.literal("§7Active: §f" + type.id));
 
-        //显示已添加的材料列表
+        //检测是否按下了 Ctrl 键，若是则仅显示副词条详情
+        if (Screen.hasControlDown()) {
+            List<Material.StellarModifierEntry> modifiers = getAllModifiers(stack);
+            if (!modifiers.isEmpty()) {
+                tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.modifiers_header"));
+                for (Material.StellarModifierEntry entry : modifiers) {
+                    StellarModifierEffect effect = StellarModifierRegistry.get(entry.id());
+                    if (effect != null) {
+                        effect.parseConfig(entry.config());
+                        tooltip.add(effect.getDisplayName());
+                        for (Component desc : effect.getDescription()) {
+                            //Component.literal(" ")	创建一个纯文本组件，内容为两个空格
+                            //.append(desc)	将副词条描述组件 desc 拼接到两个空格之后
+                            //tooltip.add(...)	将拼接好的组件添加到工具提示列表中，最终渲染在游戏界面上
+                            tooltip.add(Component.literal("  ").append(desc));
+                        }
+                        tooltip.add(Component.literal("  ").append(effect.getAuthorNote()));
+                    }
+                }
+            } else {
+                tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.no_modifiers"));
+            }
+            return; //按 Ctrl 时不显示其他信息
+        }
+
+        //正常提示信息
+        ToolType type = getActiveType(stack);
+
+        //激活形态
+        tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.active",
+                Component.translatable("tooltip.stellarmod_item.tool_core.type." + type.id)));
+
         List<Material> mats = getMaterialsFromStack(stack);
         if (!mats.isEmpty()) {
-            tooltip.add(Component.literal("§7Materials:"));
-            //统计每种材料的次数，便于显示
+            tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.materials"));
             Map<ResourceLocation, Integer> countMap = new LinkedHashMap<>();
             for (Material mat : mats) {
                 countMap.put(mat.itemId(), countMap.getOrDefault(mat.itemId(), 0) + 1);
             }
             for (Map.Entry<ResourceLocation, Integer> entry : countMap.entrySet()) {
-                Material mat = MaterialManager.getMaterial(entry.getKey());
-                if (mat != null) {
-                    String name = mat.id().toString();
-                    if (entry.getValue() > 1) {
-                        name += " x" + entry.getValue();
-                    }
-                    tooltip.add(Component.literal(" §8- §f" + name));
+                ResourceLocation itemId = entry.getKey();
+                int count = entry.getValue();
+
+                //使用物品注册名自动生成翻译键
+                Component itemName = Component.translatable("item." + itemId.getNamespace() + "." + itemId.getPath());
+                Component displayLine;
+                if (count > 1) {
+                    displayLine = Component.translatable("tooltip.stellarmod_item.tool_core.material_count", itemName, count);
+                } else {
+                    displayLine = itemName;
                 }
+                tooltip.add(Component.literal(" §8- ").append(displayLine));
             }
         }
 
-        //显示耐久信息
         int maxDmg = getStoredMaxDamage(stack);
         if (maxDmg > 0) {
             int currentDmg = getStoredDamage(stack);
-            tooltip.add(Component.literal("§7Durability: §f" + (maxDmg - currentDmg) + " / " + maxDmg));
+            tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.durability", maxDmg - currentDmg, maxDmg));
         }
 
-        //显示预览修复量（如果存在）
         if (stack.hasTag() && stack.getTag().contains("PreviewRepair")) {
             int repair = stack.getTag().getInt("PreviewRepair");
-            tooltip.add(Component.literal("§aWill repair: +" + repair));
+            tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.will_repair", repair));
         }
 
         ToolProperties props = getProperties(stack);
-        tooltip.add(Component.literal("§7Mining Level: §f" + props.miningLevel()));
-        tooltip.add(Component.literal("§7Speed: §f" + getTotalMiningSpeed(stack, type)));
-        tooltip.add(Component.literal("§7Attack: §f" + getTotalAttackDamage(stack, type)));
+        tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.mining_level", props.miningLevel()));
+        tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.speed", getTotalMiningSpeed(stack, type)));
+        tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.attack", getTotalAttackDamage(stack, type)));
+
+        //提示按住 Ctrl 查看副词条
+        tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.press_ctrl"));
     }
 
     //动态属性修改器
     @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> modifiers = HashMultimap.create();
-
-        // 1. 获取父类的默认修饰符（通常为空，除非物品注册时加了默认属性）
         modifiers.putAll(super.getAttributeModifiers(slot, stack));
 
         if (slot == EquipmentSlot.MAINHAND) {
-            // 2. 移除原有的攻击伤害修饰符（确保完全自定义）
             modifiers.removeAll(Attributes.ATTACK_DAMAGE);
-
-            // 3. 计算当前形态下的最终攻击伤害
             ToolType type = getActiveType(stack);
             float damage = getTotalAttackDamage(stack, type);
-
-            // 4. 添加新的修饰符
             modifiers.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(
                     BASE_ATTACK_DAMAGE_UUID,
                     "ToolCore attack modifier",
@@ -394,7 +727,13 @@ public class ToolCoreItem extends Item {
                     AttributeModifier.Operation.ADDITION
             ));
         }
-
         return modifiers;
+    }
+
+    //在工具损坏时播放音效
+    private void playBreakSound(LivingEntity entity) {
+        if (entity instanceof Player player) {
+            player.playNotifySound(SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 0.8F, 0.8F + player.level().random.nextFloat() * 0.4F);
+        }
     }
 }

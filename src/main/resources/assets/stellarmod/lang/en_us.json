@@ -3,6 +3,8 @@
   "item.stellarmod.metal_detector": "Metal Detector",
   "item.stellarmod.metal_detected.found": "Found in（%d，%d，%d）for %s",
   "item.stellarmod.sapphire_crystal": "Sapphire_Crystal",
+  "item.stellarmod.tool_core": "Multi-function Tool",
+
   "block.stellarmod.rainbow_block": "Rainbow Block",
   "block.stellarmod.coil_block": "Coil Block",
   "block.stellarmod.dimension_block": "Dimension Block",
@@ -11,7 +13,37 @@
   "block.stellarmod.sapphire_crystal_ore": "Sapphire Crystal Ore",
   "block.stellarmod.sapphire_crystal_block": "Sapphire Crystal Block",
   "block.stellarmod.crafting_area_block": "Crafting Area Block",
+
+  "action.stellarmod.pickaxe": "Pickaxe",
+  "action.stellarmod.axe": "Axe",
+  "action.stellarmod.shovel": "Shovel",
+  "action.stellarmod.sword": "Sword",
+  "action.stellarmod.hoe": "Hoe",
+  "action.stellarmod.settings": "Settings",
+
+  "modifier.stellarmod_item.tool_core.electromagnetic.name": "Electromagnetic Force",
+  "modifier.stellarmod_item.tool_core.electromagnetic.desc": "When excavating or killing monsters, absorb their dropped items",
+  "modifier.stellarmod_item.tool_core.electromagnetic.author_note": "Look, a magnet",
+
+  "tooltip.stellarmod_item.tool_core.active": "§7Active: §f%s",
+  "tooltip.stellarmod_item.tool_core.type.pickaxe": "Pickaxe",
+  "tooltip.stellarmod_item.tool_core.type.axe": "Axe",
+  "tooltip.stellarmod_item.tool_core.type.shovel": "Shovel",
+  "tooltip.stellarmod_item.tool_core.type.sword": "Sword",
+  "tooltip.stellarmod_item.tool_core.type.hoe": "Hoe",
+  "tooltip.stellarmod_item.tool_core.materials": "§7Materials:",
+  "tooltip.stellarmod_item.tool_core.material_count": "%s x%d",
+  "tooltip.stellarmod_item.tool_core.durability": "§7Durability: §f%s / %s",
+  "tooltip.stellarmod_item.tool_core.will_repair": "§aWill repair: +%s",
+  "tooltip.stellarmod_item.tool_core.mining_level": "§7Mining Level: §f%s",
+  "tooltip.stellarmod_item.tool_core.speed": "§7Speed: §f%s",
+  "tooltip.stellarmod_item.tool_core.attack": "§7Attack: §f%s",
+  "tooltip.stellarmod_item.tool_core.press_ctrl": "Press the Ctrl key to view the secondary entries",
+  "tooltip.stellarmod_item.tool_core.modifiers_header": "Sub-entries:",
+  "tooltip.stellarmod_item.tool_core.no_modifiers": "No adverb entries",
+
   "tooltip.stellarmod_item.metal_detector": "A instrument for prospecting, which can detect iron, gold, and diamond ores. \n They have nowhere to hide!!!",
+
   "itemGroup.stellar_tab": "Stellar Tab",
 
   "effect.stellarmod.grain_alcohol": "Alcohol's Blessing",

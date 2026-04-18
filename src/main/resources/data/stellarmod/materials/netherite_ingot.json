@@ -1,0 +1,8 @@
+{
+  "attack_damage": 5.0,
+  "durability": 10500,
+  "item": "minecraft:netherite_ingot",
+  "mining_level": 4,
+  "mining_speed": 6.0,
+  "upgrade_cost": 3
+}

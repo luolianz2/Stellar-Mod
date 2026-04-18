@@ -21,7 +21,7 @@ public enum RadialAction {
             (stack, player) -> ToolCoreItem.setActiveType(stack, ToolCoreItem.ToolType.SWORD)),
     HOE(4, "hoe", textureLocation("gui/hoe.png"),
             (stack, player) -> ToolCoreItem.setActiveType(stack, ToolCoreItem.ToolType.HOE)),
-    SETTINGS(5, "settings", textureLocation("gui/compass.png"),
+    SETTINGS(5, "settings", textureLocation("gui/settings.png"),
             (stack, player) -> { /* 打开设置界面（后续扩展） */ }),
     EMPTY_1(6, "empty", null, (s, p) -> {}),
     EMPTY_2(7, "empty", null, (s, p) -> {});

@@ -1,9 +1,6 @@
-package com.luolian.stellarmod.server.data.itemcore;
+package com.luolian.stellarmod.server.data.toolCore;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -12,6 +9,8 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 /**
  * 材料数据加载器，负责在资源重载时从数据包中读取并解析材料 JSON 文件。
@@ -29,8 +28,6 @@ import java.util.Map;
  *   "mining_speed": 6.0,
  *   "attack_damage": 2.0,
  *   "durability": 250,
- *   "enchantAbility": 14,
- *   "color": 16777130
  * }
  * }</pre>
  * 其中 {@code item} 为必填字段，其余字段均有默认值。
@@ -102,10 +99,21 @@ public class MaterialDataLoader extends SimpleJsonResourceReloadListener {
         float miningSpeed = GsonHelper.getAsFloat(json, "mining_speed", 1.0f);
         float attackDamage = GsonHelper.getAsFloat(json, "attack_damage", 0.0f);
         int durability = GsonHelper.getAsInt(json, "durability", 0);
-        int enchantAbility = GsonHelper.getAsInt(json, "enchantAbility", 0);
-        int color = GsonHelper.getAsInt(json, "color", 0xFFFFFF);
         int upgradeCost = GsonHelper.getAsInt(json, "upgrade_cost", 1);
 
-        return new Material(fileId, itemId, miningLevel, miningSpeed, attackDamage, durability, enchantAbility, color,  upgradeCost);
+        //提取副词条id和配置（材料可以没有副词条，副词条的配置可以为空）
+        //初始化一个空的动态数组 ArrayList，用于存放解析出的每一个副词条条目
+        List<Material.StellarModifierEntry> modifiers = new ArrayList<>();
+        if (json.has("modifiers")) {
+            JsonArray array = json.getAsJsonArray("modifiers");
+            for (JsonElement elem : array) {
+                JsonObject obj = elem.getAsJsonObject();
+                String effectId = GsonHelper.getAsString(obj, "id");
+                JsonObject config = obj.has("config") ? obj.getAsJsonObject("config") : null;
+                modifiers.add(new Material.StellarModifierEntry(effectId, config));
+            }
+        }
+        //传入 Material 构造器
+        return new Material(fileId, itemId, miningLevel, miningSpeed, attackDamage, durability, upgradeCost, modifiers);
     }
 }

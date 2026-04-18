@@ -3,6 +3,8 @@
   "item.stellarmod.metal_detector": "探矿仪",
   "item.stellarmod.metal_detected.found": "已检测到位于（%d，%d，%d）的%s",
   "item.stellarmod.sapphire_crystal": "蓝宝石水晶",
+  "item.stellarmod.tool_core": "多功能工具",
+
   "block.stellarmod.rainbow_block": "彩虹方块",
   "block.stellarmod.coil_block": "线圈方块",
   "block.stellarmod.dimension_block": "维度方块",
@@ -11,7 +13,37 @@
   "block.stellarmod.sapphire_crystal_ore": "蓝宝石水晶原矿",
   "block.stellarmod.sapphire_crystal_block": "蓝宝石水晶块",
   "block.stellarmod.crafting_area_block": "制作区",
+
+  "action.stellarmod.pickaxe": "稿",
+  "action.stellarmod.axe": "斧",
+  "action.stellarmod.shovel": "铲",
+  "action.stellarmod.sword": "剑",
+  "action.stellarmod.hoe": "锄",
+  "action.stellarmod.settings": "设置",
+
+  "modifier.stellarmod_item.tool_core.electromagnetic.name": "电磁力",
+  "modifier.stellarmod_item.tool_core.electromagnetic.desc": "挖掘或击杀怪物时，吸取其掉落物",
+  "modifier.stellarmod_item.tool_core.electromagnetic.author_note": "呐，吸铁石",
+
+  "tooltip.stellarmod_item.tool_core.active": "§7当前形态: §f%s",
+  "tooltip.stellarmod_item.tool_core.type.pickaxe": "镐",
+  "tooltip.stellarmod_item.tool_core.type.axe": "斧",
+  "tooltip.stellarmod_item.tool_core.type.shovel": "铲",
+  "tooltip.stellarmod_item.tool_core.type.sword": "剑",
+  "tooltip.stellarmod_item.tool_core.type.hoe": "锄",
+  "tooltip.stellarmod_item.tool_core.materials": "§7材料:",
+  "tooltip.stellarmod_item.tool_core.material_count": "%s x%d",
+  "tooltip.stellarmod_item.tool_core.durability": "§7耐久: §f%s / %s",
+  "tooltip.stellarmod_item.tool_core.will_repair": "§a将修复: +%s",
+  "tooltip.stellarmod_item.tool_core.mining_level": "§7挖掘等级: §f%s",
+  "tooltip.stellarmod_item.tool_core.speed": "§7挖掘速度: §f%s",
+  "tooltip.stellarmod_item.tool_core.attack": "§7攻击伤害: §f%s",
+  "tooltip.stellarmod_item.tool_core.press_ctrl": "按下ctrl键查看副词条",
+  "tooltip.stellarmod_item.tool_core.modifiers_header": "副词条：",
+  "tooltip.stellarmod_item.tool_core.no_modifiers": "暂无副词条",
+
   "tooltip.stellarmod_item.metal_detector": "一款探矿用的仪器，可发现铁、金、钻石矿石 \n  无所遁形！！！",
+
   "itemGroup.stellar_tab": "群星",
   
   "effect.stellarmod.grain_alcohol": "酒精的祝福",

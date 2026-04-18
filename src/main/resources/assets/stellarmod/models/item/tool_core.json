@@ -2,5 +2,12 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "stellarmod:item/tool_core"
-  }
+  },
+  "overrides": [
+    { "predicate": { "stellarmod:active_type": 0 }, "model": "stellarmod:item/tool_core_pickaxe" },
+    { "predicate": { "stellarmod:active_type": 1 }, "model": "stellarmod:item/tool_core_axe" },
+    { "predicate": { "stellarmod:active_type": 2 }, "model": "stellarmod:item/tool_core_shovel" },
+    { "predicate": { "stellarmod:active_type": 3 }, "model": "stellarmod:item/tool_core_sword" },
+    { "predicate": { "stellarmod:active_type": 4 }, "model": "stellarmod:item/tool_core_hoe" }
+  ]
 }

@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.server.data.itemcore;
+package com.luolian.stellarmod.server.data.toolCore;
 
 import net.minecraft.resources.ResourceLocation;
 
@@ -9,12 +9,6 @@ import java.util.Map;
 public class MaterialManager {
     //核心映射：物品 ID -> Material
     private static final Map<ResourceLocation, Material> BY_ITEM = new HashMap<>();
-    //默认材料（空气物品，属性全为0/基础值）
-    private static final Material DEFAULT = new Material(
-            ResourceLocation.fromNamespaceAndPath("stellarmod", "default"),
-            ResourceLocation.fromNamespaceAndPath("minecraft", "air"),
-            0, 1.0f, 0.0f, 0, 0, 0xFFFFFF, 1
-    );
 
     public static void clear() {
         BY_ITEM.clear();
@@ -28,10 +22,10 @@ public class MaterialManager {
     }
 
     /**
-     * 根据物品注册名获取对应的材料属性，若未注册则返回默认材料
+     * 根据物品注册名获取对应的材料属性，若未注册则返回 null
      */
     public static Material getMaterial(ResourceLocation itemId) {
-        return BY_ITEM.getOrDefault(itemId, DEFAULT);
+        return BY_ITEM.get(itemId);
     }
 
     /**

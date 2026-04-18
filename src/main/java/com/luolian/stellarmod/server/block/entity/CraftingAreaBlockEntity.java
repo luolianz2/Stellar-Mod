@@ -1,8 +1,8 @@
 package com.luolian.stellarmod.server.block.entity;
 
 import com.luolian.stellarmod.client.screen.craftingArea.CraftingAreaBlockMenu;
-import com.luolian.stellarmod.server.data.itemcore.Material;
-import com.luolian.stellarmod.server.data.itemcore.MaterialManager;
+import com.luolian.stellarmod.server.data.toolCore.Material;
+import com.luolian.stellarmod.server.data.toolCore.MaterialManager;
 import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

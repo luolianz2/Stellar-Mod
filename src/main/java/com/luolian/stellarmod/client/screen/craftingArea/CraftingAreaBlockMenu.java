@@ -4,6 +4,8 @@ import com.luolian.stellarmod.client.screen.StellarMenuTypes;
 import com.luolian.stellarmod.server.block.StellarBlocks;
 import com.luolian.stellarmod.server.block.entity.CraftingAreaBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -78,6 +80,9 @@ public class CraftingAreaBlockMenu extends AbstractContainerMenu {
             //执行实际合成，获得新核心
             ItemStack result = blockEntity.assemble();
             if (!result.isEmpty()) {
+                //播放铁砧使用音效
+                player.level().playSound(null, player.blockPosition(), SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+
                 //将合成结果设置为玩家当前手持的物品（鼠标拿着的物品）
                 player.containerMenu.setCarried(result);
                 //清空输出槽的预览物品

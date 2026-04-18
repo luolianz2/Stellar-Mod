@@ -7,15 +7,18 @@ import com.luolian.stellarmod.client.screen.StellarMenuTypes;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.server.block.StellarBlocks;
 import com.luolian.stellarmod.server.block.entity.StellarBlockEntities;
-import com.luolian.stellarmod.server.data.itemcore.MaterialDataLoader;
+import com.luolian.stellarmod.server.data.modifier.StellarModifierRegistry;
+import com.luolian.stellarmod.server.data.toolCore.MaterialDataLoader;
 import com.luolian.stellarmod.server.effect.StellarMobEffects;
 import com.luolian.stellarmod.server.item.StellarCreativeModeTabs;
 import com.luolian.stellarmod.server.item.StellarItems;
+import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
 import com.luolian.stellarmod.server.potion.StellarPotions;
 import com.luolian.stellarmod.server.worldgen.dimension.EmptyChunkGenerator;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -70,7 +73,9 @@ public class StellarMod {
         StellarBlockEntities.register(modEventBus);
         StellarMenuTypes.register(modEventBus);
         StellarNetworkHandler.register();
-        // 注册区块生成器 Codec 到事件总线
+        //注册所有副词条效果
+        StellarModifierRegistry.registerAll();
+        //注册区块生成器 Codec 到事件总线
         CHUNK_GENERATORS.register(modEventBus);
 
         //注册材料数据加载器到 Forge 事件总线
@@ -90,11 +95,20 @@ public class StellarMod {
         LOGGER.debug("MaterialDataLoader registered to AddReloadListenerEvent");
     }
 
-    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = StellarMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            MenuScreens.register(StellarMenuTypes.CRAFTING_AREA_MENU.get(), CraftingAreaBlockScreen::new);
+            event.enqueueWork(() -> {
+                //为工具核心注册动态模型属性
+                ItemProperties.register(
+                        StellarItems.TOOL_CORE.get(),
+                        ToolCoreItem.ACTIVE_TYPE_PREDICATE,
+                        (stack, level, entity, seed) -> (float) ToolCoreItem.getActiveType(stack).ordinal()
+                );
+
+                MenuScreens.register(StellarMenuTypes.CRAFTING_AREA_MENU.get(), CraftingAreaBlockScreen::new);
+            });
         }
     }
 }

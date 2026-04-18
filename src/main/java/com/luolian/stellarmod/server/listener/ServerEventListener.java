@@ -30,8 +30,6 @@ public class ServerEventListener {
         if (player != null) {
             OriginsUtil.handleOriginChange(player);
         }
-
-        //OriginsUtil.handleOriginChange(event.getPlayer());
     }
 
     @SubscribeEvent

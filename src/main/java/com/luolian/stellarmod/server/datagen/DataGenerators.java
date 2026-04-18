@@ -1,6 +1,7 @@
 package com.luolian.stellarmod.server.datagen;
 
 import com.luolian.stellarmod.StellarMod;
+import com.luolian.stellarmod.server.datagen.materials.StellarMaterialProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -36,5 +37,7 @@ public class DataGenerators {
                 event.includeServer(),
                 new StellarWorldGenProvider(packOutput, lookupProvider)
         );
+
+        generator.addProvider(event.includeServer(), new StellarMaterialProvider(packOutput));
     }
 }
