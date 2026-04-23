@@ -18,6 +18,7 @@ public class StellarItems
     public static final RegistryObject<Item> METAL_DETECTOR = ITEMS.register("metal_detector",() -> new MetalDetectorItem(new Item
             .Properties().durability(100)));
     public static final RegistryObject<Item> TOOL_CORE = ITEMS.register("tool_core",() -> new ToolCoreItem(new Item.Properties()));
+    public static final RegistryObject<Item> TOKEN = ITEMS.register("token",() -> new Item(new Item.Properties()));
     public static void register(IEventBus eventBus)  {
         ITEMS.register(eventBus);
     }
