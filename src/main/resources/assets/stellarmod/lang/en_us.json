@@ -4,6 +4,7 @@
   "item.stellarmod.metal_detected.found": "Found in（%d，%d，%d）for %s",
   "item.stellarmod.sapphire_crystal": "Sapphire_Crystal",
   "item.stellarmod.tool_core": "Multi-function Tool",
+  "item.stellarmod.token": "Token",
 
   "block.stellarmod.rainbow_block": "Rainbow Block",
   "block.stellarmod.coil_block": "Coil Block",
