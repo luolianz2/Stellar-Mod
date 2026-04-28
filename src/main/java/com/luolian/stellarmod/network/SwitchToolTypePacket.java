@@ -47,6 +47,9 @@ public class SwitchToolTypePacket {
                         net.minecraft.sounds.SoundSource.PLAYERS, 0.5F, 1.2F);
             }
         });
+        //标记该网络包已被成功处理
+        //ctx.get()	获取网络事件的上下文（NetworkEvent.Context）
+        //.setPacketHandled(true)	设置包的“已处理”标志为 true
         ctx.get().setPacketHandled(true);
     }
 }

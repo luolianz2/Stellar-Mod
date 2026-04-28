@@ -26,11 +26,17 @@ public interface StellarModifierEffect {
     //default提供可选实现
     //接口中的方法通常需要所有实现类强制重写
     //加了 default 后，方法就有了一个默认的空实现。实现类可以选择是否重写它：如果不重写，就使用这个默认的空逻辑；如果重写，就执行自己的代码
-    //挖掘方块后触发
-    default void onBlockMined(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miner) {}
+    /**
+     * 挖掘方块后触发（带副词条等级）。
+     * @param modifierLevel 当前副词条累计等级
+     */
+    default void onBlockMined(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miner, int modifierLevel) {}
 
-    //攻击实体后触发
-    default void onEntityHurt(ItemStack stack, LivingEntity target, LivingEntity attacker) {}
+    /**
+     * 攻击实体后触发（带副词条等级）。
+     * @param modifierLevel 当前副词条累计等级
+     */
+    default void onEntityHurt(ItemStack stack, LivingEntity target, LivingEntity attacker, int modifierLevel) {}
 
     //自定义配置解析
     default void parseConfig(JsonObject config) {}

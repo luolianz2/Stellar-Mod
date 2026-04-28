@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.luolian.stellarmod.StellarMod;
 import com.luolian.stellarmod.api.modifier.StellarModifierEffect;
+import com.luolian.stellarmod.client.screen.toolCore.ToolCoreModifierSettingsScreen;
 import com.luolian.stellarmod.server.data.modifier.StellarModifierRegistry;
 import com.luolian.stellarmod.server.data.toolCore.Material;
 import com.luolian.stellarmod.server.data.toolCore.MaterialManager;
@@ -49,6 +50,10 @@ public class ToolCoreItem extends Item {
     //耐久相关 NBT 键
     public static final String TAG_DAMAGE = "Damage";
     public static final String TAG_MAX_DAMAGE = "MaxDamage";
+    //副词条等级存储键（累计总等级）
+    public static final String TAG_MODIFIER_LEVELS = "ToolCoreModifierLevels";
+    //副词条生效等级存储键（玩家在设置中调节后的当前生效等级）
+    public static final String TAG_MODIFIER_ACTIVE_LEVELS = "ToolCoreModifierActiveLevels";
 
     //自定义标签：需要 5 级工具才能挖掘的方块
     public static final TagKey<Block> NEEDS_STELLAR_TOOL =
@@ -378,19 +383,43 @@ public class ToolCoreItem extends Item {
     }
 
     /**
-     * 收集工具当前所有已添加材料中的副词条条目
+     * 收集工具当前所有已添加材料中的副词条条目（已去重，仅保留唯一 ID）。
      */
     public static List<Material.StellarModifierEntry> getAllModifiers(ItemStack stack) {
         List<Material> materials = getMaterialsFromStack(stack);
         List<Material.StellarModifierEntry> entries = new ArrayList<>();
+        //Set<String>	声明一个字符串类型的集合，不允许存储重复元素
+        //new HashSet<>()	创建一个 HashSet 实例，基于哈希表实现，查找和插入的速度都非常快
+        //创建一个只能存字符串、不允许重复、查询超快地集合，名字叫 seen
+        //用 HashSet 作为一个容器来实现 seen 这个集合，举个例子：杯子 水杯 = new 陶瓷杯();
+        Set<String> seen = new HashSet<>();
         for (Material mat : materials) {
-            entries.addAll(mat.modifiers());
+            for (Material.StellarModifierEntry entry : mat.modifiers()) {
+                if (seen.add(entry.id())) {
+                    /*
+                        level 已无实际用途，因等级由 getModifierLevel 统一管理，此处置0，
+                     entries 需要收集的是当前工具核心所拥有的所有“副词条 ID”，而等级数据已经完全移交给 getModifierLevel 统一管理。
+
+                        在 getAllModifiers 中，entry.level() 已经失去了意义，所以故意写成 0，目的是：
+                            1.满足构造器语法
+                            2.消除歧义，强迫后续代码必须用 getModifierLevel 来读取等级
+
+                        getAllModifiers 的职责现在是“返回所有已装配的副词条 ID”，而不是“返回所有副词条及其等级”。
+
+                        真正决定等级的是 getModifierLevel，所以这里的 0 只是一个占位符。
+
+                        如果想彻底去掉 level，可以把 StellarModifierEntry 改成只包含 id 而不包含 level，
+                     但那样需要同时调整 Material、MaterialDataLoader、addMaterialToStack 等多个类。目前保留 level 只是为了兼容性，实际逻辑中它已经被“架空”了
+                    */
+                    entries.add(new Material.StellarModifierEntry(entry.id(), 0));
+                }
+            }
         }
         return entries;
     }
 
     /**
-     * 玩家手持工具破坏方块时调用。在此消耗 1 点耐久，并触发所有副词条的挖掘后效果。
+     * 玩家手持工具破坏方块时调用。在此消耗 1 点耐久，并触发所有已开启副词条的挖掘后效果（使用玩家调节后的生效等级）。
      */
     @Override
     public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity entityLiving) {
@@ -401,12 +430,16 @@ public class ToolCoreItem extends Item {
                 playBreakSound(entityLiving);
             }
 
-            //触发副词条效果：挖掘后
+            //触发副词条效果（仅当开关开启，并传入玩家调节后的生效等级）
             for (Material.StellarModifierEntry entry : getAllModifiers(stack)) {
+                if (!ToolCoreModifierSettingsScreen.isModifierEnabled(stack, entry.id())) {
+                    continue; //该副词条已被玩家禁用，跳过
+                }
                 StellarModifierEffect effect = StellarModifierRegistry.get(entry.id());
                 if (effect != null) {
-                    effect.parseConfig(entry.config());
-                    effect.onBlockMined(stack, level, state, pos, entityLiving);
+                    //使用玩家在设置中调节后的生效等级，而非累计总等级
+                    int modifierLevel = getModifierActiveLevel(stack, entry.id());
+                    effect.onBlockMined(stack, level, state, pos, entityLiving, modifierLevel);
                 }
             }
         }
@@ -414,7 +447,7 @@ public class ToolCoreItem extends Item {
     }
 
     /**
-     * 玩家手持工具攻击实体时调用。在此消耗 2 点耐久，并触发所有副词条的攻击后效果。
+     * 玩家手持工具攻击实体时调用。在此消耗 2 点耐久，并触发所有已开启副词条的攻击后效果（使用玩家调节后的生效等级）。
      */
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
@@ -424,12 +457,16 @@ public class ToolCoreItem extends Item {
             playBreakSound(attacker);
         }
 
-        //触发副词条效果：攻击后
+        //触发副词条效果（仅当开关开启，并传入玩家调节后的生效等级）
         for (Material.StellarModifierEntry entry : getAllModifiers(stack)) {
+            if (!ToolCoreModifierSettingsScreen.isModifierEnabled(stack, entry.id())) {
+                continue; //该副词条已被玩家禁用，跳过
+            }
             StellarModifierEffect effect = StellarModifierRegistry.get(entry.id());
             if (effect != null) {
-                effect.parseConfig(entry.config());
-                effect.onEntityHurt(stack, target, attacker);
+                // 使用玩家在设置中调节后的生效等级，而非累计总等级
+                int modifierLevel = getModifierActiveLevel(stack, entry.id());
+                effect.onEntityHurt(stack, target, attacker, modifierLevel);
             }
         }
         return true;
@@ -563,21 +600,103 @@ public class ToolCoreItem extends Item {
         return materials;
     }
 
-    //用于组装台将材料添加到核心
-    //首次添加时自动初始化最大耐久为材料提供的耐久值，并将当前损伤设为0
     public static void addMaterialToStack(ItemStack stack, Material material) {
         CompoundTag tag = stack.getOrCreateTag();
         ListTag list = tag.getList(TAG_MATERIALS, Tag.TAG_STRING);
-        list.add(StringTag.valueOf(material.itemId().toString()));
-        tag.put(TAG_MATERIALS, list);
 
-        //累加材料提供的耐久值到最大耐久
-        int currentMax = getStoredMaxDamage(stack);
-        int currentDamage = getStoredDamage(stack);
-        int newMax = currentMax + material.durability();
-        setStoredMaxDamage(stack, newMax);
-        //确保当前损伤不超过新最大耐久
-        setStoredDamage(stack, Math.min(currentDamage, newMax));
+        //只有新材料才追加到材料列表，并增加最大耐久
+        if (!hasMaterial(stack, material.itemId())) {
+            list.add(StringTag.valueOf(material.itemId().toString()));
+            tag.put(TAG_MATERIALS, list);
+
+            //累加材料提供的耐久值到最大耐久
+            int currentMax = getStoredMaxDamage(stack);
+            int newMax = currentMax + material.durability();
+            setStoredMaxDamage(stack, newMax);
+            //确保当前损伤不超过新最大耐久
+            int currentDamage = getStoredDamage(stack);
+            setStoredDamage(stack, Math.min(currentDamage, newMax));
+        }
+
+        //处理副词条：累加等级（无论材料是否重复，等级都会累加）
+        for (Material.StellarModifierEntry entry : material.modifiers()) {
+            mergeModifierLevel(stack, entry.id(), entry.level());
+        }
+    }
+    /**
+     * 将指定副词条的等级累加到工具核心 NBT 中（新等级 = 原有等级 + addLevel）。
+     */
+    public static void mergeModifierLevel(ItemStack stack, String modifierId, int addLevel) {
+        CompoundTag root = stack.getOrCreateTag();
+        CompoundTag levels = root.getCompound(TAG_MODIFIER_LEVELS);
+        //没加之前的等级
+        //levels.getInt(modifierId); 默认返回0
+        //CompoundTag 内部存储着键值对。当调用 getInt(key) 时：
+        //如果该键存在且值类型为 IntTag，则返回其整数值。
+        //如果该键不存在，getInt 会返回 0，而不是抛出异常或返回 null
+        int current = levels.getInt(modifierId);
+        levels.putInt(modifierId, current + addLevel);
+        root.put(TAG_MODIFIER_LEVELS, levels);
+    }
+
+    /**
+     * 从工具核心 NBT 中读取某个副词条的当前累计总等级。
+     * 若从未存储过，返回 0。
+     */
+    public static int getModifierLevel(ItemStack stack, String modifierId) {
+        CompoundTag root = stack.getTag();
+        //root != null：确保物品有 NBT 数据。如果物品从未被修改过，root 会是 null，直接跳到末尾返回 0
+        //root.contains(TAG_MODIFIER_LEVELS, Tag.TAG_COMPOUND)：检查根标签中是否存在键名为 "ToolCoreModifierLevels" 的复合标签，且值类型确实是 CompoundTag
+        //如果玩家从未合成过任何副词条材料，这个标签不会存在，条件为 false，直接返回 0
+        if (root != null && root.contains(TAG_MODIFIER_LEVELS, Tag.TAG_COMPOUND)) {
+            //root.getCompound(TAG_MODIFIER_LEVELS)：获取等级存储容器 CompoundTag。这个容器内部以 modifierId -> 等级 的键值对形式存储各个副词条的累计等级
+            //.getInt(modifierId)：读取该副词条对应的等级值（NBT 中以 IntTag 存储）。如果该键不存在，getInt 返回 0，这就是“从未添加过”时的默认值
+            return root.getCompound(TAG_MODIFIER_LEVELS).getInt(modifierId);
+        }
+        return 0;
+    }
+
+    /**
+     * 获取副词条的当前生效等级（玩家在设置中调节后的值）。
+     * 如果玩家未手动设定，则返回累计总等级（即完全返回）。
+     */
+    public static int getModifierActiveLevel(ItemStack stack, String modifierId) {
+        CompoundTag root = stack.getOrCreateTag();
+        if (root.contains(TAG_MODIFIER_ACTIVE_LEVELS, Tag.TAG_COMPOUND)) {
+            CompoundTag act = root.getCompound(TAG_MODIFIER_ACTIVE_LEVELS);
+            if (act.contains(modifierId, Tag.TAG_INT)) {
+                return act.getInt(modifierId);
+            }
+        }
+        //默认返回总等级，即不限制
+        return getModifierLevel(stack, modifierId);
+    }
+
+    /**
+     * 设置副词条的当前生效等级，并自动联动开关状态（0 关，>0 开）。
+     * 范围 [0, 总等级]。若设为 0，自动关闭该词条；若从 0 调高，自动开启。
+     */
+    public static void setModifierActiveLevel(ItemStack stack, String modifierId, int level) {
+        int maxLevel = getModifierLevel(stack, modifierId);
+        if (level < 0) level = 0;
+        if (level > maxLevel) level = maxLevel;
+
+        CompoundTag root = stack.getOrCreateTag();
+        CompoundTag act = root.getCompound(TAG_MODIFIER_ACTIVE_LEVELS);
+        if (level == maxLevel) {
+            //设为最大值时移除记录，表示无限制
+            act.remove(modifierId);
+        } else {
+            act.putInt(modifierId, level);
+        }
+        if (act.isEmpty()) {
+            root.remove(TAG_MODIFIER_ACTIVE_LEVELS);
+        } else {
+            root.put(TAG_MODIFIER_ACTIVE_LEVELS, act);
+        }
+
+        //联动开关状态：等级 > 0 则开启，否则关闭
+        ToolCoreModifierSettingsScreen.setModifierEnabledDirect(stack, modifierId, level > 0);
     }
 
     //检查某个材料是否已经添加过（通过物品 ID 判断）
@@ -638,13 +757,21 @@ public class ToolCoreItem extends Item {
         //检测是否按下了 Ctrl 键，若是则仅显示副词条详情
         if (Screen.hasControlDown()) {
             List<Material.StellarModifierEntry> modifiers = getAllModifiers(stack);
+            boolean hasAnyActive = false; //是否至少有一个生效的词条
             if (!modifiers.isEmpty()) {
                 tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.modifiers_header"));
                 for (Material.StellarModifierEntry entry : modifiers) {
                     StellarModifierEffect effect = StellarModifierRegistry.get(entry.id());
                     if (effect != null) {
-                        effect.parseConfig(entry.config());
-                        tooltip.add(effect.getDisplayName());
+                        int activeLevel = getModifierActiveLevel(stack, entry.id());
+                        //生效等级为 0 表示已关闭，隐藏该条目
+                        if (activeLevel == 0) continue;
+                        hasAnyActive = true;
+                        int maxLevel = getModifierLevel(stack, entry.id());
+                        //显示格式：名称 Lv.当前/最大，例如“电磁力 Lv.2/5”
+                        Component nameWithLevel = effect.getDisplayName().copy()
+                                .append(" Lv." + activeLevel + "/" + maxLevel);
+                        tooltip.add(nameWithLevel);
                         for (Component desc : effect.getDescription()) {
                             //Component.literal(" ")	创建一个纯文本组件，内容为两个空格
                             //.append(desc)	将副词条描述组件 desc 拼接到两个空格之后
@@ -654,7 +781,9 @@ public class ToolCoreItem extends Item {
                         tooltip.add(Component.literal("  ").append(effect.getAuthorNote()));
                     }
                 }
-            } else {
+            }
+            //如果没有任何副词条生效，显示“暂无副词条”
+            if (!hasAnyActive) {
                 tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.no_modifiers"));
             }
             return; //按 Ctrl 时不显示其他信息
@@ -710,21 +839,38 @@ public class ToolCoreItem extends Item {
         tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.press_ctrl"));
     }
 
-    //动态属性修改器
+    /**
+     * 动态属性修改器。根据当前工具形态和材料属性，向游戏注册攻击伤害加成。
+     * 该方法在物品被手持或装备时由原版调用，返回的 Multimap 会被应用到玩家属性上。
+     *
+     * @param slot  物品所在的装备槽位
+     * @param stack 当前物品堆叠
+     * @return 包含攻击伤害修饰符的属性 multimap
+     */
     @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+        //创建一个新的 multimap，用于存放最终要返回的属性修饰符
         Multimap<Attribute, AttributeModifier> modifiers = HashMultimap.create();
+        //先加入父类（Item 基类）提供的默认属性修饰符（通常为空，但保留以防将来变化）
         modifiers.putAll(super.getAttributeModifiers(slot, stack));
 
+        //只有当物品在主手时才应用攻击伤害加成
         if (slot == EquipmentSlot.MAINHAND) {
+            //移除原版的攻击伤害修饰符，确保完全由自定义伤害覆盖
             modifiers.removeAll(Attributes.ATTACK_DAMAGE);
+
+            //获取当前激活的工具形态
             ToolType type = getActiveType(stack);
+            //计算基于材料属性和形态基础值的最终攻击伤害
             float damage = getTotalAttackDamage(stack, type);
+
+            //将计算出的攻击伤害以 ADDITION（加法）模式注册到属性系统中
+            //使用原版的 BASE_ATTACK_DAMAGE_UUID，确保与其他修饰符正确交互
             modifiers.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(
-                    BASE_ATTACK_DAMAGE_UUID,
-                    "ToolCore attack modifier",
-                    damage,
-                    AttributeModifier.Operation.ADDITION
+                    BASE_ATTACK_DAMAGE_UUID,          //唯一标识符，用于识别和替换修饰符
+                    "ToolCore attack modifier",       //修饰符名称（调试用）
+                    damage,                           //伤害值
+                    AttributeModifier.Operation.ADDITION //加法运算：最终伤害 = 基础(玩家基础攻击力) + 此值(damage 值)
             ));
         }
         return modifiers;

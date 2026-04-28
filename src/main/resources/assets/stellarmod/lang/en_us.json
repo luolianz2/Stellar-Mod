@@ -21,6 +21,20 @@
   "action.stellarmod.hoe": "Hoe",
   "action.stellarmod.settings": "Settings",
 
+  "screen.stellarmod.radial_menu": "Multi-function Tool Settings",
+  "screen.stellarmod.tool_core.settings": "Multi-function Tool Panel",
+  "screen.stellarmod.tool_core.settings.save_and_exit": "Save and Exit",
+  "screen.stellarmod.tool_core.settings.restore_defaults": "Restore Defaults",
+  "screen.stellarmod.tool_core.settings.empty": "Currently, there are no sub-entries",
+  "screen.stellarmod.tool_core.matrix": "Matrix",
+  "screen.stellarmod.tool_core.matrix.enabled": "Matrix Switch",
+
+  "stellarmod.options.on": "ON",
+  "stellarmod.options.off": "OFF",
+
+  "key.categories.stellarmod": "Stellarmod",
+  "key.stellarmod.open_radial_menu": "Open the multi-function tool panel",
+
   "modifier.stellarmod_item.tool_core.electromagnetic.name": "Electromagnetic Force",
   "modifier.stellarmod_item.tool_core.electromagnetic.desc": "When excavating or killing monsters, absorb their dropped items",
   "modifier.stellarmod_item.tool_core.electromagnetic.author_note": "Look, a magnet",
@@ -40,7 +54,7 @@
   "tooltip.stellarmod_item.tool_core.attack": "§7Attack: §f%s",
   "tooltip.stellarmod_item.tool_core.press_ctrl": "Press the Ctrl key to view the secondary entries",
   "tooltip.stellarmod_item.tool_core.modifiers_header": "Sub-entries:",
-  "tooltip.stellarmod_item.tool_core.no_modifiers": "No adverb entries",
+  "tooltip.stellarmod_item.tool_core.no_modifiers": "Currently, there are no sub-attributes activated",
 
   "tooltip.stellarmod_item.metal_detector": "A instrument for prospecting, which can detect iron, gold, and diamond ores. \n They have nowhere to hide!!!",
 

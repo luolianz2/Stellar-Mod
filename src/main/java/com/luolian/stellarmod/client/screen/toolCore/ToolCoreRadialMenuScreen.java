@@ -1,9 +1,12 @@
 package com.luolian.stellarmod.client.screen.toolCore;
 
+import com.luolian.stellarmod.client.key.StellarKeyMapping;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.network.SwitchToolTypePacket;
 import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,7 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
-public class RadialMenuScreen extends Screen {
+public class ToolCoreRadialMenuScreen extends Screen {
 
     //被选框右下角的标记
     private static final ResourceLocation WIDGETS = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/widgets.png");
@@ -25,9 +28,8 @@ public class RadialMenuScreen extends Screen {
 
     private final ItemStack toolStack;
     private int highlightedSlot = -1;               //当前鼠标指向的槽位索引
-    private boolean keyWasDown = true;              //用于检测R键松开
 
-    public RadialMenuScreen(ItemStack toolStack) {
+    public ToolCoreRadialMenuScreen(ItemStack toolStack) {
         super(Component.translatable("screen.stellarmod.radial_menu"));
         this.toolStack = toolStack;
         this.minecraft = Minecraft.getInstance();
@@ -62,7 +64,7 @@ public class RadialMenuScreen extends Screen {
 
         //如果高亮槽位有效，显示其名称
         if (highlightedSlot >= 0) {
-            RadialAction action = RadialAction.fromIndex(highlightedSlot);
+            ToolCoreRadialAction action = ToolCoreRadialAction.fromIndex(highlightedSlot);
             if (!action.getId().equals("empty")) {
                 graphics.drawCenteredString(font, Component.translatable("action.stellarmod." + action.getId()),
                         centerX, centerY + RADIUS + 20, 0xFFFFFF);
@@ -93,11 +95,11 @@ public class RadialMenuScreen extends Screen {
 
     private void drawSlot(GuiGraphics graphics, int centerX, int centerY, int slotIndex, boolean highlighted) {
         //计算角度：槽位 0 在顶部，顺时针
-        double angle = Math.toRadians(slotIndex * 45.0 - 90); // -90° 使槽位0在正上方
+        double angle = Math.toRadians(slotIndex * 45.0 - 90); //-90° 使槽位0在正上方
         int x = centerX + (int) (RADIUS * Math.cos(angle)) - SLOT_SIZE / 2;
         int y = centerY + (int) (RADIUS * Math.sin(angle)) - SLOT_SIZE / 2;
 
-        RadialAction action = RadialAction.fromIndex(slotIndex);
+        ToolCoreRadialAction action = ToolCoreRadialAction.fromIndex(slotIndex);
 
         //绘制背景（方形）
         int bgColor = highlighted ? 0x80FFFFFF : 0x40000000;
@@ -118,7 +120,7 @@ public class RadialMenuScreen extends Screen {
         }
     }
 
-    private boolean matchesActiveType(RadialAction action, ToolCoreItem.ToolType activeType) {
+    private boolean matchesActiveType(ToolCoreRadialAction action, ToolCoreItem.ToolType activeType) {
         return switch (action) {
             case PICKAXE -> activeType == ToolCoreItem.ToolType.PICKAXE;
             case AXE -> activeType == ToolCoreItem.ToolType.AXE;
@@ -146,57 +148,64 @@ public class RadialMenuScreen extends Screen {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
+    //执行轮盘槽位对应的动作
     private void executeAction(int slotIndex) {
-        RadialAction action = RadialAction.fromIndex(slotIndex);
+        ToolCoreRadialAction action = ToolCoreRadialAction.fromIndex(slotIndex);
         if (!action.getId().equals("empty")) {
             Player player = minecraft.player;
             if (player != null) {
-                if (action.ordinal() < 5) { //前五个是工具形态
+                if (action.ordinal() < 5) {
+                    //前五个是工具形态，发送网络包切换形态
                     ToolCoreItem.ToolType targetType = ToolCoreItem.ToolType.values()[action.ordinal()];
-                    //发送包到服务端
                     StellarNetworkHandler.INSTANCE.sendToServer(new SwitchToolTypePacket(targetType));
+                    //通知按键系统：轮盘因执行动作而关闭，防止立即重新打开
+                    StellarKeyMapping.notifyClosedFromAction();
+                    onClose();
+                } else if (action == ToolCoreRadialAction.SETTINGS) {
+                    //打开副词条设置屏幕（新屏幕会覆盖当前屏幕，无需手动 onClose）
+                    Minecraft.getInstance().setScreen(new ToolCoreModifierSettingsScreen(toolStack));
+                    //仍需通知按键系统，防止释放按键时误触发再次打开轮盘
+                    StellarKeyMapping.notifyClosedFromAction();
+                } else if (action == ToolCoreRadialAction.MATRIX) {
+                    Minecraft.getInstance().setScreen(new ToolCoreMatrixModuleScreen(toolStack));
+                    StellarKeyMapping.notifyClosedFromAction(); // 跳过关闭，新屏幕会接管
                 } else {
-                    //处理其他操作（如设置）
+                    //对于其他非形态槽位（预留扩展），调用枚举中定义的自定义逻辑
                     action.execute(toolStack, player);
+                    StellarKeyMapping.notifyClosedFromAction();
+                    onClose();
                 }
             }
-        }
-        onClose();
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-        //检测 R 键松开，关闭轮盘
-        boolean keyDown = GLFW.glfwGetKey(minecraft.getWindow().getWindow(), GLFW.GLFW_KEY_R) == GLFW.GLFW_PRESS;
-        if (!keyDown && keyWasDown) {
+        } else {
+            //如果点击的是空槽位，也关闭轮盘
+            StellarKeyMapping.notifyClosedFromAction();
             onClose();
         }
-        keyWasDown = keyDown;
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_R) {
-            //不处理按下，等待松开
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_R) {
-            if (highlightedSlot >= 0) { //如果有高亮槽位，执行对应操作
+        //获取当前配置的轮盘键位
+        KeyMapping keyMapping = StellarKeyMapping.OPEN_RADIAL_MENU.get(); //获取玩家在控制设置中自定义的轮盘键位
+        InputConstants.Key key = keyMapping.getKey();   //返回该键位当前绑定的具体按键
+
+        //如果释放的键正是轮盘键，则执行对应动作
+        //key.getType() == InputConstants.Type.KEYSYM确保是键盘按键
+        //key.getValue() == keyCode判断释放的按键是否正是轮盘键
+        if (key.getType() == InputConstants.Type.KEYSYM && key.getValue() == keyCode) {
+            if (highlightedSlot >= 0) {   //如果释放按键时鼠标正悬停在某个有效槽位上，则执行该槽位对应的动作
                 executeAction(highlightedSlot);
-            } else {    //否则直接关闭
+            } else {
+                //没有高亮槽位，直接关闭轮盘
+                StellarKeyMapping.notifyClosedFromAction();
                 onClose();
             }
-            return true;
+            return true;    //表示该按键事件已被消费，不再传递给后续的按键处理器
         }
         return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
+    //屏幕关闭时调用
     @Override
     public void onClose() {
         super.onClose();

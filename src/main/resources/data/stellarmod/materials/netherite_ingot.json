@@ -1,8 +1,13 @@
 {
   "attack_damage": 5.0,
-  "durability": 10500,
+  "durability": 2100,
   "item": "minecraft:netherite_ingot",
   "mining_level": 4,
   "mining_speed": 6.0,
+  "modifiers": [
+    {
+      "id": "stellarmod:electromagnetic"
+    }
+  ],
   "upgrade_cost": 3
 }

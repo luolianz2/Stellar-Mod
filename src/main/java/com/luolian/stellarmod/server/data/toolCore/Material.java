@@ -1,6 +1,5 @@
 package com.luolian.stellarmod.server.data.toolCore;
 
-import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -12,9 +11,9 @@ import java.util.List;
  * @param miningLevel    挖掘等级
  * @param miningSpeed    挖掘速度加成
  * @param attackDamage   攻击伤害加成
- * @param durability     首次添加提供的最大耐久值
- * @param upgradeCost    首次升级所需数量
- * @param modifiers      副词条列表
+ * @param durability     耐久加成
+ * @param upgradeCost    首次升级所需消耗的数量
+ * @param modifiers      副词条列表（每个条目包含效果ID和初始等级）
  */
 public record Material(
         ResourceLocation id,
@@ -26,8 +25,14 @@ public record Material(
         int upgradeCost,
         List<StellarModifierEntry> modifiers
 ) {
-    public record StellarModifierEntry(
-            String id,                 //效果唯一标识，如 "stellarmod:electromagnetic"
-            JsonObject config          //可选的配置参数
-    ) {}
+    /**
+     * 副词条条目
+     * @param id   效果唯一标识，如 "stellarmod:electromagnetic"
+     * @param level 该材料提供的该副词条初始等级（正数，默认1）
+     */
+    public record StellarModifierEntry(String id, int level) {
+        public StellarModifierEntry(String id) {
+            this(id, 1);
+        }
+    }
 }

@@ -31,6 +31,25 @@ public class StellarNetworkHandler {
                 SwitchToolTypePacket::decode,
                 SwitchToolTypePacket::handle
         );
+
+        //注册同步副词条设置的包
+        INSTANCE.registerMessage(
+                packetId++,
+                SyncToolCoreModifierSettingsPacket.class,
+                SyncToolCoreModifierSettingsPacket::encode,
+                SyncToolCoreModifierSettingsPacket::decode,
+                SyncToolCoreModifierSettingsPacket::handle
+        );
+
+        //
+        INSTANCE.registerMessage(
+                packetId++,
+                SyncToolCoreMatrixSettingsPacket.class,
+                SyncToolCoreMatrixSettingsPacket::encode,
+                SyncToolCoreMatrixSettingsPacket::decode,
+                SyncToolCoreMatrixSettingsPacket::handle
+        );
+
         //后续在此继续注册
     }
 }

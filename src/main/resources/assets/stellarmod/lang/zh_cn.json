@@ -21,6 +21,20 @@
   "action.stellarmod.hoe": "锄",
   "action.stellarmod.settings": "设置",
 
+  "screen.stellarmod.radial_menu": "多功能工具面板",
+  "screen.stellarmod.tool_core.settings": "多功能工具设置",
+  "screen.stellarmod.tool_core.settings.save_and_exit": "保存并退出",
+  "screen.stellarmod.tool_core.settings.restore_defaults": "恢复默认",
+  "screen.stellarmod.tool_core.settings.empty": "当前暂无副词条",
+  "screen.stellarmod.tool_core.matrix": "矩阵",
+  "screen.stellarmod.tool_core.matrix.enabled": "矩阵开关",
+
+  "stellarmod.options.on": "开启",
+  "stellarmod.options.off": "关闭",
+
+  "key.categories.stellarmod": "群星",
+  "key.stellarmod.open_radial_menu": "打开多功能工具面板",
+
   "modifier.stellarmod_item.tool_core.electromagnetic.name": "电磁力",
   "modifier.stellarmod_item.tool_core.electromagnetic.desc": "挖掘或击杀怪物时，吸取其掉落物",
   "modifier.stellarmod_item.tool_core.electromagnetic.author_note": "呐，吸铁石",
@@ -40,7 +54,7 @@
   "tooltip.stellarmod_item.tool_core.attack": "§7攻击伤害: §f%s",
   "tooltip.stellarmod_item.tool_core.press_ctrl": "按下ctrl键查看副词条",
   "tooltip.stellarmod_item.tool_core.modifiers_header": "副词条：",
-  "tooltip.stellarmod_item.tool_core.no_modifiers": "暂无副词条",
+  "tooltip.stellarmod_item.tool_core.no_modifiers": "暂无已开启副词条",
 
   "tooltip.stellarmod_item.metal_detector": "一款探矿用的仪器，可发现铁、金、钻石矿石 \n  无所遁形！！！",
 

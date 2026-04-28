@@ -101,7 +101,7 @@ public class MaterialDataLoader extends SimpleJsonResourceReloadListener {
         int durability = GsonHelper.getAsInt(json, "durability", 0);
         int upgradeCost = GsonHelper.getAsInt(json, "upgrade_cost", 1);
 
-        //提取副词条id和配置（材料可以没有副词条，副词条的配置可以为空）
+        //提取副词条id（材料可以没有副词条，副词条不再通过json配置参数）
         //初始化一个空的动态数组 ArrayList，用于存放解析出的每一个副词条条目
         List<Material.StellarModifierEntry> modifiers = new ArrayList<>();
         if (json.has("modifiers")) {
@@ -109,8 +109,8 @@ public class MaterialDataLoader extends SimpleJsonResourceReloadListener {
             for (JsonElement elem : array) {
                 JsonObject obj = elem.getAsJsonObject();
                 String effectId = GsonHelper.getAsString(obj, "id");
-                JsonObject config = obj.has("config") ? obj.getAsJsonObject("config") : null;
-                modifiers.add(new Material.StellarModifierEntry(effectId, config));
+                int level = GsonHelper.getAsInt(obj, "level", 1); //读取等级，默认1
+                modifiers.add(new Material.StellarModifierEntry(effectId, level));
             }
         }
         //传入 Material 构造器

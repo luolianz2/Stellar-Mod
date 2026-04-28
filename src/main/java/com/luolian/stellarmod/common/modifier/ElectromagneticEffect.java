@@ -1,6 +1,5 @@
 package com.luolian.stellarmod.common.modifier;
 
-import com.google.gson.JsonObject;
 import com.luolian.stellarmod.api.modifier.StellarModifierEffect;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -16,7 +15,11 @@ import net.minecraft.world.phys.AABB;
 import java.util.List;
 
 public class ElectromagneticEffect implements StellarModifierEffect {
-    private double radius = 5.0;
+
+    //吸取半径由等级决定：基础半径 2，每级 +1，即等级1的半径为3，等级2的半径为4...
+    private static int getRadius(int level) {
+        return 2 + level;
+    }
 
     @Override
     public String getId() {
@@ -25,7 +28,8 @@ public class ElectromagneticEffect implements StellarModifierEffect {
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("modifier.stellarmod_item.tool_core.electromagnetic.name").withStyle(ChatFormatting.AQUA);
+        return Component.translatable("modifier.stellarmod_item.tool_core.electromagnetic.name")
+                .withStyle(ChatFormatting.AQUA);
     }
 
     @Override
@@ -43,17 +47,11 @@ public class ElectromagneticEffect implements StellarModifierEffect {
                 .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
     }
 
+    //带等级的挖掘触发
     @Override
-    public void parseConfig(JsonObject config) {
-        if (config != null && config.has("radius")) {
-            this.radius = config.get("radius").getAsDouble();
-        }
-    }
-
-    @Override
-    public void onBlockMined(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miner) {
+    public void onBlockMined(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miner, int modifierLevel) {
         if (!level.isClientSide && miner instanceof Player player) {
-            //吸取周围挖掘掉落物
+            int radius = getRadius(modifierLevel);
             AABB area = new AABB(pos).inflate(radius);
             List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class, area);
             for (ItemEntity item : items) {
@@ -64,10 +62,11 @@ public class ElectromagneticEffect implements StellarModifierEffect {
         }
     }
 
+    //带等级的攻击触发
     @Override
-    public void onEntityHurt(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void onEntityHurt(ItemStack stack, LivingEntity target, LivingEntity attacker, int modifierLevel) {
         if (!attacker.level().isClientSide && attacker instanceof Player player) {
-            //吸取周围实体掉落物
+            int radius = getRadius(modifierLevel);
             AABB area = new AABB(target.blockPosition()).inflate(radius);
             List<ItemEntity> items = attacker.level().getEntitiesOfClass(ItemEntity.class, area);
             for (ItemEntity item : items) {

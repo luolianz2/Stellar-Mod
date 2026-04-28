@@ -1,16 +1,13 @@
 {
-  "attack_damage": 3.0,
-  "durability": 1500,
+  "attack_damage": 2.0,
+  "durability": 300,
   "item": "minecraft:iron_ingot",
   "mining_level": 2,
-  "mining_speed": 5.0,
+  "mining_speed": 6.0,
   "modifiers": [
     {
-      "config": {
-        "radius": 5.0
-      },
       "id": "stellarmod:electromagnetic"
     }
   ],
-  "upgrade_cost": 10
+  "upgrade_cost": 3
 }

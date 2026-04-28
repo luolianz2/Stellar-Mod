@@ -48,13 +48,15 @@ public class StellarMaterialDefinition {
         return this;
     }
 
+    //添加副词条（仅ID，默认等级1）
     public StellarMaterialDefinition addModifier(String effectId) {
-        this.modifiers.add(new ModifierDef(effectId, null));
+        this.modifiers.add(new ModifierDef(effectId, 1));
         return this;
     }
 
-    public StellarMaterialDefinition addModifier(String effectId, JsonObject config) {
-        this.modifiers.add(new ModifierDef(effectId, config));
+    //添加副词条（ID + 等级）
+    public StellarMaterialDefinition addModifier(String effectId, int level) {
+        this.modifiers.add(new ModifierDef(effectId, level));
         return this;
     }
 
@@ -72,8 +74,9 @@ public class StellarMaterialDefinition {
             for (ModifierDef def : modifiers) {
                 JsonObject obj = new JsonObject();
                 obj.addProperty("id", def.effectId);
-                if (def.config != null) {
-                    obj.add("config", def.config);
+                //只有等级大于0时才写入（非默认等级可记录，默认为1）
+                if (def.level > 1) {
+                    obj.addProperty("level", def.level);
                 }
                 array.add(obj);
             }
@@ -82,5 +85,6 @@ public class StellarMaterialDefinition {
         return json;
     }
 
-    private record ModifierDef(String effectId, JsonObject config) {}
+    //副词条定义（内部记录），移除了 config，新增 level 字段
+    private record ModifierDef(String effectId, int level) {}
 }

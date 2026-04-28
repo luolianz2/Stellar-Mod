@@ -2,7 +2,6 @@ package com.luolian.stellarmod.server.datagen.materials;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.luolian.stellarmod.StellarMod;
 import com.luolian.stellarmod.server.datagen.StellarMaterialDefinition;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -35,16 +34,14 @@ public class StellarMaterialProvider implements DataProvider {
     }
 
     private void registerMaterials() {
-        //铁锭
-        JsonObject electromagneticConfig = new JsonObject();
-        electromagneticConfig.addProperty("radius", 5.0);
+        //铁锭 (副词条参数已硬编码在效果类中，不再通过config传递)
         materials.add(new StellarMaterialDefinition(BuiltInRegistries.ITEM.getKey(Items.IRON_INGOT))
                 .miningLevel(2)
                 .miningSpeed(6.0f)
                 .attackDamage(2.0f)
                 .durability(250)
                 .upgradeCost(3)
-                .addModifier("stellarmod:electromagnetic", electromagneticConfig)
+                .addModifier("stellarmod:electromagnetic")
         );
 
         //下界合金锭
@@ -54,6 +51,7 @@ public class StellarMaterialProvider implements DataProvider {
                 .attackDamage(5.0f)
                 .durability(10500)
                 .upgradeCost(3)
+                .addModifier("stellarmod:electromagnetic",1)
         );
     }
 

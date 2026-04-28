@@ -47,14 +47,6 @@ public class StellarDimensions {
     public static void bootstrapStem(BootstapContext<LevelStem> context) {
         HolderGetter<Biome> biomeRegistry = context.lookup(Registries.BIOME);
         HolderGetter<DimensionType> dimTypes = context.lookup(Registries.DIMENSION_TYPE);
-//        HolderGetter<NoiseGeneratorSettings> noiseGenSettings = context.lookup(Registries.NOISE_SETTINGS);
-//
-//        NoiseBasedChunkGenerator wrappedChunkGenerator = new NoiseBasedChunkGenerator(
-//                new FixedBiomeSource(biomeRegistry.getOrThrow(StellarBiomes.STELLAR_BIOME)),
-//                noiseGenSettings.getOrThrow(NoiseGeneratorSettings.AMPLIFIED));
-//
-//        LevelStem stem = new LevelStem(dimTypes.getOrThrow(StellarDimensions.STELLAR_DIM_TYPE), wrappedChunkGenerator);
-//        context.register(STELLAR_SPACE_KEY, stem);
         EmptyChunkGenerator emptyChunkGenerator = new EmptyChunkGenerator(
                 biomeRegistry.getOrThrow(StellarBiomes.STELLAR_BIOME)
         );
