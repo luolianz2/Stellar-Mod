@@ -29,6 +29,7 @@
   "screen.stellarmod.tool_core.settings.empty": "Currently, there are no sub-entries",
   "screen.stellarmod.tool_core.matrix": "Matrix",
   "screen.stellarmod.tool_core.matrix.enabled": "Matrix Switch",
+  "screen.stellarmod.tool_core.matrix.empty": "No matrix effects attached",
 
   "stellarmod.options.on": "ON",
   "stellarmod.options.off": "OFF",
@@ -39,6 +40,13 @@
   "modifier.stellarmod_item.tool_core.electromagnetic.name": "Electromagnetic Force",
   "modifier.stellarmod_item.tool_core.electromagnetic.desc": "When excavating or killing monsters, absorb their dropped items",
   "modifier.stellarmod_item.tool_core.electromagnetic.author_note": "Look, a magnet",
+
+  "matrix.stellarmod_item.tool_core.inertia_cancellation.name": "Sudden Stop",
+  "matrix.stellarmod_item.tool_core.inertia_cancellation.desc": "Cancel inertia during creative flight",
+  "matrix.stellarmod_item.tool_core.inertia_cancellation.author_note": "The best brakes!",
+  "matrix.stellarmod_item.tool_core.creative_flight.name": "Flight",
+  "matrix.stellarmod_item.tool_core.creative_flight.desc": "Turn on flight mode",
+  "matrix.stellarmod_item.tool_core.creative_flight.author_note": "I am a little bird, flying in the sky",
 
   "tooltip.stellarmod_item.tool_core.active": "§7Active: §f%s",
   "tooltip.stellarmod_item.tool_core.type.pickaxe": "Pickaxe",
@@ -55,6 +63,7 @@
   "tooltip.stellarmod_item.tool_core.attack": "§7Attack: §f%s",
   "tooltip.stellarmod_item.tool_core.press_ctrl": "Press the Ctrl key to view the secondary entries",
   "tooltip.stellarmod_item.tool_core.modifiers_header": "Sub-entries:",
+  "tooltip.stellarmod_item.tool_core.matrix_header": "Matrix:",
   "tooltip.stellarmod_item.tool_core.no_modifiers": "Currently, there are no sub-attributes activated",
 
   "tooltip.stellarmod_item.metal_detector": "A instrument for prospecting, which can detect iron, gold, and diamond ores. \n They have nowhere to hide!!!",

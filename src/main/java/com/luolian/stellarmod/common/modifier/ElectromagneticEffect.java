@@ -1,6 +1,6 @@
 package com.luolian.stellarmod.common.modifier;
 
-import com.luolian.stellarmod.api.modifier.StellarModifierEffect;
+import com.luolian.stellarmod.api.toolcore.StellarModifierEffect;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;

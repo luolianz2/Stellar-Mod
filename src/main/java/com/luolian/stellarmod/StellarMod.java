@@ -7,8 +7,9 @@ import com.luolian.stellarmod.client.screen.StellarMenuTypes;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.server.block.StellarBlocks;
 import com.luolian.stellarmod.server.block.entity.StellarBlockEntities;
-import com.luolian.stellarmod.server.data.modifier.StellarModifierRegistry;
-import com.luolian.stellarmod.server.data.toolCore.MaterialDataLoader;
+import com.luolian.stellarmod.server.data.toolcore.StellarMatrixRegistry;
+import com.luolian.stellarmod.server.data.toolcore.StellarModifierRegistry;
+import com.luolian.stellarmod.server.data.toolcore.MaterialDataLoader;
 import com.luolian.stellarmod.server.effect.StellarMobEffects;
 import com.luolian.stellarmod.server.item.StellarCreativeModeTabs;
 import com.luolian.stellarmod.server.item.StellarItems;
@@ -75,6 +76,8 @@ public class StellarMod {
         StellarNetworkHandler.register();
         //注册所有副词条效果
         StellarModifierRegistry.registerAll();
+        //注册所有矩阵效果
+        StellarMatrixRegistry.registerAll();
         //注册区块生成器 Codec 到事件总线
         CHUNK_GENERATORS.register(modEventBus);
 

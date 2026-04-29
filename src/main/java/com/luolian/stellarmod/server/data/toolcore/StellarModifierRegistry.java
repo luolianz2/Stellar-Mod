@@ -1,6 +1,6 @@
-package com.luolian.stellarmod.server.data.modifier;
+package com.luolian.stellarmod.server.data.toolcore;
 
-import com.luolian.stellarmod.api.modifier.StellarModifierEffect;
+import com.luolian.stellarmod.api.toolcore.StellarModifierEffect;
 import com.luolian.stellarmod.common.modifier.ElectromagneticEffect;
 
 import javax.annotation.Nullable;

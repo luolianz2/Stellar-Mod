@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.api.modifier;
+package com.luolian.stellarmod.api.toolcore;
 
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;

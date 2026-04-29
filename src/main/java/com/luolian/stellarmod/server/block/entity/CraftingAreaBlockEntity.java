@@ -1,8 +1,11 @@
 package com.luolian.stellarmod.server.block.entity;
 
+import com.luolian.stellarmod.api.toolcore.StellarMatrixEffect;
 import com.luolian.stellarmod.client.screen.craftingArea.CraftingAreaBlockMenu;
-import com.luolian.stellarmod.server.data.toolCore.Material;
-import com.luolian.stellarmod.server.data.toolCore.MaterialManager;
+import com.luolian.stellarmod.server.data.toolcore.Material;
+import com.luolian.stellarmod.server.data.toolcore.MaterialManager;
+import com.luolian.stellarmod.server.data.toolcore.StellarMatrixRegistry;
+import com.luolian.stellarmod.server.item.custom.StellarMatrixItem;
 import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,7 +20,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,8 +43,8 @@ public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider
             if (slot == 7) return false;
             //核心槽（索引3）只允许放入工具核心
             if (slot == 3) return stack.getItem() instanceof ToolCoreItem;
-            //特殊材料槽（索引6）只允许放入钻石
-            if (slot == 6) return stack.is(Items.DIAMOND);
+            //矩阵槽（索引6）只允许放入矩阵物品
+            if (slot == 6) return stack.getItem() instanceof StellarMatrixItem;
             //其他输入槽无限制
             return true;
         }
@@ -68,6 +70,8 @@ public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider
     private static final int OUTPUT_SLOT = 7;
     //常量：核心槽索引
     private static final int CORE_SLOT = 3;
+    //常量：矩阵槽索引
+    private static final int MATRIX_SLOT = 6;
 
     //用于向外部暴露物品能力的 LazyOptional
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
@@ -153,8 +157,8 @@ public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider
             return null;
         }
 
-        //按槽位顺序遍历（跳过核心槽3）
-        int[] slotOrder = {0, 1, 2, 4, 5, 6};
+        //按槽位顺序遍历（跳过核心槽3和矩阵槽6）
+        int[] slotOrder = {0, 1, 2, 4, 5};
         for (int slot : slotOrder) {
             ItemStack stack = itemHandler.getStackInSlot(slot);
             if (stack.isEmpty()) continue;
@@ -185,11 +189,34 @@ public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider
 
     //更新输出槽的预览物品（带有预览标记的工具核心）
     public void updatePreview() {
-        MaterialCandidate candidate = findNextCandidate();
         ItemStack core = itemHandler.getStackInSlot(CORE_SLOT);
+        if (!(core.getItem() instanceof ToolCoreItem)) {
+            itemHandler.setStackInSlot(OUTPUT_SLOT, ItemStack.EMPTY);
+            return;
+        }
 
-        //没有候选或核心无效，清空输出槽
-        if (candidate == null || !(core.getItem() instanceof ToolCoreItem)) {
+        //优先检查矩阵槽：若存在矩阵物品，则预览矩阵合成结果
+        ItemStack matrixStack = itemHandler.getStackInSlot(MATRIX_SLOT);
+        if (!matrixStack.isEmpty() && matrixStack.getItem() instanceof StellarMatrixItem matrixItem) {
+            StellarMatrixEffect effect = StellarMatrixRegistry.get(matrixItem.getEffectId());
+            if (effect != null) {
+                ItemStack preview = core.copy();
+                preview.setCount(1);
+                int maxLevel = effect.getMaxLevel();
+                //模拟矩阵合成（不实际消耗物品，仅用于预览）
+                ToolCoreItem.mergeMatrixLevel(preview, matrixItem.getEffectId(), matrixItem.getLevel(), maxLevel);
+                //添加预览标记，便于客户端显示提示
+                preview.getOrCreateTag().putBoolean("Preview", true);
+                itemHandler.setStackInSlot(OUTPUT_SLOT, preview);
+                return;
+            }
+        }
+
+        //无矩阵物品时，回退到普通材料扫描
+        MaterialCandidate candidate = findNextCandidate();
+
+        //没有候选，清空输出槽
+        if (candidate == null) {
             itemHandler.setStackInSlot(OUTPUT_SLOT, ItemStack.EMPTY);
             return;
         }
@@ -214,12 +241,48 @@ public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider
         itemHandler.setStackInSlot(OUTPUT_SLOT, preview);
     }
 
-    //实际执行合成：消耗材料，生成带有新属性的工具核心（首次升级）或修复耐久（重复添加）
+    //实际执行合成：优先处理矩阵合成，若无矩阵则处理材料升级或修复
     public ItemStack assemble() {
-        MaterialCandidate candidate = findNextCandidate();
         ItemStack core = itemHandler.getStackInSlot(CORE_SLOT);
 
-        if (candidate == null || !(core.getItem() instanceof ToolCoreItem)) {
+        if (!(core.getItem() instanceof ToolCoreItem)) {
+            return ItemStack.EMPTY;
+        }
+
+        //优先检查矩阵槽：若存在矩阵物品，则先执行矩阵合成
+        ItemStack matrixStack = itemHandler.getStackInSlot(MATRIX_SLOT);
+        if (!matrixStack.isEmpty() && matrixStack.getItem() instanceof StellarMatrixItem matrixItem) {
+            StellarMatrixEffect effect = StellarMatrixRegistry.get(matrixItem.getEffectId());
+            if (effect == null) {
+                return ItemStack.EMPTY;
+            }
+            int maxLevel = effect.getMaxLevel();
+
+            //消耗矩阵物品（每次合成消耗 1 个）
+            itemHandler.extractItem(MATRIX_SLOT, 1, false);
+
+            //复制核心并应用矩阵效果
+            ItemStack result = core.copy();
+            result.setCount(1);
+            ToolCoreItem.mergeMatrixLevel(result, matrixItem.getEffectId(), matrixItem.getLevel(), maxLevel);
+
+            //移除预览相关标记
+            result.removeTagKey("Preview");
+            result.removeTagKey("PreviewRepair");
+
+            //消耗原核心（数量减1）
+            itemHandler.extractItem(CORE_SLOT, 1, false);
+
+            //更新预览（可能还有下一个矩阵物品或材料）
+            updatePreview();
+
+            return result;
+        }
+
+        //无矩阵物品时，回退到普通材料合成
+        MaterialCandidate candidate = findNextCandidate();
+
+        if (candidate == null) {
             return ItemStack.EMPTY;
         }
 

@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.server.data.toolCore;
+package com.luolian.stellarmod.server.data.toolcore;
 
 import com.google.gson.*;
 import net.minecraft.resources.ResourceLocation;

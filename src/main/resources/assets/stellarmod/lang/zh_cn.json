@@ -29,6 +29,7 @@
   "screen.stellarmod.tool_core.settings.empty": "当前暂无副词条",
   "screen.stellarmod.tool_core.matrix": "矩阵",
   "screen.stellarmod.tool_core.matrix.enabled": "矩阵开关",
+  "screen.stellarmod.tool_core.matrix.empty": "当前暂无矩阵效果",
 
   "stellarmod.options.on": "开启",
   "stellarmod.options.off": "关闭",
@@ -39,6 +40,13 @@
   "modifier.stellarmod_item.tool_core.electromagnetic.name": "电磁力",
   "modifier.stellarmod_item.tool_core.electromagnetic.desc": "挖掘或击杀怪物时，吸取其掉落物",
   "modifier.stellarmod_item.tool_core.electromagnetic.author_note": "呐，吸铁石",
+
+  "matrix.stellarmod_item.tool_core.inertia_cancellation.name": "急停",
+  "matrix.stellarmod_item.tool_core.inertia_cancellation.desc": "在创造性飞行时取消惯性",
+  "matrix.stellarmod_item.tool_core.inertia_cancellation.author_note": "最好的刹车！",
+  "matrix.stellarmod_item.tool_core.creative_flight.name": "飞行",
+  "matrix.stellarmod_item.tool_core.creative_flight.desc": "开启创造飞行",
+  "matrix.stellarmod_item.tool_core.creative_flight.author_note": "我是一只小小鸟",
 
   "tooltip.stellarmod_item.tool_core.active": "§7当前形态: §f%s",
   "tooltip.stellarmod_item.tool_core.type.pickaxe": "镐",
@@ -55,6 +63,7 @@
   "tooltip.stellarmod_item.tool_core.attack": "§7攻击伤害: §f%s",
   "tooltip.stellarmod_item.tool_core.press_ctrl": "按下ctrl键查看副词条",
   "tooltip.stellarmod_item.tool_core.modifiers_header": "副词条：",
+  "tooltip.stellarmod_item.tool_core.matrix_header": "矩阵：",
   "tooltip.stellarmod_item.tool_core.no_modifiers": "暂无已开启副词条",
 
   "tooltip.stellarmod_item.metal_detector": "一款探矿用的仪器，可发现铁、金、钻石矿石 \n  无所遁形！！！",

@@ -3,11 +3,13 @@ package com.luolian.stellarmod.server.item.custom;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.luolian.stellarmod.StellarMod;
-import com.luolian.stellarmod.api.modifier.StellarModifierEffect;
+import com.luolian.stellarmod.api.toolcore.StellarMatrixEffect;
+import com.luolian.stellarmod.api.toolcore.StellarModifierEffect;
 import com.luolian.stellarmod.client.screen.toolCore.ToolCoreModifierSettingsScreen;
-import com.luolian.stellarmod.server.data.modifier.StellarModifierRegistry;
-import com.luolian.stellarmod.server.data.toolCore.Material;
-import com.luolian.stellarmod.server.data.toolCore.MaterialManager;
+import com.luolian.stellarmod.server.data.toolcore.StellarMatrixRegistry;
+import com.luolian.stellarmod.server.data.toolcore.StellarModifierRegistry;
+import com.luolian.stellarmod.server.data.toolcore.Material;
+import com.luolian.stellarmod.server.data.toolcore.MaterialManager;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -16,6 +18,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -47,13 +50,25 @@ public class ToolCoreItem extends Item {
     //类结构与常量定义
     public static final String TAG_MATERIALS = "Materials";     //一个列表，存放已装配材料的 ResourceLocation 字符串
     public static final String TAG_ACTIVE_TYPE = "ActiveType";  //当前激活的工具形态ID（如 "pickaxe"）
+
     //耐久相关 NBT 键
     public static final String TAG_DAMAGE = "Damage";
     public static final String TAG_MAX_DAMAGE = "MaxDamage";
+
     //副词条等级存储键（累计总等级）
     public static final String TAG_MODIFIER_LEVELS = "ToolCoreModifierLevels";
     //副词条生效等级存储键（玩家在设置中调节后的当前生效等级）
     public static final String TAG_MODIFIER_ACTIVE_LEVELS = "ToolCoreModifierActiveLevels";
+
+    //矩阵相关 NBT 键
+    /** 矩阵效果累计总等级存储键 */
+    public static final String TAG_MATRIX_LEVELS = "ToolCoreMatrixLevels";
+    /** 矩阵效果生效等级存储键（玩家调节后的当前等级） */
+    public static final String TAG_MATRIX_ACTIVE_LEVELS = "ToolCoreMatrixActiveLevels";
+    /** 矩阵效果开关状态存储键 */
+    public static final String TAG_MATRIX_SETTINGS = "ToolCoreMatrixSettings";
+    /** 矩阵效果添加顺序存储键（ListTag，按添加顺序记录 effectId，用于提示文本排序） */
+    public static final String TAG_MATRIX_ORDER = "ToolCoreMatrixOrder";
 
     //自定义标签：需要 5 级工具才能挖掘的方块
     public static final TagKey<Block> NEEDS_STELLAR_TOOL =
@@ -63,7 +78,7 @@ public class ToolCoreItem extends Item {
     public static final TagKey<Block> NEEDS_NETHERITE_TOOL =
             TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "needs_netherite_tool"));
 
-    //挖掘等级 → 对应的“需要该等级工具”标签
+    //挖掘等级 → 对应的"需要该等级工具"标签
     private static final Map<Integer, TagKey<Block>> MINING_LEVEL_TAGS = Map.of(
             1, BlockTags.NEEDS_STONE_TOOL,
             2, BlockTags.NEEDS_IRON_TOOL,
@@ -398,18 +413,18 @@ public class ToolCoreItem extends Item {
                 if (seen.add(entry.id())) {
                     /*
                         level 已无实际用途，因等级由 getModifierLevel 统一管理，此处置0，
-                     entries 需要收集的是当前工具核心所拥有的所有“副词条 ID”，而等级数据已经完全移交给 getModifierLevel 统一管理。
+                     entries 需要收集的是当前工具核心所拥有的所有"副词条 ID"，而等级数据已经完全移交给 getModifierLevel 统一管理。
 
                         在 getAllModifiers 中，entry.level() 已经失去了意义，所以故意写成 0，目的是：
                             1.满足构造器语法
                             2.消除歧义，强迫后续代码必须用 getModifierLevel 来读取等级
 
-                        getAllModifiers 的职责现在是“返回所有已装配的副词条 ID”，而不是“返回所有副词条及其等级”。
+                        getAllModifiers 的职责现在是"返回所有已装配的副词条 ID"，而不是"返回所有副词条及其等级"。
 
                         真正决定等级的是 getModifierLevel，所以这里的 0 只是一个占位符。
 
                         如果想彻底去掉 level，可以把 StellarModifierEntry 改成只包含 id 而不包含 level，
-                     但那样需要同时调整 Material、MaterialDataLoader、addMaterialToStack 等多个类。目前保留 level 只是为了兼容性，实际逻辑中它已经被“架空”了
+                     但那样需要同时调整 Material、MaterialDataLoader、addMaterialToStack 等多个类。目前保留 level 只是为了兼容性，实际逻辑中它已经被"架空"了
                     */
                     entries.add(new Material.StellarModifierEntry(entry.id(), 0));
                 }
@@ -650,7 +665,7 @@ public class ToolCoreItem extends Item {
         //如果玩家从未合成过任何副词条材料，这个标签不会存在，条件为 false，直接返回 0
         if (root != null && root.contains(TAG_MODIFIER_LEVELS, Tag.TAG_COMPOUND)) {
             //root.getCompound(TAG_MODIFIER_LEVELS)：获取等级存储容器 CompoundTag。这个容器内部以 modifierId -> 等级 的键值对形式存储各个副词条的累计等级
-            //.getInt(modifierId)：读取该副词条对应的等级值（NBT 中以 IntTag 存储）。如果该键不存在，getInt 返回 0，这就是“从未添加过”时的默认值
+            //.getInt(modifierId)：读取该副词条对应的等级值（NBT 中以 IntTag 存储）。如果该键不存在，getInt 返回 0，这就是"从未添加过"时的默认值
             return root.getCompound(TAG_MODIFIER_LEVELS).getInt(modifierId);
         }
         return 0;
@@ -749,41 +764,251 @@ public class ToolCoreItem extends Item {
         return baseRepair;
     }
 
+    //矩阵效果相关方法
+
+    /**
+     * 将指定矩阵效果的等级累加到工具核心 NBT 中（新等级 = 原有等级 + addLevel），但不超过最大等级。
+     * @return 实际累加的等级数
+     */
+    public static int mergeMatrixLevel(ItemStack stack, String effectId, int addLevel, int maxLevel) {
+        CompoundTag root = stack.getOrCreateTag();
+        CompoundTag levels = root.getCompound(TAG_MATRIX_LEVELS);
+        int current = levels.getInt(effectId);
+        int newLevel = Math.min(current + addLevel, maxLevel);
+        levels.putInt(effectId, newLevel);
+        root.put(TAG_MATRIX_LEVELS, levels);
+
+        // 记录添加顺序：仅在首次添加该效果时追加到顺序列表（current == 0 表示之前不存在）
+        if (current == 0 && newLevel > 0) {
+            ListTag order = root.getList(TAG_MATRIX_ORDER, Tag.TAG_STRING);
+            order.add(StringTag.valueOf(effectId));
+            root.put(TAG_MATRIX_ORDER, order);
+        }
+
+        return newLevel - current;
+    }
+
+    /**
+     * 从工具核心 NBT 中读取某个矩阵效果的当前累计总等级。
+     * 若从未存储过，返回 0。
+     */
+    public static int getMatrixTotalLevel(ItemStack stack, String effectId) {
+        if (stack.hasTag() && stack.getTag().contains(TAG_MATRIX_LEVELS, Tag.TAG_COMPOUND)) {
+            return stack.getTag().getCompound(TAG_MATRIX_LEVELS).getInt(effectId);
+        }
+        return 0;
+    }
+
+    /**
+     * 获取矩阵效果的当前生效等级（玩家在设置中调节后的值）。
+     * 如果玩家未手动设定，则返回累计总等级。
+     */
+    public static int getMatrixActiveLevel(ItemStack stack, String effectId) {
+        CompoundTag root = stack.getOrCreateTag();
+        if (root.contains(TAG_MATRIX_ACTIVE_LEVELS, Tag.TAG_COMPOUND)) {
+            CompoundTag act = root.getCompound(TAG_MATRIX_ACTIVE_LEVELS);
+            if (act.contains(effectId, Tag.TAG_INT)) {
+                return act.getInt(effectId);
+            }
+        }
+        return getMatrixTotalLevel(stack, effectId);
+    }
+
+    /**
+     * 设置矩阵效果的当前生效等级，并自动联动开关状态（0 关，>0 开）。
+     * 范围 [0, 总等级]。若设为 0，自动关闭该效果；若从 0 调高，自动开启。
+     */
+    public static void setMatrixActiveLevel(ItemStack stack, String effectId, int level) {
+        int maxLevel = getMatrixTotalLevel(stack, effectId);
+        if (level < 0) level = 0;
+        if (level > maxLevel) level = maxLevel;
+
+        CompoundTag root = stack.getOrCreateTag();
+        CompoundTag act = root.getCompound(TAG_MATRIX_ACTIVE_LEVELS);
+        if (level == maxLevel) {
+            act.remove(effectId);
+        } else {
+            act.putInt(effectId, level);
+        }
+        if (act.isEmpty()) {
+            root.remove(TAG_MATRIX_ACTIVE_LEVELS);
+        } else {
+            root.put(TAG_MATRIX_ACTIVE_LEVELS, act);
+        }
+
+        //联动开关状态
+        CompoundTag settings = root.getCompound(TAG_MATRIX_SETTINGS);
+        if (level > 0) {
+            settings.remove(effectId);
+        } else {
+            settings.putBoolean(effectId, false);
+        }
+        if (settings.isEmpty()) {
+            root.remove(TAG_MATRIX_SETTINGS);
+        } else {
+            root.put(TAG_MATRIX_SETTINGS, settings);
+        }
+    }
+
+    /**
+     * 判断某个矩阵效果是否处于开启状态。默认为开启。
+     */
+    public static boolean isMatrixEnabled(ItemStack stack, String effectId) {
+        CompoundTag root = stack.getOrCreateTag();
+        if (root.contains(TAG_MATRIX_SETTINGS, Tag.TAG_COMPOUND)) {
+            CompoundTag settings = root.getCompound(TAG_MATRIX_SETTINGS);
+            //仅当该效果在设置中存在显式记录时才读取，否则视为默认启用
+            if (settings.contains(effectId)) {
+                return settings.getBoolean(effectId);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 直接设置某个矩阵效果的开关状态，不触发界面刷新（由外部调用）。
+     */
+    public static void setMatrixEnabledDirect(ItemStack stack, String effectId, boolean enabled) {
+        CompoundTag root = stack.getOrCreateTag();
+        CompoundTag settings = root.getCompound(TAG_MATRIX_SETTINGS);
+        if (enabled) {
+            settings.remove(effectId);
+        } else {
+            settings.putBoolean(effectId, false);
+        }
+        if (settings.isEmpty()) {
+            root.remove(TAG_MATRIX_SETTINGS);
+        } else {
+            root.put(TAG_MATRIX_SETTINGS, settings);
+        }
+    }
+
+    /**
+     * 获取工具核心所有已附加的矩阵效果 ID 集合。
+     */
+    public static Set<String> getAttachedMatrixEffects(ItemStack stack) {
+        CompoundTag root = stack.getTag();
+        if (root != null && root.contains(TAG_MATRIX_LEVELS, Tag.TAG_COMPOUND)) {
+            return root.getCompound(TAG_MATRIX_LEVELS).getAllKeys();
+        }
+        //返回一个不可变的空 Set 对象
+        return Collections.emptySet();
+    }
+
     //物品提示信息
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
 
+        //检测是否按下了 Shift 键，若是则显示矩阵效果
+        if (Screen.hasShiftDown() && !Screen.hasControlDown()) {
+            Set<String> matrixIds = getAttachedMatrixEffects(stack);
+            if (!matrixIds.isEmpty()) {
+                tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.matrix_header"));
+                // 按添加顺序排序：从 NBT 顺序列表读取并反转，越晚添加的越在上方；若列表缺失则回退到字母排序
+                List<String> orderedIds = new ArrayList<>();
+                CompoundTag root = stack.getTag();
+                if (root != null && root.contains(TAG_MATRIX_ORDER, Tag.TAG_LIST)) {
+                    ListTag orderList = root.getList(TAG_MATRIX_ORDER, Tag.TAG_STRING);
+                    // 反向遍历顺序列表，使最新添加的排在前面
+                    for (int i = orderList.size() - 1; i >= 0; i--) {
+                        String id = orderList.getString(i);
+                        if (matrixIds.contains(id)) {
+                            orderedIds.add(id);
+                        }
+                    }
+                    // 补充尚不在顺序列表中的效果（回退场景：旧版本数据无顺序记录）
+                    for (String id : matrixIds) {
+                        if (!orderedIds.contains(id)) {
+                            orderedIds.add(id);
+                        }
+                    }
+                } else {
+                    orderedIds = new ArrayList<>(matrixIds);
+                    Collections.sort(orderedIds);
+                }
+                for (String id : orderedIds) {
+                    StellarMatrixEffect effect = StellarMatrixRegistry.get(id);
+                    if (effect != null) {
+                        Component displayName = effect.getDisplayName();
+                        if (displayName == null) continue;
+                        int totalLevel = getMatrixTotalLevel(stack, id);
+                        int activeLevel = getMatrixActiveLevel(stack, id);
+                        MutableComponent nameLine = displayName.copy()
+                                .append("Lv." + activeLevel + "/" + totalLevel);
+                        // 生效等级为0时标注"已关闭"
+                        if (activeLevel == 0) {
+                            nameLine.append(Component.literal(" [")
+                                    .append(Component.translatable("tooltip.stellarmod_item.tool_core.disabled"))
+                                    .append("]"));
+                        }
+                        tooltip.add(nameLine);
+                        // 描述和作者注释，添加空指针保护
+                        List<Component> descList = effect.getDescription();
+                        if (descList != null) {
+                            for (Component desc : descList) {
+                                tooltip.add(Component.literal("  ").append(desc));
+                            }
+                        }
+                        Component note = effect.getAuthorNote();
+                        if (note != null) {
+                            tooltip.add(Component.literal("  ").append(note));
+                        }
+                    }
+                }
+            } else {
+                tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.no_matrix"));
+            }
+            return;
+        }
+
         //检测是否按下了 Ctrl 键，若是则仅显示副词条详情
         if (Screen.hasControlDown()) {
-            List<Material.StellarModifierEntry> modifiers = getAllModifiers(stack);
-            boolean hasAnyActive = false; //是否至少有一个生效的词条
-            if (!modifiers.isEmpty()) {
-                tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.modifiers_header"));
-                for (Material.StellarModifierEntry entry : modifiers) {
-                    StellarModifierEffect effect = StellarModifierRegistry.get(entry.id());
-                    if (effect != null) {
-                        int activeLevel = getModifierActiveLevel(stack, entry.id());
-                        //生效等级为 0 表示已关闭，隐藏该条目
-                        if (activeLevel == 0) continue;
-                        hasAnyActive = true;
-                        int maxLevel = getModifierLevel(stack, entry.id());
-                        //显示格式：名称 Lv.当前/最大，例如“电磁力 Lv.2/5”
-                        Component nameWithLevel = effect.getDisplayName().copy()
-                                .append(" Lv." + activeLevel + "/" + maxLevel);
-                        tooltip.add(nameWithLevel);
-                        for (Component desc : effect.getDescription()) {
-                            //Component.literal(" ")	创建一个纯文本组件，内容为两个空格
-                            //.append(desc)	将副词条描述组件 desc 拼接到两个空格之后
-                            //tooltip.add(...)	将拼接好的组件添加到工具提示列表中，最终渲染在游戏界面上
-                            tooltip.add(Component.literal("  ").append(desc));
-                        }
-                        tooltip.add(Component.literal("  ").append(effect.getAuthorNote()));
+            List<Material> materials = getMaterialsFromStack(stack);
+            // 按材料添加顺序获取副词条列表，越晚添加的材料其副词条排在越前面
+            List<String> orderedModifierIds = new ArrayList<>();
+            Set<String> seen = new LinkedHashSet<>();
+            // 反向遍历材料列表，使最新添加的材料对应的副词条优先显示
+            for (int i = materials.size() - 1; i >= 0; i--) {
+                for (Material.StellarModifierEntry entry : materials.get(i).modifiers()) {
+                    if (seen.add(entry.id())) {
+                        orderedModifierIds.add(entry.id());
                     }
                 }
             }
-            //如果没有任何副词条生效，显示“暂无副词条”
-            if (!hasAnyActive) {
+            if (!orderedModifierIds.isEmpty()) {
+                tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.modifiers_header"));
+                for (String modifierId : orderedModifierIds) {
+                    StellarModifierEffect effect = StellarModifierRegistry.get(modifierId);
+                    if (effect != null) {
+                        Component displayName = effect.getDisplayName();
+                        if (displayName == null) continue;
+                        int maxLevel = getModifierLevel(stack, modifierId);
+                        int activeLevel = getModifierActiveLevel(stack, modifierId);
+                        //显示格式：名称 Lv.当前/最大，例如"电磁力 Lv.2/5"
+                        MutableComponent nameWithLevel = displayName.copy()
+                                .append("Lv." + activeLevel + "/" + maxLevel);
+                        // 当副词条被玩家禁用时标注"已关闭"
+                        if (!ToolCoreModifierSettingsScreen.isModifierEnabled(stack, modifierId)) {
+                            nameWithLevel.append(Component.literal(" [")
+                                    .append(Component.translatable("tooltip.stellarmod_item.tool_core.disabled"))
+                                    .append("]"));
+                        }
+                        tooltip.add(nameWithLevel);
+                        // 描述和作者注释，添加空指针保护
+                        List<Component> descList = effect.getDescription();
+                        if (descList != null) {
+                            for (Component desc : descList) {
+                                tooltip.add(Component.literal("  ").append(desc));
+                            }
+                        }
+                        Component note = effect.getAuthorNote();
+                        if (note != null) {
+                            tooltip.add(Component.literal("  ").append(note));
+                        }
+                    }
+                }
+            } else {
                 tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.no_modifiers"));
             }
             return; //按 Ctrl 时不显示其他信息
@@ -836,7 +1061,9 @@ public class ToolCoreItem extends Item {
         tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.attack", getTotalAttackDamage(stack, type)));
 
         //提示按住 Ctrl 查看副词条
-        tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.press_ctrl"));
+        tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.press"));
+        //补充按住 Shift 查看矩阵效果的引导
+        tooltip.add(Component.translatable("tooltip.stellarmod_item.tool_core.press_matrix"));
     }
 
     /**

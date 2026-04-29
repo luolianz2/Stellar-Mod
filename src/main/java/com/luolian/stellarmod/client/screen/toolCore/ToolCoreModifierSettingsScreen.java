@@ -1,10 +1,10 @@
 package com.luolian.stellarmod.client.screen.toolCore;
 
-import com.luolian.stellarmod.api.modifier.StellarModifierEffect;
+import com.luolian.stellarmod.api.toolcore.StellarModifierEffect;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.network.SyncToolCoreModifierSettingsPacket;
-import com.luolian.stellarmod.server.data.modifier.StellarModifierRegistry;
-import com.luolian.stellarmod.server.data.toolCore.Material;
+import com.luolian.stellarmod.server.data.toolcore.StellarModifierRegistry;
+import com.luolian.stellarmod.server.data.toolcore.Material;
 import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
