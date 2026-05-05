@@ -43,6 +43,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
+import java.util.HashMap;
+import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -1109,12 +1111,31 @@ public class ToolCoreItem extends Item {
     }
 
     /**
-     * 覆写 Forge IForgeItem 接口方法，使得精准采集副词条在掉落物计算时被当作原版精准采集附魔。
-     * EnchantmentHelper.getEnchantmentLevel 会优先调用此方法，
-     * 战利品表中的 match_tool 条件因此能正确匹配 Silk Touch 掉落。
-     *
-     * 仅在精准采集副词条启用且生效等级 > 0 时返回 1，不影响工具附魔光效和提示信息
-     *（它们直接检查 NBT 而非此方法）。
+     * 覆写 Forge IForgeItem 接口方法，返回物品上所有附魔的映射。
+     * <p>
+     * loot table 的 match_tool 条件通过 {@link ItemStack#getAllEnchantments()}
+     * 获取附魔 Map 后交由 EnchantmentPredicate 匹配，而非调用 hasSilkTouch。
+     * 因此需要在此方法中将精准采集副词条注入为 Silk Touch 附魔。
+     */
+    @Override
+    public Map<Enchantment, Integer> getAllEnchantments(ItemStack stack) {
+        //super.getAllEnchantments(stack)把物品的附魔放到map里
+        Map<Enchantment, Integer> map = new HashMap<>(super.getAllEnchantments(stack));
+        //仅在没有真实 Silk Touch 附魔时，用精准采集副词条替代
+        if (!map.containsKey(Enchantments.SILK_TOUCH)) {
+            if (ToolCoreModifierSettingsScreen.isModifierEnabled(stack, "stellarmod:precision_collection")) {
+                int level = getModifierActiveLevel(stack, "stellarmod:precision_collection");
+                if (level > 0) {
+                    map.put(Enchantments.SILK_TOUCH, 1);
+                }
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 覆写 Forge IForgeItem 接口方法，使得精准采集副词条在 hasSilkTouch 等单附魔等级查询中
+     * 被识别为原版 Silk Touch。与 {@link #getAllEnchantments(ItemStack)} 配合覆盖两条链路。
      *
      * @return 1 表示拥有精准采集，0 表示交由 EnchantmentHelper 继续检查 NBT 标签
      */

@@ -1,4 +1,7 @@
 {
+  "item.minecraft.oak_planks": "Plank",
+  "item.minecraft.cobblestone": "Stone",
+
   "item.stellarmod.blush_face": "Blush Face",
   "item.stellarmod.metal_detector": "Metal Detector",
   "item.stellarmod.metal_detected.found": "Found in（%d，%d，%d）for %s",
