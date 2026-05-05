@@ -1,0 +1,16 @@
+{
+  "attack_damage": 3.0,
+  "durability": 1600,
+  "item": "minecraft:diamond",
+  "mining_level": 3,
+  "mining_speed": 8.0,
+  "modifiers": [
+    {
+      "id": "stellarmod:durable"
+    },
+    {
+      "id": "stellarmod:precision_collection"
+    }
+  ],
+  "upgrade_cost": 3
+}

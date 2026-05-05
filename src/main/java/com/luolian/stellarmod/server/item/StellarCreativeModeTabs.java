@@ -24,6 +24,9 @@ public class StellarCreativeModeTabs {
                         output.accept(StellarItems.SAPPHIRE_CRYSTAL.get());
                         output.accept(StellarItems.TOOL_CORE.get());
                         output.accept(StellarItems.TOKEN.get());
+                        output.accept(StellarItems.MATRIX_MODULE.get());
+                        output.accept(StellarItems.MATRIX_FLIGHT.get());
+                        output.accept(StellarItems.MATRIX_SUDDEN_STOP.get());
                         output.accept(StellarBlocks.RAINBOW_BLOCK.get());
                         output.accept(StellarBlocks.COIL_BLOCK.get());
                         output.accept(StellarBlocks.DIMENSION_BLOCK.get());
@@ -32,7 +35,6 @@ public class StellarCreativeModeTabs {
                         output.accept(StellarBlocks.SAPPHIRE_CRYSTAL_ORE.get());
                         output.accept(StellarBlocks.SAPPHIRE_CRYSTAL_BLOCK.get());
                         output.accept(StellarBlocks.CRAFTING_AREA_BLOCK.get());
-                        output.accept(StellarItems.TOKEN.get());
                     }).build());
     public static void register(IEventBus eventBus) {       //让封装了自定义创造物品栏的DeferredRegister注册器，绑定到事件总线
             CREATIVE_MODE_TABS.register(eventBus);

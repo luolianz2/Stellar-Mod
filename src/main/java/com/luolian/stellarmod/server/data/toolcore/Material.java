@@ -13,6 +13,7 @@ import java.util.List;
  * @param attackDamage   攻击伤害加成
  * @param durability     耐久加成
  * @param upgradeCost    首次升级所需消耗的数量
+ * @param aliases        某个别名相关的材料列表
  * @param modifiers      副词条列表（每个条目包含效果ID和初始等级）
  */
 public record Material(
@@ -23,6 +24,7 @@ public record Material(
         float attackDamage,
         int durability,
         int upgradeCost,
+        List<ResourceLocation> aliases,
         List<StellarModifierEntry> modifiers
 ) {
     /**

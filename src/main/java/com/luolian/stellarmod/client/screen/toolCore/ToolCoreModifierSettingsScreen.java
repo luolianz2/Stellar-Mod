@@ -67,17 +67,18 @@ public class ToolCoreModifierSettingsScreen extends Screen {
             }
         }
 
+        //先计算所有条目中最长名字的宽度，确保按钮列对齐
+        int maxTextWidth = 0;
+        for (StellarModifierSettingEntry entry : entries) {
+            maxTextWidth = Math.max(maxTextWidth, font.width(entry.effect().getDisplayName()));
+        }
+        int gap = font.width("        "); //8 个空格字符的像素宽度
+        int buttonX = leftTextX + maxTextWidth + gap;
+
         //为每个副词条创建开关按钮、-、数字、+ 控件
         for (int i = 0; i < entries.size(); i++) {
             StellarModifierSettingEntry entry = entries.get(i);
             int y = contentY + i * ENTRY_HEIGHT;
-
-            //计算文字宽度，按钮放置在文字右侧 8 个字符间距处
-            Component displayName = entry.effect().getDisplayName();
-            int textWidth = font.width(displayName);
-            //8 个空格字符的像素宽度（约 48 像素）
-            int gap = font.width("        ");
-            int buttonX = leftTextX + textWidth + gap;
 
             //获取当前最大等级和生效等级
             int maxLevel = ToolCoreItem.getModifierLevel(toolStack, entry.id());

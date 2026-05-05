@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "stellarmod:item/token"
+    "layer0": "stellarmod:item/matrix_flight"
   }
 }

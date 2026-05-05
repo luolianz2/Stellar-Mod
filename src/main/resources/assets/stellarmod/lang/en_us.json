@@ -5,6 +5,9 @@
   "item.stellarmod.sapphire_crystal": "Sapphire_Crystal",
   "item.stellarmod.tool_core": "Multi-function Tool",
   "item.stellarmod.token": "Token",
+  "item.stellarmod.matrix_module": "Matrix Module",
+  "item.stellarmod.matrix_flight": "Flight Matrix",
+  "item.stellarmod.matrix_sudden_stop": "Sudden Stop Matrix",
 
   "block.stellarmod.rainbow_block": "Rainbow Block",
   "block.stellarmod.coil_block": "Coil Block",
@@ -21,14 +24,14 @@
   "action.stellarmod.sword": "Sword",
   "action.stellarmod.hoe": "Hoe",
   "action.stellarmod.settings": "Settings",
+  "action.stellarmod.matrix": "Matrix",
 
   "screen.stellarmod.radial_menu": "Multi-function Tool Settings",
   "screen.stellarmod.tool_core.settings": "Multi-function Tool Panel",
   "screen.stellarmod.tool_core.settings.save_and_exit": "Save and Exit",
-  "screen.stellarmod.tool_core.settings.restore_defaults": "Restore Defaults",
+  "screen.stellarmod.tool_core.settings.restore_defaults": "Reset",
   "screen.stellarmod.tool_core.settings.empty": "Currently, there are no sub-entries",
   "screen.stellarmod.tool_core.matrix": "Matrix",
-  "screen.stellarmod.tool_core.matrix.enabled": "Matrix Switch",
   "screen.stellarmod.tool_core.matrix.empty": "No matrix effects attached",
 
   "stellarmod.options.on": "ON",
@@ -36,16 +39,29 @@
 
   "key.categories.stellarmod": "Stellarmod",
   "key.stellarmod.open_radial_menu": "Open the multi-function tool panel",
+  "key.stellarmod.flight_boost_cycle": "Flight Boost Toggle",
+  "key.stellarmod.flight_boost_off": "Flight Boost Off",
+
+  "message.stellarmod.flight_boost.off": "Flight Boost Disabled",
+  "message.stellarmod.flight_boost.on": "Flight Boost Enabled",
+  "message.stellarmod.flight_boost.tier2": "Flight Boost II",
+  "message.stellarmod.flight_boost.max": "Flight Boost MAX",
 
   "modifier.stellarmod_item.tool_core.electromagnetic.name": "Electromagnetic Force",
   "modifier.stellarmod_item.tool_core.electromagnetic.desc": "When excavating or killing monsters, absorb their dropped items",
   "modifier.stellarmod_item.tool_core.electromagnetic.author_note": "Look, a magnet",
+  "modifier.stellarmod_item.tool_core.durable.name": "Durable",
+  "modifier.stellarmod_item.tool_core.durable.desc": "Tools have a chance to not lose durability when being used",
+  "modifier.stellarmod_item.tool_core.durable.author_note": "This is so Minecraft",
+  "modifier.stellarmod_item.tool_core.precision_collection.name": "Precision Collection",
+  "modifier.stellarmod_item.tool_core.precision_collection.desc": "Precision Collection",
+  "modifier.stellarmod_item.tool_core.precision_collection.author_note": "Well,precision Collection",
 
   "matrix.stellarmod_item.tool_core.inertia_cancellation.name": "Sudden Stop",
   "matrix.stellarmod_item.tool_core.inertia_cancellation.desc": "Cancel inertia during creative flight",
   "matrix.stellarmod_item.tool_core.inertia_cancellation.author_note": "The best brakes!",
   "matrix.stellarmod_item.tool_core.creative_flight.name": "Flight",
-  "matrix.stellarmod_item.tool_core.creative_flight.desc": "Turn on flight mode",
+  "matrix.stellarmod_item.tool_core.creative_flight.desc": "Turn on flight mode.The ability to fly quickly is unlocked at levels 2, 5, and 10 respectively. By default, the x key adjusts, and the z key resets",
   "matrix.stellarmod_item.tool_core.creative_flight.author_note": "I am a little bird, flying in the sky",
 
   "tooltip.stellarmod_item.tool_core.active": "§7Active: §f%s",
@@ -65,6 +81,11 @@
   "tooltip.stellarmod_item.tool_core.modifiers_header": "Sub-entries:",
   "tooltip.stellarmod_item.tool_core.matrix_header": "Matrix:",
   "tooltip.stellarmod_item.tool_core.no_modifiers": "Currently, there are no sub-attributes activated",
+  "tooltip.stellarmod_item.tool_core.no_matrix": "No matrix effects attached",
+  "tooltip.stellarmod_item.tool_core.disabled": "Disabled",
+  "tooltip.stellarmod_item.tool_core.press_shift": "Press Shift to view matrix effects",
+  "tooltip.stellarmod_item.tool_core.more_modifiers": "%s more items, view in settings",
+  "tooltip.stellarmod_item.tool_core.more_matrix": "%s more items, view in matrix panel",
 
   "tooltip.stellarmod_item.metal_detector": "A instrument for prospecting, which can detect iron, gold, and diamond ores. \n They have nowhere to hide!!!",
 

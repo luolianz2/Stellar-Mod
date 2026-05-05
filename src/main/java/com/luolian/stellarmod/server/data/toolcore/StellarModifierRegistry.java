@@ -1,7 +1,9 @@
 package com.luolian.stellarmod.server.data.toolcore;
 
 import com.luolian.stellarmod.api.toolcore.StellarModifierEffect;
+import com.luolian.stellarmod.common.modifier.DurableEffect;
 import com.luolian.stellarmod.common.modifier.ElectromagneticEffect;
+import com.luolian.stellarmod.common.modifier.PrecisionCollectionEffect;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -31,6 +33,8 @@ public class StellarModifierRegistry {
      */
     public static void registerAll() {
         register(new ElectromagneticEffect());
+        register(new DurableEffect());
+        register(new PrecisionCollectionEffect());
         //未来新增效果只需在此添加一行
     }
 }

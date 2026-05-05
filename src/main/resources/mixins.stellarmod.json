@@ -15,7 +15,9 @@
     "compat.QuestMixin",
     "compat.TeamDataMixin"
   ],
-  "client": [],
+  "client": [
+    "toolcore.PlayerTravelMixin"
+  ],
   "server": [],
   "injectors": {
     "defaultRequire": 1

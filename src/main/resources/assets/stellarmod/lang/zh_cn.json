@@ -5,6 +5,9 @@
   "item.stellarmod.sapphire_crystal": "蓝宝石水晶",
   "item.stellarmod.tool_core": "多功能工具",
   "item.stellarmod.token": "代币",
+  "item.stellarmod.matrix_module": "矩阵模块",
+  "item.stellarmod.matrix_flight": "飞行矩阵",
+  "item.stellarmod.matrix_sudden_stop": "急停矩阵",
 
   "block.stellarmod.rainbow_block": "彩虹方块",
   "block.stellarmod.coil_block": "线圈方块",
@@ -21,6 +24,7 @@
   "action.stellarmod.sword": "剑",
   "action.stellarmod.hoe": "锄",
   "action.stellarmod.settings": "设置",
+  "action.stellarmod.matrix": "矩阵",
 
   "screen.stellarmod.radial_menu": "多功能工具面板",
   "screen.stellarmod.tool_core.settings": "多功能工具设置",
@@ -28,7 +32,6 @@
   "screen.stellarmod.tool_core.settings.restore_defaults": "恢复默认",
   "screen.stellarmod.tool_core.settings.empty": "当前暂无副词条",
   "screen.stellarmod.tool_core.matrix": "矩阵",
-  "screen.stellarmod.tool_core.matrix.enabled": "矩阵开关",
   "screen.stellarmod.tool_core.matrix.empty": "当前暂无矩阵效果",
 
   "stellarmod.options.on": "开启",
@@ -36,16 +39,29 @@
 
   "key.categories.stellarmod": "群星",
   "key.stellarmod.open_radial_menu": "打开多功能工具面板",
+  "key.stellarmod.flight_boost_cycle": "快速飞行模式切换",
+  "key.stellarmod.flight_boost_off": "快速飞行模式关闭",
+
+  "message.stellarmod.flight_boost.off": "快速飞行关闭",
+  "message.stellarmod.flight_boost.on": "快速飞行开启",
+  "message.stellarmod.flight_boost.tier2": "快速飞行 II",
+  "message.stellarmod.flight_boost.max": "快速飞行 MAX",
 
   "modifier.stellarmod_item.tool_core.electromagnetic.name": "电磁力",
   "modifier.stellarmod_item.tool_core.electromagnetic.desc": "挖掘或击杀怪物时，吸取其掉落物",
   "modifier.stellarmod_item.tool_core.electromagnetic.author_note": "呐，吸铁石",
+  "modifier.stellarmod_item.tool_core.durable.name": "耐用",
+  "modifier.stellarmod_item.tool_core.durable.desc": "工具在被使用时有概率不损耗耐久",
+  "modifier.stellarmod_item.tool_core.durable.author_note": "这很mc",
+  "modifier.stellarmod_item.tool_core.precision_collection.name": "精准采集",
+  "modifier.stellarmod_item.tool_core.precision_collection.desc": "精准采集",
+  "modifier.stellarmod_item.tool_core.precision_collection.author_note": "嗯，精准采集",
 
   "matrix.stellarmod_item.tool_core.inertia_cancellation.name": "急停",
-  "matrix.stellarmod_item.tool_core.inertia_cancellation.desc": "在创造性飞行时取消惯性",
+  "matrix.stellarmod_item.tool_core.inertia_cancellation.desc": "在创造飞行时取消惯性",
   "matrix.stellarmod_item.tool_core.inertia_cancellation.author_note": "最好的刹车！",
   "matrix.stellarmod_item.tool_core.creative_flight.name": "飞行",
-  "matrix.stellarmod_item.tool_core.creative_flight.desc": "开启创造飞行",
+  "matrix.stellarmod_item.tool_core.creative_flight.desc": "开启创造飞行，分别于2、5、10级解锁快速飞行能力，默认x键调整，z键重置",
   "matrix.stellarmod_item.tool_core.creative_flight.author_note": "我是一只小小鸟",
 
   "tooltip.stellarmod_item.tool_core.active": "§7当前形态: §f%s",
@@ -65,6 +81,11 @@
   "tooltip.stellarmod_item.tool_core.modifiers_header": "副词条：",
   "tooltip.stellarmod_item.tool_core.matrix_header": "矩阵：",
   "tooltip.stellarmod_item.tool_core.no_modifiers": "暂无已开启副词条",
+  "tooltip.stellarmod_item.tool_core.no_matrix": "暂无已开启矩阵效果",
+  "tooltip.stellarmod_item.tool_core.disabled": "已关闭",
+  "tooltip.stellarmod_item.tool_core.press_shift": "按下Shift键查看矩阵效果",
+  "tooltip.stellarmod_item.tool_core.more_modifiers": "还有 %s 项，请在设置面板查看",
+  "tooltip.stellarmod_item.tool_core.more_matrix": "还有 %s 项，请在矩阵面板查看",
 
   "tooltip.stellarmod_item.metal_detector": "一款探矿用的仪器，可发现铁、金、钻石矿石 \n  无所遁形！！！",
 

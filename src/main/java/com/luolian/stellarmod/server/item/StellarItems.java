@@ -2,6 +2,7 @@ package com.luolian.stellarmod.server.item;
 
 import com.luolian.stellarmod.StellarMod;
 import com.luolian.stellarmod.server.item.custom.MetalDetectorItem;
+import com.luolian.stellarmod.server.item.custom.StellarMatrixItem;
 import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -15,10 +16,19 @@ public class StellarItems
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, StellarMod.MOD_ID);
     public static final RegistryObject<Item> BLUSH_FACE = ITEMS.register("blush_face",() -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> SAPPHIRE_CRYSTAL = ITEMS.register("sapphire_crystal",() -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> TOKEN = ITEMS.register("token",() -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> MATRIX_MODULE = ITEMS.register("matrix_module",() -> new Item(new Item.Properties()));
+
     public static final RegistryObject<Item> METAL_DETECTOR = ITEMS.register("metal_detector",() -> new MetalDetectorItem(new Item
             .Properties().durability(100)));
+
     public static final RegistryObject<Item> TOOL_CORE = ITEMS.register("tool_core",() -> new ToolCoreItem(new Item.Properties()));
-    public static final RegistryObject<Item> TOKEN = ITEMS.register("token",() -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> MATRIX_FLIGHT = ITEMS.register("matrix_flight",() -> new StellarMatrixItem(
+            new Item.Properties(),"stellarmod:creative_flight",1));
+    public static final RegistryObject<Item> MATRIX_SUDDEN_STOP = ITEMS.register("matrix_sudden_stop",() -> new StellarMatrixItem(
+            new Item.Properties(),"stellarmod:inertia_cancellation",1));
+
     public static void register(IEventBus eventBus)  {
         ITEMS.register(eventBus);
     }

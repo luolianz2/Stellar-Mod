@@ -171,9 +171,9 @@ public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider
 
             boolean firstTime = !ToolCoreItem.hasMaterial(core, id);
 
-            // 修复：如果是修复操作（非首次添加），且当前工具核心耐久已满，则跳过该材料
+            //如果是修复操作（非首次添加），且当前工具核心耐久已满，则跳过该材料
             if (!firstTime && ToolCoreItem.getStoredDamage(core) == 0) {
-                continue; // 耐久满，无需修复，继续扫描下一个材料
+                continue; //耐久满，无需修复，继续扫描下一个材料
             }
 
             //根据操作类型确定需要消耗的材料数量
@@ -195,24 +195,28 @@ public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider
             return;
         }
 
-        //优先检查矩阵槽：若存在矩阵物品，则预览矩阵合成结果
+        //优先检查矩阵槽：若存在矩阵物品且未满级，则预览矩阵合成结果
         ItemStack matrixStack = itemHandler.getStackInSlot(MATRIX_SLOT);
         if (!matrixStack.isEmpty() && matrixStack.getItem() instanceof StellarMatrixItem matrixItem) {
             StellarMatrixEffect effect = StellarMatrixRegistry.get(matrixItem.getEffectId());
             if (effect != null) {
-                ItemStack preview = core.copy();
-                preview.setCount(1);
                 int maxLevel = effect.getMaxLevel();
-                //模拟矩阵合成（不实际消耗物品，仅用于预览）
-                ToolCoreItem.mergeMatrixLevel(preview, matrixItem.getEffectId(), matrixItem.getLevel(), maxLevel);
-                //添加预览标记，便于客户端显示提示
-                preview.getOrCreateTag().putBoolean("Preview", true);
-                itemHandler.setStackInSlot(OUTPUT_SLOT, preview);
-                return;
+                int currentLevel = ToolCoreItem.getMatrixTotalLevel(core, matrixItem.getEffectId());
+                if (currentLevel < maxLevel) {
+                    ItemStack preview = core.copy();
+                    preview.setCount(1);
+                    //模拟矩阵合成（不实际消耗物品，仅用于预览）
+                    ToolCoreItem.mergeMatrixLevel(preview, matrixItem.getEffectId(), matrixItem.getLevel(), maxLevel);
+                    //添加预览标记，便于客户端显示提示
+                    preview.getOrCreateTag().putBoolean("Preview", true);
+                    itemHandler.setStackInSlot(OUTPUT_SLOT, preview);
+                    return;
+                }
+                //已满级：不显示矩阵预览，继续往下检查材料合成
             }
         }
 
-        //无矩阵物品时，回退到普通材料扫描
+        //无矩阵物品或矩阵已满级时，回退到普通材料扫描
         MaterialCandidate candidate = findNextCandidate();
 
         //没有候选，清空输出槽
@@ -249,37 +253,39 @@ public class CraftingAreaBlockEntity extends BlockEntity implements MenuProvider
             return ItemStack.EMPTY;
         }
 
-        //优先检查矩阵槽：若存在矩阵物品，则先执行矩阵合成
+        //优先检查矩阵槽：若存在矩阵物品且未满级，则执行矩阵合成
         ItemStack matrixStack = itemHandler.getStackInSlot(MATRIX_SLOT);
         if (!matrixStack.isEmpty() && matrixStack.getItem() instanceof StellarMatrixItem matrixItem) {
             StellarMatrixEffect effect = StellarMatrixRegistry.get(matrixItem.getEffectId());
-            if (effect == null) {
-                return ItemStack.EMPTY;
+            if (effect != null) {
+                int maxLevel = effect.getMaxLevel();
+                int currentLevel = ToolCoreItem.getMatrixTotalLevel(core, matrixItem.getEffectId());
+                if (currentLevel < maxLevel) {
+                    //消耗矩阵物品（每次合成消耗 1 个）
+                    itemHandler.extractItem(MATRIX_SLOT, 1, false);
+
+                    //复制核心并应用矩阵效果
+                    ItemStack result = core.copy();
+                    result.setCount(1);
+                    ToolCoreItem.mergeMatrixLevel(result, matrixItem.getEffectId(), matrixItem.getLevel(), maxLevel);
+
+                    //移除预览相关标记
+                    result.removeTagKey("Preview");
+                    result.removeTagKey("PreviewRepair");
+
+                    //消耗原核心（数量减1）
+                    itemHandler.extractItem(CORE_SLOT, 1, false);
+
+                    //更新预览（可能还有下一个矩阵物品或材料）
+                    updatePreview();
+
+                    return result;
+                }
+                //已满级：跳过矩阵合成，继续往下检查材料合成
             }
-            int maxLevel = effect.getMaxLevel();
-
-            //消耗矩阵物品（每次合成消耗 1 个）
-            itemHandler.extractItem(MATRIX_SLOT, 1, false);
-
-            //复制核心并应用矩阵效果
-            ItemStack result = core.copy();
-            result.setCount(1);
-            ToolCoreItem.mergeMatrixLevel(result, matrixItem.getEffectId(), matrixItem.getLevel(), maxLevel);
-
-            //移除预览相关标记
-            result.removeTagKey("Preview");
-            result.removeTagKey("PreviewRepair");
-
-            //消耗原核心（数量减1）
-            itemHandler.extractItem(CORE_SLOT, 1, false);
-
-            //更新预览（可能还有下一个矩阵物品或材料）
-            updatePreview();
-
-            return result;
         }
 
-        //无矩阵物品时，回退到普通材料合成
+        //无矩阵物品或矩阵已满级时，回退到普通材料合成
         MaterialCandidate candidate = findNextCandidate();
 
         if (candidate == null) {

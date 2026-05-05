@@ -1,0 +1,25 @@
+{
+  "aliases": [
+    "minecraft:spruce_planks",
+    "minecraft:birch_planks",
+    "minecraft:jungle_planks",
+    "minecraft:acacia_planks",
+    "minecraft:dark_oak_planks",
+    "minecraft:mangrove_planks",
+    "minecraft:cherry_planks",
+    "minecraft:bamboo_planks",
+    "minecraft:crimson_planks",
+    "minecraft:warped_planks"
+  ],
+  "attack_damage": 0.0,
+  "durability": 100,
+  "item": "minecraft:oak_planks",
+  "mining_level": 1,
+  "mining_speed": 2.0,
+  "modifiers": [
+    {
+      "id": "stellarmod:electromagnetic"
+    }
+  ],
+  "upgrade_cost": 3
+}

@@ -41,13 +41,22 @@ public class StellarNetworkHandler {
                 SyncToolCoreModifierSettingsPacket::handle
         );
 
-        //
+        //注册同步矩阵面板设置的包
         INSTANCE.registerMessage(
                 packetId++,
                 SyncToolCoreMatrixSettingsPacket.class,
                 SyncToolCoreMatrixSettingsPacket::encode,
                 SyncToolCoreMatrixSettingsPacket::decode,
                 SyncToolCoreMatrixSettingsPacket::handle
+        );
+
+        //飞行加速档位同步包（客户端 → 服务端）
+        INSTANCE.registerMessage(
+                packetId++,
+                FlightBoostPacket.class,
+                FlightBoostPacket::encode,
+                FlightBoostPacket::decode,
+                FlightBoostPacket::handle
         );
 
         //后续在此继续注册

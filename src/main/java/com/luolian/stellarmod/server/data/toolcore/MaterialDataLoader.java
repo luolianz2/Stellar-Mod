@@ -101,6 +101,20 @@ public class MaterialDataLoader extends SimpleJsonResourceReloadListener {
         int durability = GsonHelper.getAsInt(json, "durability", 0);
         int upgradeCost = GsonHelper.getAsInt(json, "upgrade_cost", 1);
 
+        //提取别名列表（可选字段，支持多个物品共用同一份材料属性）
+        List<ResourceLocation> aliases = new ArrayList<>();
+        if (json.has("aliases")) {
+            JsonArray aliasArray = json.getAsJsonArray("aliases");
+            for (JsonElement elem : aliasArray) {
+
+                //ResourceLocation.tryParse(...)：尝试将字符串解析为 ResourceLocation，若成功返回对象，若失败（字符串格式非法）则返回 null
+                ResourceLocation aliasId = ResourceLocation.tryParse(elem.getAsString());
+                if (aliasId != null) {
+                    aliases.add(aliasId);
+                }
+            }
+        }
+
         //提取副词条id（材料可以没有副词条，副词条不再通过json配置参数）
         //初始化一个空的动态数组 ArrayList，用于存放解析出的每一个副词条条目
         List<Material.StellarModifierEntry> modifiers = new ArrayList<>();
@@ -114,6 +128,6 @@ public class MaterialDataLoader extends SimpleJsonResourceReloadListener {
             }
         }
         //传入 Material 构造器
-        return new Material(fileId, itemId, miningLevel, miningSpeed, attackDamage, durability, upgradeCost, modifiers);
+        return new Material(fileId, itemId, miningLevel, miningSpeed, attackDamage, durability, upgradeCost, aliases, modifiers);
     }
 }

@@ -38,6 +38,17 @@ public interface StellarModifierEffect {
      */
     default void onEntityHurt(ItemStack stack, LivingEntity target, LivingEntity attacker, int modifierLevel) {}
 
+    /**
+     * 在消耗耐久前调用，由各副词条实现判断是否应跳过本次耐久消耗。
+     * 若任意已启用的副词条返回 true，则本次挖掘/攻击不消耗耐久。
+     *
+     * @param modifierLevel 当前副词条生效等级
+     * @return true 表示跳过本次耐久消耗
+     */
+    default boolean shouldSkipDurability(int modifierLevel) {
+        return false;
+    }
+
     //自定义配置解析
     default void parseConfig(JsonObject config) {}
 }

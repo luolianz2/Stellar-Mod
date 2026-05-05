@@ -1,0 +1,17 @@
+{
+  "aliases": [
+    "minecraft:cobbled_deepslate",
+    "minecraft:blackstone"
+  ],
+  "attack_damage": 2.0,
+  "durability": 150,
+  "item": "minecraft:cobblestone",
+  "mining_level": 1,
+  "mining_speed": 4.0,
+  "modifiers": [
+    {
+      "id": "stellarmod:electromagnetic"
+    }
+  ],
+  "upgrade_cost": 3
+}

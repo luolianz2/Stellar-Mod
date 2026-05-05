@@ -4,7 +4,6 @@ import com.luolian.stellarmod.api.toolcore.StellarMatrixEffect;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -29,15 +28,7 @@ public class InertiaCancellationEffect implements StellarMatrixEffect {
 
     @Override
     public void onPlayerTick(Player player, int activeLevel) {
-        if (activeLevel <= 0) return;
-
-        if (!player.level().isClientSide) {
-            //仅在玩家主动飞行且无水平输入时取消惯性
-            //玩家当前处于飞行状态+玩家左/右和前进/后退的输入值为0
-            if (player.getAbilities().flying && player.xxa == 0.0F && player.zza == 0.0F) {
-                //将速度向量设为0，即立即停止所有惯性移动，实现“急停”效果
-                player.setDeltaMovement(Vec3.ZERO);
-            }
-        }
+        //惯性消除已由 PlayerTravelMixin 在客户端 travel() 尾部实现，
+        //服务端 setDeltaMovement 对客户端预测的飞行移动无实际影响，故此处不再处理。
     }
 }

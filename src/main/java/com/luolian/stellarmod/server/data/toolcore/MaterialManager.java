@@ -15,10 +15,18 @@ public class MaterialManager {
     }
 
     /**
-     * 注册一个材料，如果同一物品 ID 已有材料，后者会覆盖前者
+     * 注册一个材料及其所有别名，如果同一物品 ID 已有材料，后者会覆盖前者。
+     * 别名物品与主物品共享完全相同的材料属性。
      */
     public static void register(Material material) {
+
+        //通过材料的原生物品ID（主键）建立映射
         BY_ITEM.put(material.itemId(), material);
+
+        //遍历该材料的所有别名，为每个别名也建立到同一材料的映射
+        for (ResourceLocation alias : material.aliases()) {
+            BY_ITEM.put(alias, material);
+        }
     }
 
     /**
