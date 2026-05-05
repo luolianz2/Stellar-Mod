@@ -30,3 +30,10 @@ Thumbs.db
 # Files from Forge MDK
 forge*changelog.txt
 /src/generated/resources/.cache/
+/.spec-workflow/templates/design-template.md
+/.spec-workflow/templates/product-template.md
+/.spec-workflow/user-templates/README.md
+/.spec-workflow/templates/requirements-template.md
+/.spec-workflow/templates/structure-template.md
+/.spec-workflow/templates/tasks-template.md
+/.spec-workflow/templates/tech-template.md
