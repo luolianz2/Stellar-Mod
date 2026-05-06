@@ -59,6 +59,12 @@
   "modifier.stellarmod_item.tool_core.precision_collection.name": "Precision Collection",
   "modifier.stellarmod_item.tool_core.precision_collection.desc": "Precision Collection",
   "modifier.stellarmod_item.tool_core.precision_collection.author_note": "Well,precision Collection",
+  "modifier.stellarmod_item.tool_core.teleport.name":"Teleport",
+  "modifier.stellarmod_item.tool_core.teleport.desc": "Press the T key to switch to the teleportation view, and use the left button to teleport towards the direction of the camera or the anchor point",
+  "modifier.stellarmod_item.tool_core.teleport.author_note": "Are you afraid of water?",
+  "modifier.stellarmod_item.tool_core.anchor_point.name": "Anchor Point",
+  "modifier.stellarmod_item.tool_core.anchor_point.desc": "Press T to switch to the teleportation view, and right-click to place an anchor point at the current location",
+  "modifier.stellarmod_item.tool_core.anchor_point.author_note": "Factory Disruptor",
 
   "matrix.stellarmod_item.tool_core.inertia_cancellation.name": "Sudden Stop",
   "matrix.stellarmod_item.tool_core.inertia_cancellation.desc": "Cancel inertia during creative flight",

@@ -59,6 +59,12 @@
   "modifier.stellarmod_item.tool_core.precision_collection.name": "精准采集",
   "modifier.stellarmod_item.tool_core.precision_collection.desc": "精准采集",
   "modifier.stellarmod_item.tool_core.precision_collection.author_note": "嗯，精准采集",
+  "modifier.stellarmod_item.tool_core.teleport.name":"传送",
+  "modifier.stellarmod_item.tool_core.teleport.desc": "按下T键切换至传送视图，左键向视角方向或锚点传送",
+  "modifier.stellarmod_item.tool_core.teleport.author_note": "你会怕水吗",
+  "modifier.stellarmod_item.tool_core.anchor_point.name": "锚点",
+  "modifier.stellarmod_item.tool_core.anchor_point.desc": "按下T键切换至传送视图，右键在当前位置放置锚点",
+  "modifier.stellarmod_item.tool_core.anchor_point.author_note": "工厂利器",
 
   "matrix.stellarmod_item.tool_core.inertia_cancellation.name": "急停",
   "matrix.stellarmod_item.tool_core.inertia_cancellation.desc": "在创造飞行时取消惯性",
