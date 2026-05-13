@@ -1,5 +1,7 @@
 package com.luolian.stellarmod.client.screen.toolCore;
 
+import com.luolian.stellarmod.client.config.RadialConfigStorage;
+import com.luolian.stellarmod.client.config.ToolCoreRadialState;
 import com.luolian.stellarmod.client.key.StellarKeyMapping;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.network.SwitchToolTypePacket;
@@ -28,11 +30,14 @@ public class ToolCoreRadialMenuScreen extends Screen {
 
     private final ItemStack toolStack;
     private int highlightedSlot = -1;               //当前鼠标指向的槽位索引
+    private int currentRadialIndex;                 //当前显示的轮盘索引
 
     public ToolCoreRadialMenuScreen(ItemStack toolStack) {
         super(Component.translatable("screen.stellarmod.radial_menu"));
         this.toolStack = toolStack;
         this.minecraft = Minecraft.getInstance();
+        //按R键打开时始终从索引1（默认轮盘）开始
+        this.currentRadialIndex = 1;
     }
 
     @Override
@@ -64,12 +69,31 @@ public class ToolCoreRadialMenuScreen extends Screen {
 
         //如果高亮槽位有效，显示其名称
         if (highlightedSlot >= 0) {
-            ToolCoreRadialAction action = ToolCoreRadialAction.fromIndex(highlightedSlot);
-            if (!action.getId().equals("empty")) {
-                graphics.drawCenteredString(font, Component.translatable("action.stellarmod." + action.getId()),
+            String actionId = RadialConfigStorage.getSlotAction(currentRadialIndex, highlightedSlot);
+            if (actionId != null) {
+
+                //尝试将功能 ID 转换为 ToolCoreRadialAction 枚举常量（比如镐）
+                //若 actionId 不对应任何枚举值，则 action 为 null
+                ToolCoreRadialAction action = ToolCoreRadialAction.fromId(actionId);
+                String displayKey;
+                if (action != null) {
+                    displayKey = action.getId();
+                } else {
+                    //对于非枚举的功能（如副词条/矩阵效果），尝试作为翻译键显示
+                    displayKey = actionId;
+                }
+                graphics.drawCenteredString(font, Component.translatable("action.stellarmod." + displayKey),
                         centerX, centerY + RADIUS + 20, 0xFFFFFF);
             }
         }
+
+        //显示当前轮盘索引指示器（仅在索引 > 1 时显示）
+        if (currentRadialIndex > 1) {
+            String indexText = "[" + currentRadialIndex + "/" + RadialConfigStorage.getRadialCount() + "]";
+            graphics.drawString(font, indexText, centerX - font.width(indexText) / 2,
+                    centerY - RADIUS - 30, 0xAAAAAA);
+        }
+
         //恢复渲染状态，避免对后续渲染造成影响
         RenderSystem.disableBlend();
     }
@@ -99,7 +123,9 @@ public class ToolCoreRadialMenuScreen extends Screen {
         int x = centerX + (int) (RADIUS * Math.cos(angle)) - SLOT_SIZE / 2;
         int y = centerY + (int) (RADIUS * Math.sin(angle)) - SLOT_SIZE / 2;
 
-        ToolCoreRadialAction action = ToolCoreRadialAction.fromIndex(slotIndex);
+        //从配置中读取该槽位的功能 ID
+        String actionId = RadialConfigStorage.getSlotAction(currentRadialIndex, slotIndex);
+        ToolCoreRadialAction action = ToolCoreRadialAction.fromId(actionId);
 
         //绘制背景（方形）
         int bgColor = highlighted ? 0x80FFFFFF : 0x40000000;
@@ -108,14 +134,20 @@ public class ToolCoreRadialMenuScreen extends Screen {
         graphics.renderOutline(x, y, SLOT_SIZE, SLOT_SIZE, highlighted ? 0xFFFFFFFF : 0xFFAAAAAA);
 
         //绘制图标
-        if (action.getIcon() != null) {
+        if (action != null && action.getIcon() != null) {
             //直接使用 GuiGraphics.blit，无需手动设置纹理，避免状态污染
             graphics.blit(action.getIcon(), x + 4, y + 4, 0, 0, 16, 16, 16, 16);
+        } else if (actionId != null && !actionId.isEmpty()) {
+
+            //对于非枚举功能（副词条/矩阵效果），绘制首字母作为临时图标
+            //.substring(0, 1)截取字符串的第一个字符（索引 0 到 1，不包括 1），得到长度为 1 的字符串，toUpperCase()：将该字符转换为大写字母
+            String letter = actionId.substring(0, 1).toUpperCase();
+            graphics.drawCenteredString(font, letter, x + SLOT_SIZE / 2, y + SLOT_SIZE / 2 - 4, 0xFFFFFF);
         }
 
         //如果是当前激活的形态，绘制一个标记
         ToolCoreItem.ToolType activeType = ToolCoreItem.getActiveType(toolStack);
-        if (matchesActiveType(action, activeType)) {
+        if (action != null && matchesActiveType(action, activeType)) {
             graphics.blit(WIDGETS, x + SLOT_SIZE - 8, y + SLOT_SIZE - 8, 0, 0, 8, 8, 256, 256);
         }
     }
@@ -150,37 +182,65 @@ public class ToolCoreRadialMenuScreen extends Screen {
 
     //执行轮盘槽位对应的动作
     private void executeAction(int slotIndex) {
-        ToolCoreRadialAction action = ToolCoreRadialAction.fromIndex(slotIndex);
-        if (!action.getId().equals("empty")) {
-            Player player = minecraft.player;
-            if (player != null) {
-                if (action.ordinal() < 5) {
-                    //前五个是工具形态，发送网络包切换形态
-                    ToolCoreItem.ToolType targetType = ToolCoreItem.ToolType.values()[action.ordinal()];
-                    StellarNetworkHandler.INSTANCE.sendToServer(new SwitchToolTypePacket(targetType));
-                    //通知按键系统：轮盘因执行动作而关闭，防止立即重新打开
-                    StellarKeyMapping.notifyClosedFromAction();
-                    onClose();
-                } else if (action == ToolCoreRadialAction.SETTINGS) {
-                    //打开副词条设置屏幕（新屏幕会覆盖当前屏幕，无需手动 onClose）
-                    Minecraft.getInstance().setScreen(new ToolCoreModifierSettingsScreen(toolStack));
-                    //仍需通知按键系统，防止释放按键时误触发再次打开轮盘
-                    StellarKeyMapping.notifyClosedFromAction();
-                } else if (action == ToolCoreRadialAction.MATRIX) {
-                    Minecraft.getInstance().setScreen(new ToolCoreMatrixModuleScreen(toolStack));
-                    StellarKeyMapping.notifyClosedFromAction(); // 跳过关闭，新屏幕会接管
-                } else {
-                    //对于其他非形态槽位（预留扩展），调用枚举中定义的自定义逻辑
-                    action.execute(toolStack, player);
-                    StellarKeyMapping.notifyClosedFromAction();
-                    onClose();
-                }
+        String actionId = RadialConfigStorage.getSlotAction(currentRadialIndex, slotIndex);
+        if (actionId == null) {
+            //空槽位，关闭轮盘
+            StellarKeyMapping.notifyClosedFromAction();
+            onClose();
+            return;
+        }
+
+        ToolCoreRadialAction action = ToolCoreRadialAction.fromId(actionId);
+        Player player = minecraft.player;
+        if (player == null) {
+            StellarKeyMapping.notifyClosedFromAction();
+            onClose();
+            return;
+        }
+
+        if (action != null) {
+            //枚举中定义的标准动作
+            if (ToolCoreRadialAction.isToolType(actionId)) {
+                //前五个是工具形态，发送网络包切换形态
+                //getIndex() 只看这个动作是什么，不看它放在哪个槽位，是硬编码的，比如说镐这个动作的getIndex返回值永久为0，其被枚举在ToolCoreRadialAction类中
+                ToolCoreItem.ToolType targetType = ToolCoreItem.ToolType.values()[action.getIndex()];
+                StellarNetworkHandler.INSTANCE.sendToServer(new SwitchToolTypePacket(targetType));
+                StellarKeyMapping.notifyClosedFromAction();
+                onClose();
+            } else {
+                //面板入口：MODIFIERS / MATRIX / SETTINGS
+                action.execute(toolStack, player);
+                StellarKeyMapping.notifyClosedFromAction();
             }
         } else {
-            //如果点击的是空槽位，也关闭轮盘
+            //非枚举功能（如副词条/矩阵效果），暂时关闭轮盘（后续扩展）
             StellarKeyMapping.notifyClosedFromAction();
             onClose();
         }
+    }
+
+    /**
+     * 处理轮盘打开期间的按键事件。
+     * <p>
+     * 左右 Shift：将当前显示的轮盘切到下一个有内容的索引（循环），
+     * 从而实现"一个 R 键浏览多个轮盘页"的效果。
+     * <p>
+     * 其他按键交由父类处理。
+     *
+     * @param keyCode   被按下的键的 GLFW 键码（如 {@code GLFW.GLFW_KEY_LEFT_SHIFT}）
+     * @param scanCode  平台相关的键盘扫描码（由操作系统或硬件提供，表示按键的物理位置，而不是键的功能）
+     * @param modifiers 当前有效的修饰键位掩码（Ctrl/Alt/Shift 等组合，可以理解为复合键，比如说Ctrl+A）
+     * @return true 表示事件已消费，不再向后续监听器传递
+     */
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        //Shift 切换轮盘索引
+        if (keyCode == GLFW.GLFW_KEY_LEFT_SHIFT || keyCode == GLFW.GLFW_KEY_RIGHT_SHIFT) {
+            ToolCoreRadialState.switchToNextRadial();
+            currentRadialIndex = ToolCoreRadialState.getCurrentRadialIndex();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
