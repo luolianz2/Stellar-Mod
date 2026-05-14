@@ -59,12 +59,12 @@ public class ServerEventListener {
         StructureSpawnData data = level.getDataStorage().computeIfAbsent(
                 StructureSpawnData::load,
                 StructureSpawnData::new,
-                StellarMod.MOD_ID + "_kjz_spawned"
+                StellarMod.MOD_ID + "_kjs_spawned"
         );
 
         if (!data.hasSpawned) {
             StructureTemplateManager templateManager = level.getStructureManager();
-            Optional<StructureTemplate> templateOpt = templateManager.get(StellarMod.location("kjz"));
+            Optional<StructureTemplate> templateOpt = templateManager.get(StellarMod.location("space_station"));
 
             if (templateOpt.isPresent()) {
                 StructureTemplate template = templateOpt.get();
