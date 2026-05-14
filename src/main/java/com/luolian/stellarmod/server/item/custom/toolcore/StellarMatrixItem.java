@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.server.item.custom;
+package com.luolian.stellarmod.server.item.custom.toolcore;
 
 import net.minecraft.world.item.Item;
 

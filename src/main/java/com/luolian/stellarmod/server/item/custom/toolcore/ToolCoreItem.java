@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.server.item.custom;
+package com.luolian.stellarmod.server.item.custom.toolcore;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;

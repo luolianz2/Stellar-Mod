@@ -5,7 +5,7 @@ import com.luolian.stellarmod.client.config.ToolCoreRadialState;
 import com.luolian.stellarmod.client.key.StellarKeyMapping;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.network.toolcore.SwitchToolTypePacket;
-import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.KeyMapping;

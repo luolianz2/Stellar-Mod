@@ -1,7 +1,7 @@
 package com.luolian.stellarmod.common.toolcore.matrix;
 
 import com.luolian.stellarmod.api.toolcore.StellarMatrixEffect;
-import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;

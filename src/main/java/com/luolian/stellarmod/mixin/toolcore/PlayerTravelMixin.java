@@ -1,6 +1,6 @@
 package com.luolian.stellarmod.mixin.toolcore;
 
-import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;

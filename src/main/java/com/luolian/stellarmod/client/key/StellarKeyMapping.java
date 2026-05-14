@@ -5,7 +5,7 @@ import com.luolian.stellarmod.client.screen.toolCore.ToolCoreRadialMenuScreen;
 import com.luolian.stellarmod.common.toolcore.matrix.CreativeFlightEffect;
 import com.luolian.stellarmod.network.toolcore.FlightBoostPacket;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
-import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;

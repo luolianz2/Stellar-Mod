@@ -4,7 +4,7 @@ import com.luolian.stellarmod.api.toolcore.StellarMatrixEffect;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.network.toolcore.SyncToolCoreMatrixSettingsPacket;
 import com.luolian.stellarmod.server.data.toolcore.StellarMatrixRegistry;
-import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;

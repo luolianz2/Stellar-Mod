@@ -13,7 +13,7 @@ import com.luolian.stellarmod.server.data.toolcore.MaterialDataLoader;
 import com.luolian.stellarmod.server.effect.StellarMobEffects;
 import com.luolian.stellarmod.server.item.StellarCreativeModeTabs;
 import com.luolian.stellarmod.server.item.StellarItems;
-import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
 import com.luolian.stellarmod.server.potion.StellarPotions;
 import com.luolian.stellarmod.server.worldgen.dimension.EmptyChunkGenerator;
 import com.mojang.logging.LogUtils;

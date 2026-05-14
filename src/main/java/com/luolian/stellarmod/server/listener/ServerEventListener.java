@@ -4,7 +4,7 @@ import com.luolian.stellarmod.StellarMod;
 import com.luolian.stellarmod.api.toolcore.StellarMatrixEffect;
 import com.luolian.stellarmod.api.util.OriginsUtil;
 import com.luolian.stellarmod.server.data.toolcore.StellarMatrixRegistry;
-import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
 import com.luolian.stellarmod.server.worldgen.dimension.StellarDimensions;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.core.BlockPos;

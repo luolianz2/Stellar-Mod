@@ -5,7 +5,7 @@ import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.network.toolcore.SyncToolCoreModifierSettingsPacket;
 import com.luolian.stellarmod.server.data.toolcore.StellarModifierRegistry;
 import com.luolian.stellarmod.server.data.toolcore.Material;
-import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;

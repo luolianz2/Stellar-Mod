@@ -2,8 +2,8 @@ package com.luolian.stellarmod.server.item;
 
 import com.luolian.stellarmod.StellarMod;
 import com.luolian.stellarmod.server.item.custom.MetalDetectorItem;
-import com.luolian.stellarmod.server.item.custom.StellarMatrixItem;
-import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.StellarMatrixItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
