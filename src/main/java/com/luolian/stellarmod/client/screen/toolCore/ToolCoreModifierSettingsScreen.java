@@ -6,6 +6,7 @@ import com.luolian.stellarmod.network.toolcore.SyncToolCoreModifierSettingsPacke
 import com.luolian.stellarmod.server.data.toolcore.StellarModifierRegistry;
 import com.luolian.stellarmod.server.data.toolcore.Material;
 import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreNBT;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -32,8 +33,7 @@ public class ToolCoreModifierSettingsScreen extends Screen {
     private int contentY;   //记录内容区域的起始 Y 坐标（垂直位置）
     private static final int ENTRY_HEIGHT = 24; //定义每个副词条条目（包括开关按钮和名称）所占的固定高度（单位：像素）
 
-    //定义了一个静态常量，用作 NBT 标签的键名，负责在工具核心的物品数据中统一标识副词条开关设置的位置
-    private static final String TAG_MODIFIER_SETTINGS = "ToolCoreModifierSettings";
+    //TAG_MODIFIER_SETTINGS 已迁移至 ToolCoreNBT 统一管理
 
     public ToolCoreModifierSettingsScreen(ItemStack toolStack) {
         super(Component.translatable("screen.stellarmod.tool_core.settings"));
@@ -58,7 +58,7 @@ public class ToolCoreModifierSettingsScreen extends Screen {
         entries.clear();
 
         //获取工具核心当前拥有的所有副词条
-        List<Material.StellarModifierEntry> modifiers = ToolCoreItem.getAllModifiers(toolStack);
+        List<Material.StellarModifierEntry> modifiers = ToolCoreNBT.getAllModifiers(toolStack);
         for (Material.StellarModifierEntry entry : modifiers) {
             StellarModifierEffect effect = StellarModifierRegistry.get(entry.id());
             if (effect != null) {
@@ -81,8 +81,8 @@ public class ToolCoreModifierSettingsScreen extends Screen {
             int y = contentY + i * ENTRY_HEIGHT;
 
             //获取当前最大等级和生效等级
-            int maxLevel = ToolCoreItem.getModifierLevel(toolStack, entry.id());
-            int activeLevel = ToolCoreItem.getModifierActiveLevel(toolStack, entry.id());
+            int maxLevel = ToolCoreNBT.getModifierLevel(toolStack, entry.id());
+            int activeLevel = ToolCoreNBT.getModifierActiveLevel(toolStack, entry.id());
 
             //创建开关按钮，初始文字根据生效等级是否 > 0 决定
             boolean isEnabled = activeLevel > 0;
@@ -177,7 +177,7 @@ public class ToolCoreModifierSettingsScreen extends Screen {
                 //构建 Tooltip 内容：描述行 + 作者吐槽 + 最大等级
                 List<Component> tooltipLines = new ArrayList<>(entry.effect().getDescription());
                 tooltipLines.add(entry.effect().getAuthorNote());
-                int maxLevel = ToolCoreItem.getModifierLevel(toolStack, entry.id());
+                int maxLevel = ToolCoreNBT.getModifierLevel(toolStack, entry.id());
                 tooltipLines.add(Component.literal("最大等级：Lv." + maxLevel));
                 graphics.renderComponentTooltip(font, tooltipLines, mouseX, mouseY);
                 break; //一次只显示一个
@@ -190,55 +190,13 @@ public class ToolCoreModifierSettingsScreen extends Screen {
         return false; //不暂停游戏
     }
 
-    //NBT 读写
-
-    /**
-     * 判断某个副词条是否处于开启状态。默认为开启。
-     */
-    public static boolean isModifierEnabled(ItemStack stack, String modifierId) {
-        //获取物品的根 CompoundTag。如果物品当前没有 NBT 数据，则创建一个新的空标签并返回
-        CompoundTag root = stack.getOrCreateTag();
-
-        //root.contains(key, type) 检查根标签中是否存在指定键名且值类型为 CompoundTag 的数据
-        //如果玩家从未修改过任何副词条开关，则根标签中不存在这个键，条件为 false，直接跳到方法末尾返回 true
-        if (root.contains(TAG_MODIFIER_SETTINGS, Tag.TAG_COMPOUND)) {
-
-            //如果设置容器存在，则通过 getCompound 获取这个复合标签。该标签内部以 modifierId -> boolean 的键值对形式存储各个副词条的开关状态
-            CompoundTag settings = root.getCompound(TAG_MODIFIER_SETTINGS);
-
-            //检查该副词条的 ID 是否作为键存在于设置容器中，且对应的值是一个字节标签（ByteTag，在 NBT 中用于存储布尔值，1 为 true，0 为 false）
-            //如果玩家从未单独修改过这个副词条，则设置容器中不会包含它的键（因为只有被修改过的条目才会被写入）。此时条件为 false，同样会跳到方法末尾返回 true。这体现了“默认开启”的逻辑
-            if (settings.contains(modifierId, Tag.TAG_BYTE)) {
-                return settings.getBoolean(modifierId);
-            }
-        }
-        return true; //默认开启
-    }
-
-    /**
-     * 直接设置某个副词条的开关状态，不触发界面刷新。
-     * 该方法供 ToolCoreItem.setModifierActiveLevel 调用以自动联动开关。
-     */
-    public static void setModifierEnabledDirect(ItemStack stack, String modifierId, boolean enabled) {
-        CompoundTag root = stack.getOrCreateTag();
-        CompoundTag settings = root.getCompound(TAG_MODIFIER_SETTINGS);
-        if (enabled) {
-            settings.remove(modifierId); //默认开启，移除记录即可
-        } else {
-            settings.putBoolean(modifierId, false);
-        }
-        if (settings.isEmpty()) {
-            root.remove(TAG_MODIFIER_SETTINGS);
-        } else {
-            root.put(TAG_MODIFIER_SETTINGS, settings);
-        }
-    }
+    //isModifierEnabled / setModifierEnabledDirect 已迁移至 ToolCoreNBT
 
     /**
      * 设置某个副词条的生效等级，保存到 NBT，触发同步，并刷新界面。
      */
     private void setActiveLevelWithSync(String id, int level) {
-        ToolCoreItem.setModifierActiveLevel(toolStack, id, level);
+        ToolCoreNBT.setModifierActiveLevel(toolStack, id, level);
         syncModifierSettings();
         rebuildWidgets();
     }
@@ -260,8 +218,8 @@ public class ToolCoreModifierSettingsScreen extends Screen {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
-        CompoundTag settings = toolStack.getOrCreateTag().getCompound(TAG_MODIFIER_SETTINGS);
-        CompoundTag activeLevels = toolStack.getOrCreateTag().getCompound(ToolCoreItem.TAG_MODIFIER_ACTIVE_LEVELS);
+        CompoundTag settings = toolStack.getOrCreateTag().getCompound(ToolCoreNBT.TAG_MODIFIER_SETTINGS);
+        CompoundTag activeLevels = toolStack.getOrCreateTag().getCompound(ToolCoreNBT.TAG_MODIFIER_ACTIVE_LEVELS);
         StellarNetworkHandler.INSTANCE.sendToServer(new SyncToolCoreModifierSettingsPacket(this.slot, settings, activeLevels));
     }
 
@@ -270,9 +228,9 @@ public class ToolCoreModifierSettingsScreen extends Screen {
      */
     private void restoreDefaults() {
         //移除 NBT 中的设置标签
-        toolStack.getOrCreateTag().remove(TAG_MODIFIER_SETTINGS);
+        toolStack.getOrCreateTag().remove(ToolCoreNBT.TAG_MODIFIER_SETTINGS);
         //移除生效等级限制
-        toolStack.getOrCreateTag().remove(ToolCoreItem.TAG_MODIFIER_ACTIVE_LEVELS);
+        toolStack.getOrCreateTag().remove(ToolCoreNBT.TAG_MODIFIER_ACTIVE_LEVELS);
         //同步到服务端
         syncModifierSettings();
 

@@ -1,6 +1,7 @@
 package com.luolian.stellarmod.mixin.toolcore;
 
 import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreNBT;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -54,8 +55,8 @@ public class PlayerTravelMixin {
         //扫描背包查找已启用的惯性消除矩阵
         for (ItemStack stack : self.getInventory().items) {
             if (stack.getItem() instanceof ToolCoreItem) {
-                if (ToolCoreItem.isMatrixEnabled(stack, "stellarmod:inertia_cancellation")) {
-                    int level = ToolCoreItem.getMatrixActiveLevel(stack, "stellarmod:inertia_cancellation");
+                if (ToolCoreNBT.isMatrixEnabled(stack, "stellarmod:inertia_cancellation")) {
+                    int level = ToolCoreNBT.getMatrixActiveLevel(stack, "stellarmod:inertia_cancellation");
                     if (level > 0) {
                         self.setDeltaMovement(Vec3.ZERO);
                         return;

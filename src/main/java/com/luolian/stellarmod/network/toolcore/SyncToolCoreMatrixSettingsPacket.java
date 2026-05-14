@@ -1,6 +1,6 @@
 package com.luolian.stellarmod.network.toolcore;
 
-import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreNBT;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,16 +44,16 @@ public class SyncToolCoreMatrixSettingsPacket {
                 if (!stack.isEmpty()) {
                     //写入矩阵开关状态
                     if (msg.settings != null && !msg.settings.isEmpty()) {
-                        stack.getOrCreateTag().put(ToolCoreItem.TAG_MATRIX_SETTINGS, msg.settings);
+                        stack.getOrCreateTag().put(ToolCoreNBT.TAG_MATRIX_SETTINGS, msg.settings);
                     } else {
-                        stack.getOrCreateTag().remove(ToolCoreItem.TAG_MATRIX_SETTINGS);
+                        stack.getOrCreateTag().remove(ToolCoreNBT.TAG_MATRIX_SETTINGS);
                     }
 
                     //写入矩阵生效等级
                     if (msg.activeLevels != null && !msg.activeLevels.isEmpty()) {
-                        stack.getOrCreateTag().put(ToolCoreItem.TAG_MATRIX_ACTIVE_LEVELS, msg.activeLevels);
+                        stack.getOrCreateTag().put(ToolCoreNBT.TAG_MATRIX_ACTIVE_LEVELS, msg.activeLevels);
                     } else {
-                        stack.getOrCreateTag().remove(ToolCoreItem.TAG_MATRIX_ACTIVE_LEVELS);
+                        stack.getOrCreateTag().remove(ToolCoreNBT.TAG_MATRIX_ACTIVE_LEVELS);
                     }
                 }
             }

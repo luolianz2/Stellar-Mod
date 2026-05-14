@@ -1,6 +1,6 @@
 package com.luolian.stellarmod.network.toolcore;
 
-import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreNBT;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -54,10 +54,10 @@ public class SyncToolCoreModifierSettingsPacket {
 
                     //处理生效等级数据
                     if (msg.activeLevels != null && !msg.activeLevels.isEmpty()) {
-                        stack.getOrCreateTag().put(ToolCoreItem.TAG_MODIFIER_ACTIVE_LEVELS, msg.activeLevels);
+                        stack.getOrCreateTag().put(ToolCoreNBT.TAG_MODIFIER_ACTIVE_LEVELS, msg.activeLevels);
                     } else {
                         //如果为空则移除该标签，表示无限制（使用最大等级）
-                        stack.getOrCreateTag().remove(ToolCoreItem.TAG_MODIFIER_ACTIVE_LEVELS);
+                        stack.getOrCreateTag().remove(ToolCoreNBT.TAG_MODIFIER_ACTIVE_LEVELS);
                     }
                 }
             }

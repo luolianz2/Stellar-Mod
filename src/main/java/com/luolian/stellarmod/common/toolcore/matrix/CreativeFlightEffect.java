@@ -2,6 +2,7 @@ package com.luolian.stellarmod.common.toolcore.matrix;
 
 import com.luolian.stellarmod.api.toolcore.StellarMatrixEffect;
 import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreNBT;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -102,8 +103,8 @@ public class CreativeFlightEffect implements StellarMatrixEffect {
         int maxMatrixLevel = 0;
         for (ItemStack stack : player.getInventory().items) {
             if (stack.getItem() instanceof ToolCoreItem) {
-                if (ToolCoreItem.isMatrixEnabled(stack, ID)) {
-                    int level = ToolCoreItem.getMatrixActiveLevel(stack, ID);
+                if (ToolCoreNBT.isMatrixEnabled(stack, ID)) {
+                    int level = ToolCoreNBT.getMatrixActiveLevel(stack, ID);
                     if (level > maxMatrixLevel) maxMatrixLevel = level;
                 }
             }

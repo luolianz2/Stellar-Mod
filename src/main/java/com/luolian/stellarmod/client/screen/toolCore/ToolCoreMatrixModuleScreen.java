@@ -5,6 +5,7 @@ import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.network.toolcore.SyncToolCoreMatrixSettingsPacket;
 import com.luolian.stellarmod.server.data.toolcore.StellarMatrixRegistry;
 import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreItem;
+import com.luolian.stellarmod.server.item.custom.toolcore.ToolCoreNBT;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -54,7 +55,7 @@ public class ToolCoreMatrixModuleScreen extends Screen {
         entries.clear();
 
         //获取工具核心当前附加的所有矩阵效果
-        Set<String> matrixIds = ToolCoreItem.getAttachedMatrixEffects(toolStack);
+        Set<String> matrixIds = ToolCoreNBT.getAttachedMatrixEffects(toolStack);
         for (String id : matrixIds) {
             StellarMatrixEffect effect = StellarMatrixRegistry.get(id);
             if (effect != null) {
@@ -76,8 +77,8 @@ public class ToolCoreMatrixModuleScreen extends Screen {
             int y = contentY + i * ENTRY_HEIGHT;
 
             //获取当前最大等级和生效等级
-            int maxLevel = ToolCoreItem.getMatrixTotalLevel(toolStack, entry.id());
-            int activeLevel = ToolCoreItem.getMatrixActiveLevel(toolStack, entry.id());
+            int maxLevel = ToolCoreNBT.getMatrixTotalLevel(toolStack, entry.id());
+            int activeLevel = ToolCoreNBT.getMatrixActiveLevel(toolStack, entry.id());
 
             //创建开关按钮，初始文字根据生效等级是否 > 0 决定
             boolean isEnabled = activeLevel > 0;
@@ -169,7 +170,7 @@ public class ToolCoreMatrixModuleScreen extends Screen {
                 //构建 Tooltip 内容：描述行 + 作者吐槽 + 最大等级
                 List<Component> tooltipLines = new ArrayList<>(entry.effect().getDescription());
                 tooltipLines.add(entry.effect().getAuthorNote());
-                int maxLevel = ToolCoreItem.getMatrixTotalLevel(toolStack, entry.id());
+                int maxLevel = ToolCoreNBT.getMatrixTotalLevel(toolStack, entry.id());
                 tooltipLines.add(Component.literal("最大等级：Lv." + maxLevel));
                 graphics.renderComponentTooltip(font, tooltipLines, mouseX, mouseY);
                 break; //一次只显示一个
@@ -188,7 +189,7 @@ public class ToolCoreMatrixModuleScreen extends Screen {
      * 设置某个矩阵效果的生效等级，保存到 NBT，触发同步，并刷新界面。
      */
     private void setActiveLevelWithSync(String effectId, int level) {
-        ToolCoreItem.setMatrixActiveLevel(toolStack, effectId, level);
+        ToolCoreNBT.setMatrixActiveLevel(toolStack, effectId, level);
         syncMatrixSettings();
         rebuildWidgets();
     }
@@ -201,8 +202,8 @@ public class ToolCoreMatrixModuleScreen extends Screen {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
-        CompoundTag settings = toolStack.getOrCreateTag().getCompound(ToolCoreItem.TAG_MATRIX_SETTINGS);
-        CompoundTag activeLevels = toolStack.getOrCreateTag().getCompound(ToolCoreItem.TAG_MATRIX_ACTIVE_LEVELS);
+        CompoundTag settings = toolStack.getOrCreateTag().getCompound(ToolCoreNBT.TAG_MATRIX_SETTINGS);
+        CompoundTag activeLevels = toolStack.getOrCreateTag().getCompound(ToolCoreNBT.TAG_MATRIX_ACTIVE_LEVELS);
         StellarNetworkHandler.INSTANCE.sendToServer(new SyncToolCoreMatrixSettingsPacket(this.slot, settings, activeLevels));
     }
 
@@ -211,8 +212,8 @@ public class ToolCoreMatrixModuleScreen extends Screen {
      * 使它们回到默认的开启状态和最大等级。
      */
     private void restoreDefaults() {
-        toolStack.getOrCreateTag().remove(ToolCoreItem.TAG_MATRIX_SETTINGS);
-        toolStack.getOrCreateTag().remove(ToolCoreItem.TAG_MATRIX_ACTIVE_LEVELS);
+        toolStack.getOrCreateTag().remove(ToolCoreNBT.TAG_MATRIX_SETTINGS);
+        toolStack.getOrCreateTag().remove(ToolCoreNBT.TAG_MATRIX_ACTIVE_LEVELS);
         //不删除 TAG_MATRIX_LEVELS（累计等级属于物品固有数据）
         syncMatrixSettings();
         this.entries.clear();
