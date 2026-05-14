@@ -1,8 +1,8 @@
 package com.luolian.stellarmod.server.data.toolcore;
 
 import com.luolian.stellarmod.api.toolcore.StellarMatrixEffect;
-import com.luolian.stellarmod.common.matrix.CreativeFlightEffect;
-import com.luolian.stellarmod.common.matrix.InertiaCancellationEffect;
+import com.luolian.stellarmod.common.toolcore.matrix.CreativeFlightEffect;
+import com.luolian.stellarmod.common.toolcore.matrix.InertiaCancellationEffect;
 
 import java.util.HashMap;
 import java.util.Map;

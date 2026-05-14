@@ -2,8 +2,8 @@ package com.luolian.stellarmod.client.key;
 
 import com.luolian.stellarmod.StellarMod;
 import com.luolian.stellarmod.client.screen.toolCore.ToolCoreRadialMenuScreen;
-import com.luolian.stellarmod.common.matrix.CreativeFlightEffect;
-import com.luolian.stellarmod.network.FlightBoostPacket;
+import com.luolian.stellarmod.common.toolcore.matrix.CreativeFlightEffect;
+import com.luolian.stellarmod.network.toolcore.FlightBoostPacket;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
 import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
 import com.mojang.blaze3d.platform.InputConstants;

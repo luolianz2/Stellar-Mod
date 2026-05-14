@@ -1,5 +1,9 @@
 package com.luolian.stellarmod.network;
 
+import com.luolian.stellarmod.network.toolcore.FlightBoostPacket;
+import com.luolian.stellarmod.network.toolcore.SwitchToolTypePacket;
+import com.luolian.stellarmod.network.toolcore.SyncToolCoreMatrixSettingsPacket;
+import com.luolian.stellarmod.network.toolcore.SyncToolCoreModifierSettingsPacket;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 

@@ -2,7 +2,7 @@ package com.luolian.stellarmod.client.screen.toolCore;
 
 import com.luolian.stellarmod.api.toolcore.StellarModifierEffect;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
-import com.luolian.stellarmod.network.SyncToolCoreModifierSettingsPacket;
+import com.luolian.stellarmod.network.toolcore.SyncToolCoreModifierSettingsPacket;
 import com.luolian.stellarmod.server.data.toolcore.StellarModifierRegistry;
 import com.luolian.stellarmod.server.data.toolcore.Material;
 import com.luolian.stellarmod.server.item.custom.ToolCoreItem;

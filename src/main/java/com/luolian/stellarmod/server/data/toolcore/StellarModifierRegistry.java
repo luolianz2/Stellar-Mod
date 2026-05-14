@@ -1,9 +1,9 @@
 package com.luolian.stellarmod.server.data.toolcore;
 
 import com.luolian.stellarmod.api.toolcore.StellarModifierEffect;
-import com.luolian.stellarmod.common.modifier.DurableEffect;
-import com.luolian.stellarmod.common.modifier.ElectromagneticEffect;
-import com.luolian.stellarmod.common.modifier.PrecisionCollectionEffect;
+import com.luolian.stellarmod.common.toolcore.modifier.DurableEffect;
+import com.luolian.stellarmod.common.toolcore.modifier.ElectromagneticEffect;
+import com.luolian.stellarmod.common.toolcore.modifier.PrecisionCollectionEffect;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

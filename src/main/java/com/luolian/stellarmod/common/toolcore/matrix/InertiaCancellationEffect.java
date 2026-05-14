@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.common.matrix;
+package com.luolian.stellarmod.common.toolcore.matrix;
 
 import com.luolian.stellarmod.api.toolcore.StellarMatrixEffect;
 import net.minecraft.ChatFormatting;

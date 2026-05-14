@@ -1,6 +1,6 @@
-package com.luolian.stellarmod.network;
+package com.luolian.stellarmod.network.toolcore;
 
-import com.luolian.stellarmod.common.matrix.CreativeFlightEffect;
+import com.luolian.stellarmod.common.toolcore.matrix.CreativeFlightEffect;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;

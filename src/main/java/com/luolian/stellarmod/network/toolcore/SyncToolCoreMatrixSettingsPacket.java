@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.network;
+package com.luolian.stellarmod.network.toolcore;
 
 import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
 import net.minecraft.nbt.CompoundTag;

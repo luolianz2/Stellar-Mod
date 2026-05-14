@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.common.modifier;
+package com.luolian.stellarmod.common.toolcore.modifier;
 
 import com.luolian.stellarmod.api.toolcore.StellarModifierEffect;
 import net.minecraft.ChatFormatting;

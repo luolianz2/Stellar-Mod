@@ -1,4 +1,4 @@
-package com.luolian.stellarmod.common.matrix;
+package com.luolian.stellarmod.common.toolcore.matrix;
 
 import com.luolian.stellarmod.api.toolcore.StellarMatrixEffect;
 import com.luolian.stellarmod.server.item.custom.ToolCoreItem;

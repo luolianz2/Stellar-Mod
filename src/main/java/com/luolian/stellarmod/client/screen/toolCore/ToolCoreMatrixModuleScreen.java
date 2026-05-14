@@ -2,7 +2,7 @@ package com.luolian.stellarmod.client.screen.toolCore;
 
 import com.luolian.stellarmod.api.toolcore.StellarMatrixEffect;
 import com.luolian.stellarmod.network.StellarNetworkHandler;
-import com.luolian.stellarmod.network.SyncToolCoreMatrixSettingsPacket;
+import com.luolian.stellarmod.network.toolcore.SyncToolCoreMatrixSettingsPacket;
 import com.luolian.stellarmod.server.data.toolcore.StellarMatrixRegistry;
 import com.luolian.stellarmod.server.item.custom.ToolCoreItem;
 import net.minecraft.client.Minecraft;
